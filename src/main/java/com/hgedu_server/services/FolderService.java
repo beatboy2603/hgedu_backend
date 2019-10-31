@@ -17,36 +17,40 @@ import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
+
+
 /**
  *
  * @author ADMIN
  */
 @Service
 public class FolderService {
+
     @Autowired
     private FolderRepository folderRepository;
-    
-    public List<Folder> getAllSubfolders(int teacherId, int parentFolderId){
+
+    public List<Folder> getAllSubfolders(int teacherId, int parentFolderId) {
         return folderRepository.getAllSubfolders(teacherId, parentFolderId);
     }
-    
-    public boolean checkFolderExisting(int folderId){
+
+    public boolean checkFolderExisting(int folderId) {
         Folder folder = folderRepository.getOne(folderId);
-        if(folder!=null){
+        if (folder != null) {
             System.out.println(folder.getFolderName());
             return true;
-        }else{
+        } else {
             return false;
         }
     }
-    
+
     public Map<String, Object> getFoldersForNav() {
         Map<String, Object> responseList = new LinkedHashMap<>();
         List<Object> folders = new ArrayList<>();
         loadFolders(responseList, folders, 1, 0);
         return responseList;
     }
-    
+
     private void loadFolders(Map<String, Object> responseList, List<Object> folder, int teacherId, int parentFolderId) {
         try {
             List<Folder> subfolders = folderRepository.getAllSubfolders(teacherId, parentFolderId);
