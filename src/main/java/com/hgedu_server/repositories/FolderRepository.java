@@ -16,7 +16,7 @@ import org.springframework.data.jpa.repository.Query;
  */
 public interface FolderRepository extends JpaRepository<Folder, Integer> {
 
-    @Query(value = "select * from folder where teacherId = ?1 and parentFolderId = ?2", nativeQuery = true)
+    @Query(value = "select * from Folder where teacherId = ?1 and parentFolderId = ?2", nativeQuery = true)
     List<Folder> getAllSubfolders(int teacherId, int parentFolderId);
     
     Folder getOne(int folderId);
