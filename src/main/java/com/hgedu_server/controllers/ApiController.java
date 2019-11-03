@@ -37,14 +37,8 @@ public class ApiController {
 //    }
     
     @Autowired
-    private FolderService folderService;
-    @Autowired
     private TestToWordService testToWordService;
-    
-    @GetMapping("/test")
-    public Map<String, Object> test(){
-        return folderService.getFoldersForNav();
-    }
+
     
     @GetMapping("/test2")
     public List<String> test2() {

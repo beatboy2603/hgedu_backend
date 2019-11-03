@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.hgedu_server.controllers;
+package com.hgedu_server.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -19,6 +19,7 @@ import java.util.Date;
  * @author ADMIN
  */
 public class JwtController {
+
     private static JwtController instance;
 
     public static JwtController getInstance() {
@@ -36,13 +37,13 @@ public class JwtController {
         algorithm = Algorithm.HMAC256("motcaisecretkeygido");
     }
 
-    public String createToken(String account, long uid, int role) {
+    public String createToken(String sub, int uid, int role) {
         // Create token with 30min timeline and change token each 15min
         try {
             Date exp = new Date(System.currentTimeMillis() + 30 * 60 * 1000); // 30 min expired
             Date renew = new Date(System.currentTimeMillis() + 15 * 60 * 1000); // 15 min renew token
 
-            String token = JWT.create().withIssuer(issuer).withExpiresAt(exp).withClaim("acc", account)
+            String token = JWT.create().withIssuer(issuer).withExpiresAt(exp).withClaim("sub", sub)
                     .withClaim("uid", uid).withClaim("role", role).withClaim("renew", renew).sign(algorithm);
             return token;
         } catch (JWTCreationException exception) {
@@ -56,7 +57,7 @@ public class JwtController {
             JWTVerifier verifier = JWT.require(algorithm).acceptExpiresAt(System.currentTimeMillis()).build();
             DecodedJWT jwt = verifier.verify(token);
             if (jwt.getClaim("renew").asDate().before(new Date(System.currentTimeMillis()))) {
-                return createToken(jwt.getClaim("acc").asString(), jwt.getClaim("uid").asLong(),
+                return createToken(jwt.getClaim("sub").asString(), jwt.getClaim("uid").asInt(),
                         jwt.getClaim("role").asInt());
             }
             return "";
@@ -69,7 +70,7 @@ public class JwtController {
     public long getUid(String token) {
         try {
             DecodedJWT jwt = JWT.decode(token);
-            return jwt.getClaim("uid").asLong();
+            return jwt.getClaim("uid").asInt();
         } catch (JWTDecodeException exception) {
             // Invalid signature/claims
             return -1;

@@ -17,9 +17,6 @@ import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
-
-
 /**
  *
  * @author ADMIN
@@ -41,6 +38,21 @@ public class FolderService {
             return true;
         } else {
             return false;
+        }
+    }
+
+    public Folder addFolder(Folder folder) {
+        if (folder.getFolderName() != null && folder.getParentFolderId() != 0) {
+            return folderRepository.save(folder);
+        }
+        return null;
+    }
+    
+    public void deleteFolder(int folderId) throws Exception{
+        try {
+            folderRepository.deleteById(folderId);
+        } catch (Exception e) {
+            throw new Exception(e);
         }
     }
 

@@ -5,19 +5,34 @@
  */
 package com.hgedu_server.controllers;
 
-import javax.servlet.http.HttpServletResponse;
+import com.hgedu_server.services.AuthenService;
+import com.hgedu_server.utils.Util;
+import java.util.Map;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  *
  * @author ADMIN
  */
+@RestController
+@RequestMapping("/api/authen")
 public class AuthenController {
-    public void authen(HttpServletResponse res) {
-//        String jwt = JwtController.getInstance().createToken(model.username, 0, 1);
-//        Util.response(res, new Response("Login success", 0, jwt));
+    
+    @Autowired
+    private AuthenService authenService;
+    
+    @PostMapping
+    public Map<String, Object> authen(@RequestBody String token) {
+        return authenService.authen(token);
     }
     
-    public void signup(){
-        
-    }
+//    public void signup(){
+//        
+//    }
 }
