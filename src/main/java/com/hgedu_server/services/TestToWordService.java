@@ -13,6 +13,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -41,6 +43,8 @@ import org.openxmlformats.schemas.officeDocument.x2006.math.CTOMathPara;
 import org.openxmlformats.schemas.officeDocument.x2006.math.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
@@ -52,6 +56,8 @@ import uk.ac.ed.ph.snuggletex.SnuggleSession;
  */
 @Service
 public class TestToWordService {
+    
+    private Path fileStorageLocation;
 
     @Autowired
     private TestToWordRepository testToWordRepository;
@@ -146,7 +152,7 @@ public class TestToWordService {
     public String convertToJson() {
         FileInputStream input;
         try {
-            input = new FileInputStream(new File("/Users/admin/Desktop/readexcel1.xlsx"));
+            input = new FileInputStream("excelFile.xlsx");
 
             XSSFWorkbook workbook = new XSSFWorkbook(input);
             Sheet sheet0 = workbook.getSheetAt(0);
@@ -400,6 +406,23 @@ public class TestToWordService {
         } catch (Exception ex) {
             Logger.getLogger(TestToWordService.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    
+    
+    public Resource loadFileAsResource(String fileName) {
+        try {
+            Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+            if(resource.exists()) {
+                return resource;
+            } else {
+                System.out.println("File not found " + fileName);
+            }
+        } catch (MalformedURLException ex) {
+            System.out.println("File not found " + fileName);
+        }
+        return null;
     }
 
 }
