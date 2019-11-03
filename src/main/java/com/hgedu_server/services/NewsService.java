@@ -52,6 +52,10 @@ public class NewsService {
         return newsRepo.save(news);
     }
     
+    public News createNews(News news) {
+        return newsRepo.save(news);
+    }
+    
     public List<News> getAllNews() {
         return newsRepo.findAllByOrderByIdDesc();
     }

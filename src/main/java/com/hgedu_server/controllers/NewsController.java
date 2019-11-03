@@ -38,12 +38,12 @@ public class NewsController {
     private NewsService newsService;
     
     @PostMapping(value = "/create-news")
-    public ResponseEntity createNews(@Valid @RequestBody Map<String, Object> news ) {
+    public ResponseEntity createNews(@Valid @RequestBody News news ) {
         News createdNews = newsService.createNews(news);
         return ResponseEntity.ok(createdNews);
     }
     
-    @GetMapping("/news-list")
+    @GetMapping("/news")
     public ResponseEntity getAllNews() {
       List<News> list = newsService.getAllNews();
       return ResponseEntity.ok(list);
