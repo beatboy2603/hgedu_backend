@@ -6,13 +6,22 @@
 package com.hgedu_server.repositories;
 
 import com.hgedu_server.models.User;
-import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+/**
+ *
+ * @author Admin
+ */
+//    @Query(value = "SELECT * FROM User WHERE userId = ?1", nativeQuery = true)
+import java.util.List;
+
 
 /**
  *
  * @author ADMIN
  */
-public interface UserRepository extends JpaRepository<User, Integer>{
+public interface UserRepository extends JpaRepository<User, Integer> {
+
     List<User> findByUserSub(String userSub);
 }

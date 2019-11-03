@@ -17,21 +17,22 @@ import javax.persistence.Id;
  */
 @Entity
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name="userId")
+    @Column(name = "userId")
     private int userId;
-    @Column(name="userSub")
+    @Column(name = "userSub")
     private String userSub;
-    @Column(name="email")
+    @Column(name = "email")
     private String email;
-    @Column(name="fullName")
+    @Column(name = "fullName")
     private String fullName;
-    @Column(name="phoneNumber")
+    @Column(name = "phoneNumber")
     private String phoneNumber;
-    @Column(name="gender")
+    @Column(name = "gender")
     private boolean gender;
-    @Column(name="roleId")
+    @Column(name = "roleId")
     private int roleId;
 
     public User() {
@@ -102,5 +103,5 @@ public class User {
     public void setRoleId(int roleId) {
         this.roleId = roleId;
     }
-    
+
 }
