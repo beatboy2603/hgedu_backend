@@ -36,39 +36,7 @@ public class ApiController {
 //    }
 
     @Autowired
-    private FolderService folderService;
-    @Autowired
-    private UserService userService;
-
-    @GetMapping("/user/{userId}")
-    @ResponseBody
-    public ResponseEntity show(@PathVariable("userId") int userId) {
-        Optional<User> users = userService.getAnUser(userId);
-        if (users.isPresent()) {
-            return ResponseEntity.ok(users.get());
-        } else {
-            return null;
-        }
-    }
-
-    @PutMapping("/user/{userId}")
-    public ResponseEntity edit(@PathVariable("userId") int userId, @RequestBody User user) {
-        Optional<User> users = userService.getAnUser(userId);
-        if (users.isPresent()) {
-            System.out.println(users);
-            User getUser = users.get();
-            getUser.setFullName(user.getFullName());
-            getUser.setEmail(user.getEmail());
-            getUser.setPhoneNumber(user.getPhoneNumber());
-            getUser.setGender(user.isGender());
-            User savedUser = userService.saveUser(getUser);
-            return ResponseEntity.ok(savedUser);
-        } else {
-            System.out.println("save not done");
-            return null;
-        }
-    }
-
+    private FolderService folderService;    
     @GetMapping("/test")
     public Map<String, Object> test() {
         return folderService.getFoldersForNav();
