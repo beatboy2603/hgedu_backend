@@ -24,23 +24,27 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class AuthenService {
+
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private FolderService folderService;
     @Autowired
     private FolderRepository folderRepository;
-    
-    public Map<String, Object> authen(String token){
+
+    public Map<String, Object> authen(String token) {
         JSONObject tokenJson = Util.decodeToken(token);
         String sub = tokenJson.getString("sub");
         List<User> users = findByUserSub(sub);
         Map<String, Object> responseList = new LinkedHashMap<>();
-        if(users.size()==0){
+        if (users.size() == 0) {
             responseList.put("message", (Object) "SignUp");
-            signup(tokenJson);
+            responseList.put("email", tokenJson.getString("email"));
+            responseList.put("name", tokenJson.getString("name"));
+            responseList.put("picture", tokenJson.getString("picture"));
+//            signup(tokenJson);
             return responseList;
-        }else{
+        } else {
             User user = users.get(0);
             responseList.put("user", user);
             String jwt = JwtController.getInstance().createToken(user.getUserSub(), user.getUserId(), user.getRoleId());
@@ -48,8 +52,8 @@ public class AuthenService {
             return responseList;
         }
     }
-    
-    public void signup(JSONObject tokenJson){
+
+    public void signup(JSONObject tokenJson) {
         User user = new User();
         user.setEmail(tokenJson.getString("email"));
         user.setFullName(tokenJson.getString("name"));
@@ -60,18 +64,20 @@ public class AuthenService {
         addUser(user);
         User newUser = findByUserSub(tokenJson.getString("sub")).get(0);
 //        System.out.println("user:" + newUser.getUserId());
-        Folder[] folders = new Folder[5];
-        String[] folderNames={"Thư viện câu hỏi", "Thư viện đề thi","Nhóm", "Nhóm công cộng", "Quản lí thông báo"};
-        for(int i=0;i<folders.length; i++){
-            System.out.println("iter"+ i);
+//        Folder[] folders = new Folder[5];
+//        String[] folderNames={"Thư viện câu hỏi", "Thư viện đề thi","Nhóm", "Nhóm công cộng", "Quản lí thông báo"};
+        Folder[] folders = new Folder[3];
+        String[] folderNames={"Thư viện câu hỏi", "Thư viện đề thi","Nhóm"};
+        for (int i = 0; i < folders.length; i++) {
+            System.out.println("iter" + i);
             folders[i] = new Folder();
 //            folders[i].setFolderId(i);
             folders[i].setFolderName(folderNames[i]);
             folders[i].setFolderTypeId(1);
-            if(i==3){
+            if (i == 3) {
                 List<Folder> tempFolders = folderService.getAllSubfolders(newUser.getUserId(), 0);
                 folders[i].setParentFolderId(tempFolders.get(2).getFolderId());
-            }else{
+            } else {
                 folders[i].setParentFolderId(0);
             }
             folders[i].setTeacherId(newUser.getUserId());
@@ -79,12 +85,12 @@ public class AuthenService {
         }
 //        folderService.addFolder();
     }
-    
+
     public User addUser(User user) {
         return userRepository.save(user);
     }
-    
-    public List<User> findByUserSub(String sub){
+
+    public List<User> findByUserSub(String sub) {
         return userRepository.findByUserSub(sub);
     }
 }

@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -27,18 +29,25 @@ public class FolderController {
     @Autowired
     private FolderService folderService;
     
-    @GetMapping("/getFoldersForNav")
-    public Map<String, Object> getFoldersForNav(){
-        return folderService.getFoldersForNav();
+//    @GetMapping("/getFolder/{teacherId}/{folderName}")
+//    public Folder getFoldersForNav(@PathVariable("teacherId") int teacherId, 
+//            @PathVariable("folderName") String folderName){
+//        return folderService.getFolderByNameFromRootFolders(teacherId, folderName);
+//    }
+    
+    @PostMapping("/getFoldersForNav")
+    public Map<String, Object> getFoldersForNav(@RequestParam("uid") int teacherId){
+        return folderService.getFoldersForNav(teacherId);
     }
     
     @PostMapping("/addFolder")
+    @ResponseBody
     public Folder addFolder(@RequestBody Folder folder) throws Exception {
         return folderService.addFolder(folder);
     }
     
-    @PostMapping("/deleteFolder/{id}")
-    public void deleteFolder(@PathVariable("id") int folderId) throws Exception {
+    @PostMapping("/deleteFolder")
+    public void deleteFolder(@RequestParam("folderId") int folderId) throws Exception {
         folderService.deleteFolder(folderId);
     }
 }

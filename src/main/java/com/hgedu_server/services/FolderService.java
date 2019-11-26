@@ -27,6 +27,16 @@ public class FolderService {
     @Autowired
     private FolderRepository folderRepository;
 
+    public Folder getFolderByName(int teacherId, String folderName) {
+//        Folder folder = folderRepository.findByTeacherIdAndFolderName(teacherId, folderName);
+//        System.out.println(folder.getFolderId());
+        return folderRepository.findByTeacherIdAndFolderName(teacherId, folderName);
+    }
+
+    public Folder getFolderByNameFromRootFolders(int teacherId, String folderName) {
+        return folderRepository.findByTeacherIdAndFolderNameAndParentFolderId(teacherId, folderName, 0);
+    }
+
     public List<Folder> getAllSubfolders(int teacherId, int parentFolderId) {
         return folderRepository.getAllSubfolders(teacherId, parentFolderId);
     }
@@ -47,8 +57,8 @@ public class FolderService {
         }
         return null;
     }
-    
-    public void deleteFolder(int folderId) throws Exception{
+
+    public void deleteFolder(int folderId) throws Exception {
         try {
             folderRepository.deleteById(folderId);
         } catch (Exception e) {
@@ -56,31 +66,53 @@ public class FolderService {
         }
     }
 
-    public Map<String, Object> getFoldersForNav() {
+    public Map<String, Object> getFoldersForNav(int teacherId) {
         Map<String, Object> responseList = new LinkedHashMap<>();
-        List<Object> folders = new ArrayList<>();
-        loadFolders(responseList, folders, 1, 0);
+        List<Folder> folders = folderRepository.findByTeacherId(teacherId);
+        Folder publicGroup = null;
+        for(int i=0;i<folders.size();i++){
+            Folder folder = folders.get(i);
+            responseList.put("folder" + folder.getFolderId(), folder);
+            if(folder.getFolderName().equals("Nhóm")&&folder.getParentFolderId()==0){
+                publicGroup = new Folder(1, 1, "Nhóm công cộng", 4, folder.getFolderId());
+                responseList.put("folder" + publicGroup.getFolderId(), publicGroup);
+            }
+        }
+//        Folder groups = getFolderByNameFromRootFolders(teacherId, "Nhóm");
+//        Folder publicGroup = getFolderByNameFromRootFolders(1, "Nhóm công cộng");
+//        publicGroup.setParentFolderId(groups.getFolderId());
         return responseList;
     }
 
-    private void loadFolders(Map<String, Object> responseList, List<Object> folder, int teacherId, int parentFolderId) {
-        try {
-            List<Folder> subfolders = folderRepository.getAllSubfolders(teacherId, parentFolderId);
-            for (int i = 0; i < subfolders.size(); i++) {
-                responseList.put("folder" + subfolders.get(i).getFolderId(), subfolders.get(i));
-                if (folderRepository.getAllSubfolders(teacherId, subfolders.get(i).getFolderId()).size() > 0) {
-                    HashMap<String, List> subfolder = new HashMap<>();
-                    List<Object> subfoldersOfThis = new ArrayList<>();
-                    loadFolders(responseList, subfoldersOfThis, teacherId, subfolders.get(i).getFolderId());
-
-                    subfolder.put(subfolders.get(i).getFolderId() + "", subfoldersOfThis);
-                    folder.add(subfolder);
-                } else {
-                    folder.add(subfolders.get(i).getFolderId() + "");
-                }
-            }
-        } catch (Exception ex) {
-            Logger.getLogger(FolderService.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+//    public Map<String, Object> testFolder(int teacherId) {
+//        Map<String, Object> responseList = new LinkedHashMap<>();
+//        List<Object> folders = new ArrayList<>();
+//        testFolderRecur(responseList, folders, teacherId, 0);
+//        Folder groups = getFolderByNameFromRootFolders(teacherId, "Nhóm");
+//        Folder publicGroup = getFolderByNameFromRootFolders(1, "Nhóm công cộng");
+//        publicGroup.setParentFolderId(groups.getFolderId());
+//        responseList.put("folder" + publicGroup.getFolderId(), publicGroup);
+//        return responseList;
+//    }
+//    
+//    private void testFolderRecur(Map<String, Object> responseList, List<Object> folder, int teacherId, int parentFolderId) {
+//        try {
+//            List<Folder> subfolders = folderRepository.getAllSubfolders(teacherId, parentFolderId);
+//            for (int i = 0; i < subfolders.size(); i++) {
+//                responseList.put("folder" + subfolders.get(i).getFolderId(), subfolders.get(i));
+//                if (folderRepository.getAllSubfolders(teacherId, subfolders.get(i).getFolderId()).size() > 0) {
+//                    HashMap<String, List> subfolder = new HashMap<>();
+//                    List<Object> subfoldersOfThis = new ArrayList<>();
+//                    loadFolders(responseList, subfoldersOfThis, teacherId, subfolders.get(i).getFolderId());
+//
+//                    subfolder.put(subfolders.get(i).getFolderId() + "", subfoldersOfThis);
+//                    folder.add(subfolder);
+//                } else {
+//                    folder.add(subfolders.get(i).getFolderId() + "");
+//                }
+//            }
+//        } catch (Exception ex) {
+//            Logger.getLogger(FolderService.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//    }
 }
