@@ -5,7 +5,12 @@
  */
 package com.hgedu_server.services;
 
+import com.hgedu_server.exceptions.QuestionCodeException;
+import com.hgedu_server.models.AnswerOption;
+import com.hgedu_server.models.Question;
 import com.hgedu_server.models.TestToWord;
+import com.hgedu_server.repositories.AnswerRepository;
+import com.hgedu_server.repositories.QuestionRepository;
 import com.hgedu_server.repositories.TestToWordRepository;
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,6 +18,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -26,6 +33,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
@@ -41,6 +49,8 @@ import org.openxmlformats.schemas.officeDocument.x2006.math.CTOMathPara;
 import org.openxmlformats.schemas.officeDocument.x2006.math.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
@@ -53,8 +63,16 @@ import uk.ac.ed.ph.snuggletex.SnuggleSession;
 @Service
 public class TestToWordService {
 
+    private Path fileStorageLocation;
+
     @Autowired
     private TestToWordRepository testToWordRepository;
+
+    @Autowired
+    private QuestionRepository questionRepository;
+
+    @Autowired
+    private AnswerRepository answerRepository;
 
     public List<String> getAllContent() {
         return testToWordRepository.getAllContent();
@@ -66,21 +84,15 @@ public class TestToWordService {
 
     public CTOMath getOMML(String mathML) throws Exception {
         Transformer transformer = tFactory.newTransformer(stylesource);
-
         StringReader stringreader = new StringReader(mathML);
         StreamSource source = new StreamSource(stringreader);
-
         StringWriter stringwriter = new StringWriter();
         StreamResult result = new StreamResult(stringwriter);
         transformer.transform(source, result);
-
         String ooML = stringwriter.toString();
         stringwriter.close();
-
         CTOMathPara ctOMathPara = CTOMathPara.Factory.parse(ooML);
         CTOMath ctOMath = ctOMathPara.getOMathArray(0);
-
-        //for making this to work with Office 2007 Word also, special font settings are necessary
         XmlCursor xmlcursor = ctOMath.newCursor();
         while (xmlcursor.hasNextToken()) {
             XmlCursor.TokenType tokentype = xmlcursor.toNextToken();
@@ -92,16 +104,13 @@ public class TestToWordService {
                 }
             }
         }
-
         return ctOMath;
     }
 
     public void parseTextWithMathML(XWPFParagraph paragraph, XWPFRun runLatex, String text) {
         try {
-
             SnuggleEngine engine = new SnuggleEngine();
             SnuggleSession sSession = engine.createSession();
-
             SnuggleInput input = new SnuggleInput(text);
             sSession.parseInput(input);
 
@@ -117,7 +126,8 @@ public class TestToWordService {
                     ctp.setOMathArray(ctp.sizeOfOMathArray() - 1, ctOMath);
                 } else {
                     runLatex = paragraph.createRun();
-                    runLatex.setText(s + " ");
+                    paragraph.setSpacingAfter(50);
+                    runLatex.setText(" " + s + " ");
                 }
             }
         } catch (Exception ex) {
@@ -136,182 +146,252 @@ public class TestToWordService {
         }
     }
 
-    public TestToWord saveContent() {
-        String json = convertToJson();
-        TestToWord testToWord = new TestToWord();
-        testToWord.setContent(json);
-        return testToWordRepository.save(testToWord);   
-    }
-
-    public String convertToJson() {
+    public void getQuestions() {
         FileInputStream input;
         try {
-            input = new FileInputStream(new File("/Users/admin/Desktop/readexcel1.xlsx"));
-
+            input = new FileInputStream("read3.xlsx");
             XSSFWorkbook workbook = new XSSFWorkbook(input);
             Sheet sheet0 = workbook.getSheetAt(0);
             Iterator<Row> iteratorRow = sheet0.iterator();
             String regex = "<[a-z][a-z]>";
-            String dummy = "<ct>aaf</ct>";
-            String dummy1 = "asfasf";
-
-            String[] s1 = null;
-            String[] s2 = null;
-            ArrayList<String> arr = new ArrayList<>();
-            ArrayList<String> arr1 = new ArrayList<>();
-            int count = 0;
-
             String debai = "";
-            String json = "[";
             String wrapFormular = "{\"insert\":{\"formula\":\"";
             String wrapText = "{\"insert\":\"";
-            String debai2 = "";
-
+            int answer = 0;
+            String qCode = "";
+            Long questionId = null;
+            ArrayList<AnswerOption> aos = new ArrayList<>();
+            ArrayList<Question> qs = new ArrayList<>();
             while (iteratorRow.hasNext()) {
                 Row row = iteratorRow.next();
-                Iterator<Cell> iteratorCell = row.cellIterator();
-                while (iteratorCell.hasNext()) {
-                    Cell cell = iteratorCell.next();
-                    debai = cell.getStringCellValue();
-                    s1 = debai.split(regex);
-                    for (int k = 0; k < s1.length; k++) {
-                        if (k == 0) {
-                            json += wrapText + s1[0].trim() + "\"},";
+                if (row.getCell(1).getStringCellValue().equals("end")) {
+                    if (aos.size() > 1 && aos.size() < 5) {
+                        int checkCorrect = 0;
+                        for (int i = 0; i < aos.size(); i++) {
+                            if (aos.get(i).isIsCorrect() == true) {
+                                checkCorrect++;
+                            }
                         }
-                        if (s1[k].contains("</ct>")) {
-                            s2 = s1[k].split("</ct>");
+                        if (checkCorrect == 1) {
+                            for (Question question : qs) {
+                                try {
+                                    questionRepository.save(question);
+                                    questionId = questionRepository.findQuestionIdByQuestionCode(question.getQuestionCode());
+                                    for (int i = 0; i < aos.size(); i++) {
+                                        aos.get(i).setQuestionId(questionId);
+                                        answerRepository.save(aos.get(i));
+                                    }
 
-                            json += wrapFormular + s2[0].trim() + "\"}},";
-                            json += wrapText + s2[1].trim() + "\"},";
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+
+                        }
+
+                    }
+                    break;
+                }
+                if (row.getCell(0) != null) {
+                    int checkCorrect = 0;
+                    if (aos.size() > 1 && aos.size() < 5) {
+                        for (int i = 0; i < aos.size(); i++) {
+                            if (aos.get(i).isIsCorrect() == true) {
+                                checkCorrect++;
+                            }
+                        }
+                        if (checkCorrect == 1) {
+                            for (Question question : qs) {
+                                try {
+                                    questionRepository.save(question);
+                                    questionId = questionRepository.findQuestionIdByQuestionCode(question.getQuestionCode());
+                                    for (int i = 0; i < aos.size(); i++) {
+                                        aos.get(i).setQuestionId(questionId);
+                                        answerRepository.save(aos.get(i));
+                                    }
+                                } catch (Exception e) {
+                                    System.out.println("aaa");
+                                }
+                            }
+
                         }
                     }
+                    qs.clear();
+                    Question qtion = new Question();
+                    String json = "[";
+                    String[] s1 = null;
+                    String[] s2 = null;
+                    qCode = row.getCell(1).getStringCellValue();
+                    String question = row.getCell(2).getStringCellValue();
+                    String description = row.getCell(3).getStringCellValue();
+                    int difficultyId = (int) row.getCell(4).getNumericCellValue();
+                    int gradeLevelId = (int) row.getCell(5).getNumericCellValue();
+                    int qTypeId = (int) row.getCell(6).getNumericCellValue();
+                    String explanation = row.getCell(7).getStringCellValue();
+                    s1 = question.split(regex);
+                    for (int k = 0; k < s1.length; k++) {
+                        if (s1[k].contains("</ct>")) {
+                            s2 = s1[k].split("</ct>");
+                            for (int a = 0; a < s2.length; a++) {
+                                if (a == 0) {
+                                    json += wrapFormular + s2[a].trim() + "\"}},";
+                                } else {
+                                    json += wrapText + s2[a].trim() + "\"},";
+                                }
+                            }
+                        } else {
+                            json += wrapText + s1[0].trim() + "\"},";
+                        }
+                    }
+                    json += "]";
+                    qtion.setQuestionCode(qCode);
+                    qtion.setContent(json);
+                    qtion.setDescription(description);
+                    qtion.setDifficultyId(difficultyId);
+                    qtion.setGradeLevelId(gradeLevelId);
+                    qtion.setQuestionTypeId(qTypeId);
+                    qtion.setExplanation(explanation);
+                    qs.add(qtion);
+                    aos.clear();
+                } else {
+                    AnswerOption answerOption = new AnswerOption();
+                    String json = "[";
+                    String[] s1 = null;
+                    String[] s2 = null;
+                    String content = row.getCell(1).getStringCellValue();
+                    boolean isCorrect = row.getCell(2).getBooleanCellValue();
+                    s1 = content.split(regex);
+                    for (int k = 0; k < s1.length; k++) {
+                        if (s1[k].contains("</ct>")) {
+                            s2 = s1[k].split("</ct>");
+                            for (int a = 0; a < s2.length; a++) {
+                                if (a == 0) {
+                                    json += wrapFormular + s2[a].trim() + "\"}},";
+                                } else {
+                                    json += wrapText + s2[a].trim() + "\"},";
+                                }
+                            }
+                        } else {
+                            json += wrapText + s1[0].trim() + "\"},";
+                        }
+                    }
+                    json += "]";
+                    answerOption.setContent(json);
+                    answerOption.setIsCorrect(isCorrect);
+                    aos.add(answerOption);
                 }
             }
-            json += "]";
-            return json; 
         } catch (Exception ex) {
             Logger.getLogger(TestToWordService.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return null;
-
+        formatWord();
     }
 
     public void formatWord() {
         try {
+
             String qResult = "";
             String aResult = "";
-// export
-// question            
-
-// answer q1           
-            String a1 = "[{ \"insert\": \"Chuong\"},{ \"insert\": \"án1\"}]";
-            String a2 = "[{ \"insert\": \"Đá\"},{ \"insert\": \"án2\"}]";
-            String a3 = "[{ \"insert\": \"Đá\"},{ \"insert\": \"án3\"}]";
-            String a4 = "[{ \"insert\": \"Đá\"},{ \"insert\": \"án4\"}]";
-            // question list           
-            ArrayList<String> answers = new ArrayList<>();
-            answers.add(a1);
-            answers.add(a2);
-            answers.add(a3);
-            answers.add(a4);
-// answer q2            
-
-// question list            
-            List<String> questions = getAllContent();
-
-// output $ list         
-            ArrayList<String> outputq = new ArrayList<>();
-            ArrayList<String> outputa = new ArrayList<>();
-
-            for (int i = 0; i < answers.size(); i++) {
+            List<AnswerOption> answerOptions = answerRepository.findAll();     
+            List<Question> questions = questionRepository.findAll();
+            for (int i = 0; i < answerOptions.size(); i++) {
                 JSONParser parser = new JSONParser();
-                JSONArray jsonArr = (JSONArray) parser.parse(answers.get(i));
+                JSONArray jsonArr = (JSONArray) parser.parse(answerOptions.get(i).getContent());
                 for (int j = 0; j < jsonArr.size(); j++) {
                     JSONObject object = (JSONObject) jsonArr.get(j);
                     if (object.get("insert") instanceof String) {
-//                    System.out.println(object.get("insert"));
                         aResult += object.get("insert");
                     } else {
-//                    System.out.println(((JSONObject) object.get("insert")).get("formula"));
                         String formula = " $" + ((JSONObject) object.get("insert")).get("formula") + "$ ";
                         aResult += formula;
                     }
-
                 }
-                outputa.add(aResult);
+                answerOptions.get(i).setContent(aResult);
                 aResult = "";
             }
-
-            for (int i = 0; i < outputa.size(); i++) {
-                System.out.println(outputa.get(i));
-            }
-
             for (int i = 0; i < questions.size(); i++) {
                 JSONParser parser = new JSONParser();
-                JSONArray jsonArr = (JSONArray) parser.parse(questions.get(i));
-
+                JSONArray jsonArr = (JSONArray) parser.parse(questions.get(i).getContent());
 
                 for (int j = 0; j < jsonArr.size(); j++) {
                     JSONObject object = (JSONObject) jsonArr.get(j);
                     if (object.get("insert") instanceof String) {
-//                    System.out.println(object.get("insert"));
                         qResult += object.get("insert");
                     } else {
-//                    System.out.println(((JSONObject) object.get("insert")).get("formula"));
                         String formula = " $" + ((JSONObject) object.get("insert")).get("formula") + "$ ";
                         qResult += formula;
                     }
-
                 }
-                outputq.add(qResult);
+                questions.get(i).setContent(qResult);
                 qResult = "";
             }
+            toWord(questions, answerOptions);
+        } catch (Exception e) {
+            Logger.getLogger(TestToWordService.class.getName()).log(Level.SEVERE, null, e);
+        }
 
+    }
+
+    public void toWord(List<Question> questions, List<AnswerOption> answerOptions) {
+        try {
             XWPFDocument doc = new XWPFDocument();
-            FileOutputStream fos = new FileOutputStream(new File("formatwordtest1.docx"));
+            FileOutputStream fos = new FileOutputStream(new File("format_file.docx"));
 // Export
             XWPFTable table = doc.createTable(1, 2);
             table.setWidth(10000);
             XWPFTableRow tableRowOne = table.getRow(0);
 
-            tableRowOne.getCell(0).setWidth("1000");
+            tableRowOne.getCell(0).setWidth("1200");
             XWPFParagraph paragraph0 = tableRowOne.getCell(0).addParagraph();
-            setRun(paragraph0.createRun(), "Verdana", 10, "000000", "Câu", true, false);
+            paragraph0.setSpacingBefore(100);
+            paragraph0.setSpacingAfter(100);
+            setRun(paragraph0.createRun(), "Verdana", 10, "000000", " Câu", true, false);
             tableRowOne.getCell(0).removeParagraph(0);
 
             tableRowOne.getCell(1).setWidth("9000");
             XWPFParagraph paragraph1 = tableRowOne.getCell(1).addParagraph();
+            paragraph1.setAlignment(ParagraphAlignment.CENTER);
+            paragraph1.setSpacingAfter(100);
+            paragraph1.setSpacingBefore(100);
             setRun(paragraph1.createRun(), "Verdana", 10, "000000", "Nội dung", true, false);
             tableRowOne.getCell(1).removeParagraph(0);
 
-            for (int i = 0; i < outputq.size(); i++) {
+            for (int i = 0; i < questions.size(); i++) {
 
                 XWPFTableRow tableRow = table.createRow();
 
+// format o day
                 XWPFParagraph questionPara0 = tableRow.getCell(0).addParagraph();
-                setRun(questionPara0.createRun(), "Verdana", 10, "000000", "Câu " + (i + 1), true, false);
+
+                setRun(questionPara0.createRun(), "Verdana", 10, "000000", " Câu " + (i + 1) + ":", true, false);
                 tableRow.getCell(0).removeParagraph(0);
 
-// lấy câu hỏi cho vào bảng 
+// lấy câu hỏi cho vào bảng => format o day
                 XWPFParagraph questionPara1Q = tableRow.getCell(1).addParagraph();
                 XWPFRun questionRun = null;
-                String parseForm = outputq.get(i);
+                String parseForm = questions.get(i).getContent();
 //                questionRun.setText(outputq.get(i));
                 parseTextWithMathML(questionPara1Q, questionRun, parseForm);
 
                 XWPFParagraph answerPara = tableRow.getCell(1).addParagraph();
                 tableRow.getCell(1).removeParagraph(0);
+                List<String> answerContent = new ArrayList<>();
 
-// Xử lý câu hỏi 
+                for (int m = 0; m < answerOptions.size(); m++) {
+                    if (questions.get(i).getQuestionId().equals(answerOptions.get(m).getQuestionId())) {
+                        answerContent.add(answerOptions.get(m).getContent());
+                    }
+                }
                 int type = 0;
-                for (String outputItem : outputa) {
-                    if (outputItem.length() < 10 && type <= 0) {
+                for (String outputItem : answerContent) {
+                    if (outputItem.length() < 15 && type <= 0) {
                         type = 1;
                     }
-                    if (outputItem.length() >= 10 && outputa.get(i).length() < 25 && type <= 1) {
+                    if (outputItem.length() >= 15 && outputItem.length() < 30 && type <= 1) {
                         type = 2;
                     }
-                    if (outputItem.length() >= 25 && type <= 2) {
+                    if (outputItem.length() >= 30 && type <= 2) {
                         type = 3;
                     }
                 }
@@ -322,20 +402,20 @@ public class TestToWordService {
                 XWPFTableRow nestedTableRow = null;
                 XWPFTableCell cellOfNestedTable;
 
-                for (int j = 0; j < outputa.size(); j++) {
+                for (int j = 0; j < answerContent.size(); j++) {
                     String choice = "";
                     switch (j) {
                         case 0:
-                            choice = "A";
+                            choice = " A";
                             break;
                         case 1:
-                            choice = "B";
+                            choice = " B";
                             break;
                         case 2:
-                            choice = "C";
+                            choice = " C";
                             break;
                         case 3:
-                            choice = "D";
+                            choice = " D";
                             break;
                     }
 
@@ -345,11 +425,14 @@ public class TestToWordService {
                         }
                         cellOfNestedTable = nestedTableRow.createCell();
                         cellOfNestedTable.setWidth("2250");
-
+// format o day
                         XWPFParagraph para = cellOfNestedTable.addParagraph();
                         cellOfNestedTable.removeParagraph(0);
-                        XWPFRun run = para.createRun();
-                        run.setText(choice + ":" + outputa.get(j));
+                        XWPFRun answerRun = null;
+                        String answerParseForm = choice + ".  " + answerContent.get(j);
+                        parseTextWithMathML(para, answerRun, answerParseForm);
+//                        XWPFRun run = para.createRun();
+//                        run.setText(choice + ".  " + answerContent.get(j));
                     }
                     if (type == 2) {
                         if (j == 0 || j % 2 == 0) {
@@ -366,10 +449,14 @@ public class TestToWordService {
                         }
 
                         cellOfNestedTable.setWidth("4500");
+// format o day                        
                         XWPFParagraph para = cellOfNestedTable.addParagraph();
                         cellOfNestedTable.removeParagraph(0);
-                        XWPFRun run = para.createRun();
-                        run.setText(choice + ":" + outputa.get(j));
+                        XWPFRun answerRun = null;
+                        String answerParseForm = choice + ". " + answerContent.get(j);
+                        parseTextWithMathML(para, answerRun, answerParseForm);
+
+//                        run.setText(choice + ".  " + answerContent.get(j));
 //                        setRun(para.createRun(), "Verdana", 10, "000000", choice + ": " + answersParts[order], false, false);
                     }
                     if (type == 3) {
@@ -381,25 +468,42 @@ public class TestToWordService {
                         }
 
                         cellOfNestedTable.setWidth("9000");
+// format o day                        
                         XWPFParagraph para = cellOfNestedTable.addParagraph();
                         cellOfNestedTable.removeParagraph(0);
-                        XWPFRun run = para.createRun();
-                        run.setText(choice + ":" + outputa.get(j));
+                        XWPFRun answerRun = null;
+                        String answerParseForm = choice + "." + answerContent.get(j);
+                        parseTextWithMathML(para, answerRun, answerParseForm);
+//                        run.setText(choice + "." + answerContent.get(j));
 //                        setRun(para.createRun(), "Verdana", 10, "000000", choice + ": " + answersParts[order], false, false);
                     }
                 }
+                answerContent.clear();
+// Xử lý câu hỏi 
             }
-
-            table.removeRow(0);
 
 // Close
             doc.write(fos);
             fos.close();
             System.out.println("done");
-
-        } catch (Exception ex) {
-            Logger.getLogger(TestToWordService.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception e) {
+            Logger.getLogger(TestToWordService.class.getName()).log(Level.SEVERE, null, e);
         }
+    }
+
+    public Resource loadFileAsResource(String fileName) {
+        try {
+            Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+            if (resource.exists()) {
+                return resource;
+            } else {
+                System.out.println("File not found " + fileName);
+            }
+        } catch (MalformedURLException ex) {
+            System.out.println("File not found " + fileName);
+        }
+        return null;
     }
 
 }

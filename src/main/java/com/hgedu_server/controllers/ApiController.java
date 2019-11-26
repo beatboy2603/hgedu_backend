@@ -11,11 +11,21 @@ import com.hgedu_server.services.FolderService;
 import com.hgedu_server.services.TestToWordService;
 import java.util.Date;
 import java.util.HashMap;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
 import org.json.JSONObject;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,38 +50,20 @@ public class ApiController {
 //        return "hello world d";
 //    }
 
-    @Autowired
-    private TestToWordService testToWordService;
-
     @PostMapping("/test")
-    public Date test(@RequestBody Object date) {
+    public Date test(@RequestBody HashMap<String, String> data) {
 //        System.out.println(date);
 //        HashMap<String, Date> json = (HashMap<String, Date>) date;
 //        Date a = json.get("date");
 //        System.out.println(a);
 //        Long mls = Long.parseLong((String) date.get("date"));
-        System.out.println(date);
+        System.out.println(data.get("date"));
+        
 //            System.out.println(data.get("date"));
 //            Object obj = data.get("date");
 //            System.out.println((Date) obj);
 //        System.out.println(date.getTime());
         return new Date();
-    }
-
-    @GetMapping("/test2")
-    public List<String> test2() {
-        return testToWordService.getAllContent();
-    }
-
-    @GetMapping("/test2/export")
-    public void format() {
-        testToWordService.formatWord();
-    }
-
-    @GetMapping("/test2/import")
-    public ResponseEntity importData() {
-        TestToWord test = testToWordService.saveContent();
-        return ResponseEntity.ok(test);
     }
 
     @GetMapping("/hello")
