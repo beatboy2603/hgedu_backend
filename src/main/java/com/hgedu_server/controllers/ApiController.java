@@ -39,46 +39,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/api")
 public class ApiController {
-//    @GetMapping("/hello/{id}")
-//    public String hello(@PathVariable int id){
-//        return "hello world d";
-//    }
-    
-    @Autowired
-    private TestToWordService testToWordService;
-    
-//    @GetMapping("/test")
-//    public Map<String, Object> test(){
-//        return folderService.getFoldersForNav();
-//    }
-    
-    @GetMapping("/test2")
-    public List<String> test2() {
-        return testToWordService.getAllContent();
-    }
-    
-    @PostMapping(value = "/upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public String fileUpload(@RequestParam("file") MultipartFile file) throws IOException {
-        String uploadFileName = file.getOriginalFilename();
-        uploadFileName = uploadFileName.toLowerCase().replaceAll("([a-zA-Z0-9\\s_\\\\.\\-\\(\\):])+(.xlsx)$", "excelFile.xlsx");
-        try (FileOutputStream fout = new FileOutputStream(new File(uploadFileName))) {
-            fout.write(file.getBytes());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "FIle has uploaded successfully";
-    }
-    
-    @GetMapping("/test2/export")
-    public void format() {
-        testToWordService.formatWord();
-    }
-    
-    @GetMapping("/test2/import")
-    public ResponseEntity importData() {
-       TestToWord test = testToWordService.saveContent();
-       return ResponseEntity.ok(test);
-    }
     
     @GetMapping("/hello")
 //    @ResponseBody
