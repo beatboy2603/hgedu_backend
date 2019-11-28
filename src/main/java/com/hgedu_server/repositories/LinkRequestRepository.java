@@ -6,15 +6,24 @@
 package com.hgedu_server.repositories;
 
 import com.hgedu_server.models.LinkRequest;
+import java.util.Optional;
+import javax.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  *
  * @author Admin
  */
 public interface LinkRequestRepository extends JpaRepository<LinkRequest, Integer> {
-    @Query(value = "Insert into ParentStudentRequest values ?1, ?2", nativeQuery = true)
-    LinkRequest addRequest(String requestMail, String receivedMail);
 
+    @Modifying
+    @Query(value = "insert into LinkRequest (parentEmail, studentEmail) values (:parentEmail, :studentEmail)", nativeQuery = true)
+    @Transactional
+    void addRequest(@Param("parentEmail") String parentMail, @Param("studentEmail") String studentMail);
+
+    @Query(value = "select * from LinkRequest where studentEmail = ?1", nativeQuery = true)
+    Optional<LinkRequest> getRequest(String studentEmail);
 }

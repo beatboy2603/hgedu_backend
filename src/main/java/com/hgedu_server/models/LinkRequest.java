@@ -5,22 +5,32 @@
  */
 package com.hgedu_server.models;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+
 /**
  *
  * @author Admin
  */
+@Entity
 public class LinkRequest {
- private int id;
- private String senderEmail;
- private String requestedEmail;
+    @Id
+    @Column(name = "requestId")
+    private int id;
+    @Column(name = "parentEmail")
+    private String parentEmail;
+    @Column(name = "studentEmail")
+    private String studentEmail;
 
     public LinkRequest() {
     }
 
-    public LinkRequest(int id, String senderEmail, String requestedEmail) {
+    public LinkRequest(int id, String parentEmail, String studentEmail) {
         this.id = id;
-        this.senderEmail = senderEmail;
-        this.requestedEmail = requestedEmail;
+        this.parentEmail = parentEmail;
+        this.studentEmail= studentEmail;
     }
 
     public int getId() {
@@ -31,22 +41,21 @@ public class LinkRequest {
         this.id = id;
     }
 
-    public String getSenderEmail() {
-        return senderEmail;
+    public String getParentEmail() {
+        return parentEmail;
     }
 
-    public void setSenderEmail(String senderEmail) {
-        this.senderEmail = senderEmail;
+    public void setParentEmail(String parentEmail) {
+        this.parentEmail = parentEmail;
     }
 
-    public String getRequestedEmail() {
-        return requestedEmail;
+    public String getStudentEmail() {
+        return studentEmail;
     }
 
-    public void setRequestedEmail(String requestedEmail) {
-        this.requestedEmail = requestedEmail;
+    public void setStudentEmail(String studentEmail) {
+        this.studentEmail = studentEmail;
     }
 
-    
-    
+
 }
