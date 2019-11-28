@@ -37,8 +37,10 @@ public class AuthenService {
         String sub = tokenJson.getString("sub");
         List<User> users = findByUserSub(sub);
         Map<String, Object> responseList = new LinkedHashMap<>();
-        if (users.size() == 0) {
-            responseList.put("message", (Object) "SignUp");
+        
+        boolean isExisting = checkExistence(token);
+        if (!isExisting) {
+            responseList.put("message", "signup");
             responseList.put("email", tokenJson.getString("email"));
             responseList.put("name", tokenJson.getString("name"));
             responseList.put("picture", tokenJson.getString("picture"));
@@ -52,38 +54,41 @@ public class AuthenService {
             return responseList;
         }
     }
+    
+    public boolean checkExistence(String token) {
+        JSONObject tokenJson = Util.decodeToken(token);
+        String sub = tokenJson.getString("sub");
+        List<User> users = findByUserSub(sub);
+        if (users.size() == 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
-    public void signup(JSONObject tokenJson) {
-        User user = new User();
+    public Map<String, Object> signup(String token, User user) {
+        Map<String, Object> responseList = new LinkedHashMap<>();
+        JSONObject tokenJson = Util.decodeToken(token);
+        
         user.setEmail(tokenJson.getString("email"));
         user.setFullName(tokenJson.getString("name"));
-        user.setGender(true);
-        user.setPhoneNumber("0000000000");
         user.setUserSub(tokenJson.getString("sub"));
         user.setRoleId(3);
         addUser(user);
         User newUser = findByUserSub(tokenJson.getString("sub")).get(0);
-//        System.out.println("user:" + newUser.getUserId());
-//        Folder[] folders = new Folder[5];
-//        String[] folderNames={"Thư viện câu hỏi", "Thư viện đề thi","Nhóm", "Nhóm công cộng", "Quản lí thông báo"};
         Folder[] folders = new Folder[3];
-        String[] folderNames={"Thư viện câu hỏi", "Thư viện đề thi","Nhóm"};
+        String[] folderNames = {"Thư viện câu hỏi", "Thư viện đề thi", "Nhóm"};
         for (int i = 0; i < folders.length; i++) {
-            System.out.println("iter" + i);
             folders[i] = new Folder();
-//            folders[i].setFolderId(i);
             folders[i].setFolderName(folderNames[i]);
             folders[i].setFolderTypeId(1);
-            if (i == 3) {
-                List<Folder> tempFolders = folderService.getAllSubfolders(newUser.getUserId(), 0);
-                folders[i].setParentFolderId(tempFolders.get(2).getFolderId());
-            } else {
-                folders[i].setParentFolderId(0);
-            }
+            folders[i].setParentFolderId(0);
             folders[i].setTeacherId(newUser.getUserId());
             folderRepository.save(folders[i]);
+            responseList.put("folder"+i, "added");
         }
-//        folderService.addFolder();
+        responseList.put("message", "signup succeeded");
+        return responseList;
     }
 
     public User addUser(User user) {
@@ -93,4 +98,6 @@ public class AuthenService {
     public List<User> findByUserSub(String sub) {
         return userRepository.findByUserSub(sub);
     }
+    
+    
 }
