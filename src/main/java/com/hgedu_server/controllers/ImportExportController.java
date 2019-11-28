@@ -11,8 +11,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -59,6 +57,18 @@ public class ImportExportController {
         testToWordService.getQuestions();
         return "import ok";
     }
+    
+    @GetMapping("/export")
+    public String exportData() {
+        testToWordService.formatWord();
+        return "export ok";
+    }
+    
+//    @GetMapping("/test")
+//    public String test() {
+//        testToWordService.test2();
+//        return "test ok";
+//    }
 
     @GetMapping("/download")
     public ResponseEntity<Object> downloadFile() {
@@ -72,11 +82,9 @@ public class ImportExportController {
             headers.add("Expires", "0");
             
             ResponseEntity<Object> responseEntity = ResponseEntity.ok().headers(headers).contentLength(file.length()).contentType(MediaType.parseMediaType("application/txt")).body(resource);
-            System.out.println("Download ok");
             return responseEntity;
             
         } catch (FileNotFoundException ex) {
-            System.out.println("loi download");
             return new ResponseEntity<>("error occurred", HttpStatus.INTERNAL_SERVER_ERROR);	
         }
 
