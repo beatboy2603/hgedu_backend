@@ -34,11 +34,31 @@ public class User {
     private boolean gender;
     @Column(name = "roleId")
     private int roleId;
+    @Column(name = "dob")
+    private String dob;
+    @Column(name = "school")
+    private String school;
 
     public User() {
     }
 
-    public User(int userId, String userSub, String email, String fullName, String phoneNumber, boolean gender, int roleId) {
+    public String getDob() {
+        return dob;
+    }
+
+    public void setDob(String dob) {
+        this.dob = dob;
+    }
+
+    public String getSchool() {
+        return school;
+    }
+
+    public void setSchool(String school) {
+        this.school = school;
+    }
+
+    public User(int userId, String userSub, String email, String fullName, String phoneNumber, boolean gender, int roleId, String dob, String school) {
         this.userId = userId;
         this.userSub = userSub;
         this.email = email;
@@ -46,6 +66,8 @@ public class User {
         this.phoneNumber = phoneNumber;
         this.gender = gender;
         this.roleId = roleId;
+        this.dob = dob;
+        this.school = school;
     }
 
     public int getUserId() {
