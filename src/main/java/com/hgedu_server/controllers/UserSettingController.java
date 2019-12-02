@@ -5,8 +5,11 @@
  */
 package com.hgedu_server.controllers;
 
+import com.hgedu_server.models.LinkRequest;
 import com.hgedu_server.models.User;
+import com.hgedu_server.services.LinkRequestService;
 import com.hgedu_server.services.UserService;
+import java.util.HashMap;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,8 +33,9 @@ public class UserSettingController {
 
     @Autowired
     private UserService userService;
-    
-    
+    @Autowired
+    private LinkRequestService linkRequestService;
+
 //    ----- get user info through id -----
 //    userService
     @GetMapping("/{userId}")
@@ -44,14 +49,25 @@ public class UserSettingController {
         }
     }
 
-    
+//    ----- Check and get whether user has link request or not -----
+    @GetMapping("/request/{userId}")
+    @ResponseBody
+    public ResponseEntity getRequest(@PathVariable("userId") int userId) {
+        Optional<LinkRequest> linkRequest = linkRequestService.getRequest(userId);
+        if (linkRequest.isPresent()) {
+            return ResponseEntity.ok(linkRequest.get());
+        } else {
+            System.out.println("no data");
+            return null;
+        }
+    }
+
 //    ----- edit user information -----
 //    userService
     @PutMapping("/{userId}")
     public ResponseEntity edit(@PathVariable("userId") int userId, @RequestBody User user) {
         Optional<User> users = userService.getAnUser(userId);
         if (users.isPresent()) {
-            System.out.println(users);
             User getUser = users.get();
             getUser.setFullName(user.getFullName());
             getUser.setEmail(user.getEmail());
@@ -63,6 +79,14 @@ public class UserSettingController {
             System.out.println("save not done");
             return null;
         }
+    }
+
+    //   ----- send a request to link between parent and student -----
+    @PostMapping("")
+    public void addRequest(@RequestBody HashMap<String, String> data) {
+        System.out.println("email phụ huynh: " + data.get("parentMail"));
+        System.out.println("email học sinh: " + data.get("studentMail"));
+        linkRequestService.addRequest(data.get("parentMail"), data.get("studentMail"));
     }
 
 }
