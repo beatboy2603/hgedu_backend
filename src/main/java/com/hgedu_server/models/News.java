@@ -36,7 +36,7 @@ public class News implements Serializable {
     private String description;
 
     @Column(name = "moderatorId")
-    private int modId;
+    private long modId;
 
     @Column(name = "dateCreated")
     private String dateCreated;
@@ -79,11 +79,11 @@ public class News implements Serializable {
         this.description = description;
     }
 
-    public int getModId() {
+    public long getModId() {
         return modId;
     }
 
-    public void setModId(int modId) {
+    public void setModId(long modId) {
         this.modId = modId;
     }
 

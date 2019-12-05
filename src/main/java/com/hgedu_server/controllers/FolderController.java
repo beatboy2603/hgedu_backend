@@ -7,9 +7,9 @@ package com.hgedu_server.controllers;
 
 import com.hgedu_server.models.Folder;
 import com.hgedu_server.services.FolderService;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,5 +40,11 @@ public class FolderController {
     @PostMapping("/deleteFolder/{id}")
     public void deleteFolder(@PathVariable("id") int folderId) throws Exception {
         folderService.deleteFolder(folderId);
+    }
+    
+    @GetMapping("/testRoot/{teacherId}")
+    public ResponseEntity<?> getRootTestsFolder(@PathVariable("teacherId") Long teacherId) {
+        Folder folder = folderService.getRootTestsFolder(teacherId);
+        return ResponseEntity.ok(folder);
     }
 }

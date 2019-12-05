@@ -56,12 +56,21 @@ public class NewsService {
         return newsRepo.save(news);
     }
     
+    public List<News> getAllNews(Long modId) {
+        return newsRepo.findAllByModIdOrderByIdDesc(modId);
+    }
+    
     public List<News> getAllNews() {
         return newsRepo.findAllByOrderByIdDesc();
     }
     
     public Optional<News> getNewsById(Long id) {
         Optional<News> news = newsRepo.findById(id);
+        return news;
+    }
+    
+    public News getOne(Long id) {
+        News news = newsRepo.findNewsById(id);
         return news;
     }
     

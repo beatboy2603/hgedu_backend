@@ -30,9 +30,27 @@ public class FolderService {
     public List<Folder> getAllSubfolders(int teacherId, int parentFolderId) {
         return folderRepository.getAllSubfolders(teacherId, parentFolderId);
     }
+    
+    public List<Folder> getAllSubfolders(Long teacherId, Long parentFolderId) {
+        return folderRepository.getAllSubfolders(teacherId, parentFolderId);
+    }
+    
+    public Folder getRootTestsFolder(Long teacherId) {
+        return folderRepository.getRootTestsFolder(teacherId);
+    }
 
     public boolean checkFolderExisting(int folderId) {
         Folder folder = folderRepository.getOne(folderId);
+        if (folder != null) {
+            System.out.println(folder.getFolderName());
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    public boolean checkFolderExisting(Long folderId) {
+        Folder folder = folderRepository.getFolderById(folderId);
         if (folder != null) {
             System.out.println(folder.getFolderName());
             return true;
