@@ -5,7 +5,6 @@
  */
 package com.hgedu_server.models;
 
-import com.sun.xml.internal.ws.developer.Serialization;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;

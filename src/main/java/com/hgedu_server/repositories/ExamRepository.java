@@ -27,9 +27,9 @@ public interface ExamRepository extends JpaRepository<Exam, Long>{
                     "(SELECT COUNT(cs.studentId) 'Total' FROM ClassStudent cs WHERE cs.classId IN ( SELECT c.id FROM ClassExam ce, Class c WHERE ce.classId = c.id AND ce.examId = ?1)) b ", nativeQuery = true)
     String getExamProgress(Long examId);
     
-    @Query(value = "SELECT DATE(Exam.dateUpdated) FROM Exam WHERE Exam.startEntryTime <= CONVERT_TZ(NOW(),@@global.time_zone,'+07:00') AND Exam.startEntryTime != '0000-00-00 00:00:00' AND Exam.teacherId = 101 GROUP BY DATE(Exam.dateUpdated) ORDER BY DATE(Exam.dateUpdated) ASC", nativeQuery = true)
-    List<String> getExamHistoryDates();
+    @Query(value = "SELECT DATE(Exam.dateUpdated) FROM Exam WHERE Exam.startEntryTime <= CONVERT_TZ(NOW(),@@global.time_zone,'+07:00') AND Exam.startEntryTime != '0000-00-00 00:00:00' AND Exam.teacherId = ?1 GROUP BY DATE(Exam.dateUpdated) ORDER BY DATE(Exam.dateUpdated) ASC", nativeQuery = true)
+    List<String> getExamHistoryDates(long teacherId);
     
-    @Query(value = "SELECT DATE(Exam.dateUpdated) FROM Exam WHERE Exam.startEntryTime > CONVERT_TZ(NOW(),@@global.time_zone,'+07:00') OR Exam.startEntryTime = '0000-00-00 00:00:00' AND Exam.teacherId = 101 GROUP BY DATE(Exam.dateUpdated) ORDER BY DATE(Exam.dateUpdated) ASC", nativeQuery = true)
-    List<String> getExamScheduleDates();
+    @Query(value = "SELECT DATE(Exam.dateUpdated) FROM Exam WHERE Exam.startEntryTime > CONVERT_TZ(NOW(),@@global.time_zone,'+07:00') AND Exam.teacherId = ?1 GROUP BY DATE(Exam.dateUpdated) ORDER BY DATE(Exam.dateUpdated) ASC", nativeQuery = true)
+    List<String> getExamScheduleDates(long teacherId);
 }

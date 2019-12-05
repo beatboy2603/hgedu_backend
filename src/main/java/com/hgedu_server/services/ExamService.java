@@ -33,7 +33,7 @@ public class ExamService {
         List<Exam> examList = null;
         List<ExamProgress> examProgressList = null;
         Map<String, List<ExamProgress>> examScheduleMap = new HashMap<>();
-        List<String> examScheduleDates = examRepo.getExamScheduleDates();
+        List<String> examScheduleDates = examRepo.getExamScheduleDates(teacherId);
         for(String date: examScheduleDates) {
             examList = examRepo.getExamSchedule(teacherId, date);
             examProgressList = new ArrayList<>();
@@ -50,7 +50,7 @@ public class ExamService {
         List<Exam> examList = null;
         List<ExamProgress> examProgressList = null;
         Map<String, List<ExamProgress>> examHistoryMap = new HashMap<>();
-        List<String> examHistoryDates = examRepo.getExamHistoryDates();
+        List<String> examHistoryDates = examRepo.getExamHistoryDates(teacherId);
         for(String date: examHistoryDates) {
             examList = examRepo.getExamHistory(teacherId, date);
             examProgressList = new ArrayList<>();
