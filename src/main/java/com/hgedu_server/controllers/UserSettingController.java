@@ -10,6 +10,9 @@ import com.hgedu_server.models.User;
 import com.hgedu_server.services.LinkRequestService;
 import com.hgedu_server.services.UserService;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -38,41 +41,27 @@ public class UserSettingController {
 
 //    ----- get user info through id -----
 //    userService
-    @GetMapping("/{userId}")
-    @ResponseBody
-    public ResponseEntity show(@PathVariable("userId") int userId) {
-        Optional<User> users = userService.getAnUser(userId);
-        if (users.isPresent()) {
-            return ResponseEntity.ok(users.get());
-        } else {
-            return null;
-        }
-    }
-
 //    ----- Check and get whether user has link request or not -----
     @GetMapping("/request/{userId}")
     @ResponseBody
-    public ResponseEntity getRequest(@PathVariable("userId") int userId) {
-        Optional<LinkRequest> linkRequest = linkRequestService.getRequest(userId);
-        if (linkRequest.isPresent()) {
-            return ResponseEntity.ok(linkRequest.get());
-        } else {
-            System.out.println("no data");
-            return null;
-        }
+    public List<User> getRequest(@PathVariable("userId") int userId) {
+        String getAnUser = userService.getAnUser(userId).get().getEmail();
+        return linkRequestService.getUserByRequest(getAnUser);
     }
 
 //    ----- edit user information -----
 //    userService
     @PutMapping("/{userId}")
-    public ResponseEntity edit(@PathVariable("userId") int userId, @RequestBody User user) {
+    public ResponseEntity edit(@PathVariable("userId") int userId, @RequestBody HashMap<String, Object> user) {
         Optional<User> users = userService.getAnUser(userId);
         if (users.isPresent()) {
             User getUser = users.get();
-            getUser.setFullName(user.getFullName());
-            getUser.setEmail(user.getEmail());
-            getUser.setPhoneNumber(user.getPhoneNumber());
-            getUser.setGender(user.isGender());
+            getUser.setFullName(user.get("name").toString());
+            getUser.setEmail(user.get("email").toString());
+            getUser.setPhoneNumber(user.get("phone").toString());
+            getUser.setDob(user.get("dob").toString());
+            System.out.println(user.get("dob").toString());
+            getUser.setGender(Boolean.valueOf(String.valueOf(user.get("gender"))));
             User savedUser = userService.saveUser(getUser);
             return ResponseEntity.ok(savedUser);
         } else {
@@ -83,10 +72,30 @@ public class UserSettingController {
 
     //   ----- send a request to link between parent and student -----
     @PostMapping("")
-    public void addRequest(@RequestBody HashMap<String, String> data) {
-        System.out.println("email phụ huynh: " + data.get("parentMail"));
-        System.out.println("email học sinh: " + data.get("studentMail"));
-        linkRequestService.addRequest(data.get("parentMail"), data.get("studentMail"));
+    public Map<String, Object> sendRequest(@RequestBody HashMap<String, String> data) {
+        return linkRequestService.checkSendRequest(data.get("parentMail"), data.get("studentMail"));
+
+    }
+
+    @PostMapping("/requestResponse")
+    public Map<String, Object> linkResponse(@RequestBody HashMap<String, String> data) {
+        Map<String, Object> responseList = new LinkedHashMap<>();
+        if (data == null) {
+            responseList.put("error", "Không có data, đang thử server ư?");
+        } else {
+            switch (data.get("status")) {
+                case "accept":
+                    linkRequestService.acceptRequest(data.get("parentEmail"), data.get("studentEmail"));
+                    responseList.put("mess", "Thành công!");
+                    return responseList;
+
+                case "refuse":
+                    linkRequestService.refuseRequest(data.get("parentEmail"), data.get("studentEmail"));
+                    responseList.put("mess", "Thành công!");
+                    return responseList;
+            }
+        }
+        return responseList;
     }
 
 }
