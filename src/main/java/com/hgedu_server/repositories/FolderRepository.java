@@ -18,8 +18,17 @@ public interface FolderRepository extends JpaRepository<Folder, Integer> {
 
     @Query(value = "select * from Folder where teacherId = ?1 and parentFolderId = ?2", nativeQuery = true)
     List<Folder> getAllSubfolders(int teacherId, int parentFolderId);
-
+    
+    @Query(value = "select * from Folder where teacherId = ?1 and parentFolderId = ?2", nativeQuery = true)
+    List<Folder> getAllSubfolders(Long teacherId, Long parentFolderId);
+    
     Folder getOne(int folderId);
+    
+    @Query(value = "select * from Folder where folderId = ?1", nativeQuery = true)
+    Folder getFolderById(Long folderId);
+    
+    @Query(value = "select * from Folder where teacherId = ?1 and folderName = \"Thư viện đề thi\"", nativeQuery = true)
+    Folder getRootTestsFolder(Long teacherId);
 
     List<Folder> findByTeacherId(int teacherId);
     

@@ -43,6 +43,12 @@ public class NewsController {
         return ResponseEntity.ok(createdNews);
     }
     
+    @GetMapping("/news/{modId}/all")
+    public ResponseEntity getAllNews(@PathVariable("modId") Long modId) {
+      List<News> list = newsService.getAllNews(modId);
+      return ResponseEntity.ok(list);
+    }
+    
     @GetMapping("/news")
     public ResponseEntity getAllNews() {
       List<News> list = newsService.getAllNews();
@@ -50,11 +56,10 @@ public class NewsController {
     }
     
     @GetMapping("/news/{id}")
-    public ResponseEntity getNews(@PathVariable("id") Long id) {
-      Optional<News> news = newsService.getNewsById(id);
-      if (news.isPresent()) {
-        logger.info("present");
-        return new ResponseEntity<>(news.get(), HttpStatus.OK);
+    public ResponseEntity getNewsById(@PathVariable("id") Long id) {
+      News news = newsService.getOne(id);
+      if (news != null) {
+        return new ResponseEntity<>(news, HttpStatus.OK);
       } else {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
       }

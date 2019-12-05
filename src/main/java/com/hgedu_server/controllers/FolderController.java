@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,5 +57,11 @@ public class FolderController {
     @PostMapping("/deleteFolder")
     public void deleteFolder(@RequestParam("folderId") int folderId) throws Exception {
         folderService.deleteFolder(folderId);
+    }
+    
+    @GetMapping("/testRoot/{teacherId}")
+    public ResponseEntity<?> getRootTestsFolder(@PathVariable("teacherId") Long teacherId) {
+        Folder folder = folderService.getRootTestsFolder(teacherId);
+        return ResponseEntity.ok(folder);
     }
 }
