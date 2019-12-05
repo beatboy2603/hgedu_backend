@@ -22,8 +22,10 @@ public interface FolderRepository extends JpaRepository<Folder, Integer> {
     Folder getOne(int folderId);
 
     List<Folder> findByTeacherId(int teacherId);
+    
+    List<Folder> findByFolderId(int folderId);
 
-    Folder findByTeacherIdAndFolderName(int teacherId, String folderName);
+    List<Folder> findByTeacherIdAndFolderName(int teacherId, String folderName);
 
     Folder findByTeacherIdAndFolderNameAndParentFolderId(int teacherId, String folderName, int parentFolderId);
 

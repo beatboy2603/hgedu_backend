@@ -5,6 +5,8 @@
  */
 package com.hgedu_server.models;
 
+import com.sun.xml.internal.ws.developer.Serialization;
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -29,16 +31,27 @@ public class Folder {
     private int folderTypeId;
     @Column(name="parentFolderId")
     private int parentFolderId;
+    @Column(name="subGroupId")
+    private int subGroupId;
 
     public Folder() {
     }
 
-    public Folder(int folderId, int teacherId, String folderName, int folderTypeId, int parentFolderId) {
+    public Folder(int folderId, int teacherId, String folderName, int folderTypeId, int parentFolderId, int subGroupId) {
         this.folderId = folderId;
         this.teacherId = teacherId;
         this.folderName = folderName;
         this.folderTypeId = folderTypeId;
         this.parentFolderId = parentFolderId;
+        this.subGroupId = subGroupId;
+    }
+
+    public int getSubGroupId() {
+        return subGroupId;
+    }
+
+    public void setSubGroupId(int subGroupId) {
+        this.subGroupId = subGroupId;
     }
 
     public int getFolderId() {

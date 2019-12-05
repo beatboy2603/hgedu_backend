@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +28,19 @@ public class FolderService {
     @Autowired
     private FolderRepository folderRepository;
 
-    public Folder getFolderByName(int teacherId, String folderName) {
+    public List<Folder> getFolderByName(int teacherId, String folderName) {
 //        Folder folder = folderRepository.findByTeacherIdAndFolderName(teacherId, folderName);
 //        System.out.println(folder.getFolderId());
         return folderRepository.findByTeacherIdAndFolderName(teacherId, folderName);
+    }
+    
+    public Folder getFolderById(int folderId) {
+        List<Folder> folders = folderRepository.findByFolderId(folderId);
+        if (folders.size() > 0) {
+            return folders.get(0);
+        } else {
+            return null;
+        }
     }
 
     public Folder getFolderByNameFromRootFolders(int teacherId, String folderName) {
@@ -74,7 +84,7 @@ public class FolderService {
             Folder folder = folders.get(i);
             responseList.put("folder" + folder.getFolderId(), folder);
             if(folder.getFolderName().equals("Nhóm")&&folder.getParentFolderId()==0){
-                publicGroup = new Folder(1, 1, "Nhóm công cộng", 4, folder.getFolderId());
+                publicGroup = new Folder(1, 1, "Nhóm công cộng", 4, folder.getFolderId(), 3);
                 responseList.put("folder" + publicGroup.getFolderId(), publicGroup);
             }
         }
