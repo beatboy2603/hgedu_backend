@@ -37,6 +37,7 @@ public class AuthenService {
         String sub = tokenJson.getString("sub");
         List<User> users = findByUserSub(sub);
         Map<String, Object> responseList = new LinkedHashMap<>();
+        System.out.println(sub);
         
         boolean isExisting = checkExistence(token);
         if (!isExisting) {

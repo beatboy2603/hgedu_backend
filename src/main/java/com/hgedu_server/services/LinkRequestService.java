@@ -9,6 +9,9 @@ import com.hgedu_server.models.LinkRequest;
 import com.hgedu_server.models.User;
 import com.hgedu_server.repositories.LinkRequestRepository;
 import com.hgedu_server.repositories.UserRepository;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,20 +28,67 @@ public class LinkRequestService {
     @Autowired
     private UserRepository userRepository;
 
-    public void addRequest(String parentMail, String studentMail) {
-        System.out.println("addRequest parent's mail: " + parentMail);
-        System.out.println("addRequest student's mail: " + studentMail);
-        linkRequestRepo.addRequest(parentMail, studentMail);
+//    public boolean sendRequest(String parentMail, String studentMail) {
+//        if (userRepository.getUserByEmail(studentMail).isEmpty()) {
+//            System.out.println("K tim duoc hoc sinh");
+//            return false;
+//        } else {
+//            System.out.println("tim duoc hoc sinh");
+////            if user duplicate
+//            if (linkRequestRepo.checkDuplicateUser(parentMail, studentMail) >= 1) {
+//                System.out.println("dupe");
+//                return false;
+//            }
+//            linkRequestRepo.addRequest(parentMail, studentMail);
+//            return true;
+//        }
+//    }
+    public Map<String, Object> checkSendRequest(String parentMail, String studentMail) {
+        Map<String, Object> responseList = new LinkedHashMap<>();
+        if (parentMail.equals(studentMail)) {
+            responseList.put("mess", "Bạn không thể gửi cho chính bạn");
+            return responseList;
+        }
+
+        if (userRepository.getUserByEmail(studentMail).isEmpty()) {
+            responseList.put("mess", "Không tìm thấy người dùng");
+        } else {
+            if (linkRequestRepo.checkDuplicateLinkedUser(parentMail, studentMail) >= 1) {
+                responseList.put("mess", "Bạn có liên kết tới người dùng này rồi");
+            } else {
+                if (linkRequestRepo.checkDuplicateUser(parentMail, studentMail) >= 1) {
+                    responseList.put("mess", "Bạn đã gửi liên kết tới người dùng này rồi");
+                } else {
+                    linkRequestRepo.addRequest(parentMail, studentMail);
+                    responseList.put("mess", "Gửi liên kết thành công!");
+                }
+            }
+        }
+        return responseList;
     }
 
-//    public String getUserEmail(int id){
-//        User user = userRepository.getOne(id);
-//        return user.getEmail();
-//    }
-    public Optional<LinkRequest> getRequest(int id) {
+    public List<LinkRequest> getRequest(int id) {
         User user = userRepository.getOne(id);
-        String mail = user.getEmail();
-        System.out.println("mail: "+mail);
-        return linkRequestRepo.getRequest(mail);
+        return linkRequestRepo.getRequest(user.getEmail());
+    }
+
+    public List<User> getUserByRequest(String studentMail) {
+        return userRepository.getUserByRequestEmail(studentMail);
+//        return userRepository.getByEmail();
+    }
+
+    public List<User> getUserByEmail(String email) {
+        List<User> getUser = userRepository.getUserByEmail(email);
+        return getUser;
+    }
+
+    public void acceptRequest(String parentEmail, String studentEmail) {
+        System.out.println("Accept Request - Student mail: " + studentEmail);
+        linkRequestRepo.addToLink(parentEmail, studentEmail);
+        linkRequestRepo.deleteRequest(parentEmail, studentEmail);
+    }
+
+    public void refuseRequest(String parentEmail, String studentEmail) {
+        linkRequestRepo.deleteRequest(parentEmail, studentEmail);
     }
 }
