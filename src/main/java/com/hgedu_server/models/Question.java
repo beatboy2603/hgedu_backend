@@ -24,10 +24,8 @@ public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long questionId;
-
     @Column(unique = false)
     private String questionCode;
-    
     @Column
     private int teacherId;
     @Column
@@ -218,4 +216,30 @@ public class Question {
     public void setImages(String images) {
         this.images = images;
     }
+
+    public Question() {
+    }
+
+    public Question(Long questionId, String questionCode, int teacherId, int folderId, int questionParentId, int formIdentifier, String content, String description, Date dateCreated, int difficultyId, int gradeLevelId, int questionTypeId, String knowledgeGroup, String specialKnowledge, String explanation, boolean isPublic, String questionKatex, String images) {
+        this.questionId = questionId;
+        this.questionCode = questionCode;
+        this.teacherId = teacherId;
+        this.folderId = folderId;
+        this.questionParentId = questionParentId;
+        this.formIdentifier = formIdentifier;
+        this.content = content;
+        this.description = description;
+        this.dateCreated = dateCreated;
+        this.difficultyId = difficultyId;
+        this.gradeLevelId = gradeLevelId;
+        this.questionTypeId = questionTypeId;
+        this.knowledgeGroup = knowledgeGroup;
+        this.specialKnowledge = specialKnowledge;
+        this.explanation = explanation;
+        this.isPublic = isPublic;
+        this.questionKatex = questionKatex;
+        this.images = images;
+    }
+    
+    
 }

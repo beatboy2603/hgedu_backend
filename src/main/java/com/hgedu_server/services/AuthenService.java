@@ -37,16 +37,25 @@ public class AuthenService {
         String sub = tokenJson.getString("sub");
         List<User> users = findByUserSub(sub);
         Map<String, Object> responseList = new LinkedHashMap<>();
-        System.out.println(sub);
-        
+
         boolean isExisting = checkExistence(token);
+
         if (!isExisting) {
-            responseList.put("message", "signup");
-            responseList.put("email", tokenJson.getString("email"));
-            responseList.put("name", tokenJson.getString("name"));
-            responseList.put("picture", tokenJson.getString("picture"));
+            boolean hasEmail = this.checkEmail(token);
+            if (!hasEmail) {
+                responseList.put("message", "signup");
+                responseList.put("email", tokenJson.getString("email"));
+                responseList.put("name", tokenJson.getString("name"));
+                responseList.put("picture", tokenJson.getString("picture"));
 //            signup(tokenJson);
-            return responseList;
+                return responseList;
+            } else {
+                responseList.put("message", "signup-mod");
+                responseList.put("email", tokenJson.getString("email"));
+                responseList.put("name", tokenJson.getString("name"));
+                responseList.put("picture", tokenJson.getString("picture"));
+                return responseList;
+            }
         } else {
             User user = users.get(0);
             responseList.put("user", user);
@@ -55,7 +64,7 @@ public class AuthenService {
             return responseList;
         }
     }
-    
+
     public boolean checkExistence(String token) {
         JSONObject tokenJson = Util.decodeToken(token);
         String sub = tokenJson.getString("sub");
@@ -67,27 +76,46 @@ public class AuthenService {
         }
     }
 
+    public boolean checkEmail(String token) {
+        JSONObject tokenJson = Util.decodeToken(token);
+        String email = tokenJson.getString("email");
+        List<User> users = userRepository.findByEmail(email);
+        if (users.size() == 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     public Map<String, Object> signup(String token, User user) {
         Map<String, Object> responseList = new LinkedHashMap<>();
         JSONObject tokenJson = Util.decodeToken(token);
         
-        user.setEmail(tokenJson.getString("email"));
-        user.setFullName(tokenJson.getString("name"));
-        user.setUserSub(tokenJson.getString("sub"));
-        user.setRoleId(3);
-        addUser(user);
-        User newUser = findByUserSub(tokenJson.getString("sub")).get(0);
-        Folder[] folders = new Folder[3];
-        String[] folderNames = {"Thư viện câu hỏi", "Thư viện đề thi", "Nhóm"};
-        for (int i = 0; i < folders.length; i++) {
-            folders[i] = new Folder();
-            folders[i].setFolderName(folderNames[i]);
-            folders[i].setFolderTypeId(1);
-            folders[i].setParentFolderId(0);
-            folders[i].setTeacherId(newUser.getUserId());
-            folders[i].setSubGroupId(i+1);
-            folderRepository.save(folders[i]);
-            responseList.put("folder"+i, "added");
+        if (user.getRoleId()==3) {
+            user.setEmail(tokenJson.getString("email"));
+            user.setFullName(tokenJson.getString("name"));
+            user.setUserSub(tokenJson.getString("sub"));
+            addUser(user);
+            User newUser = findByUserSub(tokenJson.getString("sub")).get(0);
+            Folder[] folders = new Folder[3];
+            String[] folderNames = {"Thư viện câu hỏi", "Thư viện đề thi", "Nhóm"};
+            for (int i = 0; i < folders.length; i++) {
+                folders[i] = new Folder();
+                folders[i].setFolderName(folderNames[i]);
+                folders[i].setFolderTypeId(1);
+                folders[i].setParentFolderId(0);
+                folders[i].setTeacherId(newUser.getUserId());
+                folders[i].setSubGroupId(i + 1);
+                folderRepository.save(folders[i]);
+                responseList.put("folder" + i, "added");
+            }
+        }else{
+            List<User> users = userRepository.findByEmail(tokenJson.getString("email"));
+            user.setUserId(users.get(0).getUserId());
+            user.setEmail(tokenJson.getString("email"));
+            user.setFullName(tokenJson.getString("name"));
+            user.setUserSub(tokenJson.getString("sub"));
+            addUser(user);
         }
         responseList.put("message", "signup succeeded");
         return responseList;
@@ -100,6 +128,5 @@ public class AuthenService {
     public List<User> findByUserSub(String sub) {
         return userRepository.findByUserSub(sub);
     }
-    
-    
+
 }

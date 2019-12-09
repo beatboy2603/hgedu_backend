@@ -53,6 +53,21 @@ public class FolderController {
     public Folder addFolder(@RequestBody Folder folder) throws Exception {
         return folderService.addFolder(folder);
     }
+    
+    @PostMapping("/updateFolder")
+    @ResponseBody
+    public Folder updateFolder(@RequestBody Folder folder) throws Exception {
+        return folderService.addFolder(folder);
+    }
+    
+//    @PostMapping("/testFolder")
+//    @ResponseBody
+//    public List<Folder> test(@RequestBody List<Folder> folder) throws Exception {
+//        System.out.println(folder.size());
+//        System.out.println(folder.get(0).getFolderId());
+//        System.out.println("a");
+//        return folder;
+//    }
 
     @PostMapping("/deleteFolder")
     public void deleteFolder(@RequestParam("folderId") int folderId) throws Exception {

@@ -60,6 +60,9 @@ public class AuthenController {
         if (data.get("school") != null) {
             user.setSchool(data.get("school"));
         }
+        if (data.get("roleId") != null) {
+            user.setRoleId(Integer.parseInt(data.get("roleId")));
+        }
         return authenService.signup(token, user);
     }
 

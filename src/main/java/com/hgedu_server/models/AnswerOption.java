@@ -89,6 +89,19 @@ public class AnswerOption {
     public void setLinkedAnswers(String linkedAnswers) {
         this.linkedAnswers = linkedAnswers;
     }
+
+    public AnswerOption() {
+    }
+
+    public AnswerOption(Long answerId, Long questionId, String content, String images, boolean isCorrect, String answerKatex, String linkedAnswers) {
+        this.answerId = answerId;
+        this.questionId = questionId;
+        this.content = content;
+        this.images = images;
+        this.isCorrect = isCorrect;
+        this.answerKatex = answerKatex;
+        this.linkedAnswers = linkedAnswers;
+    }
     
     
 }
