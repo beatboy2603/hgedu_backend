@@ -41,7 +41,6 @@ import org.apache.xmlbeans.XmlCursor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.openxmlformats.schemas.officeDocument.x2006.math.CTOMath;
 import org.openxmlformats.schemas.officeDocument.x2006.math.CTOMathPara;
 import org.openxmlformats.schemas.officeDocument.x2006.math.CTR;
@@ -318,7 +317,6 @@ public class TestToWordService {
                 questions.get(i).setContent(qResult);
                 qResult = "";
             }
-            toWord(questions, answerOptions);
         } catch (Exception e) {
             Logger.getLogger(TestToWordService.class.getName()).log(Level.SEVERE, null, e);
         }
@@ -387,7 +385,6 @@ public class TestToWordService {
                                 }
                             }
                         }
-
                     } else {
                         s1 = content.split("<image>");
                         for (int q = 0; q < s1.length; q++) {
