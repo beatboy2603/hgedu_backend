@@ -33,5 +33,13 @@ public class UserService {
     public User saveUser(User user){
         return usersRepository.save(user);
     }
+    
+    public Iterable<User> findAll(){
+        return usersRepository.findAll();
+    }
+    
+    public int countUsers(){
+        return usersRepository.countUsers();
+    }
 
 }

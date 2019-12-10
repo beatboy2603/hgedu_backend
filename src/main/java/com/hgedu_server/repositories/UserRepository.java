@@ -15,6 +15,8 @@ import org.springframework.data.jpa.repository.Query;
  */
 //    @Query(value = "SELECT * FROM User WHERE userId = ?1", nativeQuery = true)
 import java.util.List;
+import org.springframework.data.repository.CrudRepository;
+
 import java.util.Optional;
 
 /**
@@ -35,6 +37,10 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     List<User> getStudentByRequestEmail(String email);
 
     List<User> findByUserSub(String userSub);
+//    @Override
+//    public Iterable<User> findAll();
+    @Query(value = "select count(userId) from User")
+    public int countUsers();
     
     List<User> findByEmail(String email);
 }

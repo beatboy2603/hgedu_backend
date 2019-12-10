@@ -35,8 +35,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         String username = null;
         String jwt = null;
-        HttpServletResponse myResponse = null;
-        MyResponseRequestWrapper responseWrapper = null;
+
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);
             System.out.println("author " + jwt);
@@ -44,28 +43,15 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             String verifiedToken = JwtController.getInstance().verifyToken(jwt);
             if (verifiedToken == null) {
                 System.out.println("wrong token");
-            } else {
-                myResponse = (HttpServletResponse) hsr1;
-                responseWrapper = new MyResponseRequestWrapper(myResponse);
-                responseWrapper.addHeader("Authorization", "true");
-                System.out.println("tokenVerified");
-//                hsr1.addHeader("tokenverified", "true");
+            } else if (!verifiedToken.equals("")) {
+                System.out.println("abc");
+                hsr1.setHeader("renewtoken", verifiedToken);
             }
-//                if (!verifiedToken.equals("")) {
-//                hsr1.setHeader("renewToken", verifiedToken);
-//            }
         }
-        hsr1.setHeader("Access-Control-Allow-Origin", "*");
-        hsr1.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE");
-        hsr1.setHeader("Access-Control-Max-Age", "3600");
-        hsr1.setHeader("Access-Control-Allow-Headers", "Authorization, x-xsrf-token, Access-Control-Allow-Headers, Origin, Accept, X-Requested-With, "
-                + "Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
-        hsr1.addHeader("headerName", "headerValue");
-        hsr1.setHeader("setheaderName", "setheaderValue");
-        hsr.setAttribute("test", "test");
+        hsr1.addHeader("renewtoken", "test");
+
         fc.doFilter(hsr, hsr1);
-        System.out.println(hsr1.getHeader("setheaderName"));
-        System.out.println(hsr1.getHeader("headerName"));
+
 //        if (myResponse != null) {
 //            System.out.println("đ hiểu");
 //            myResponse.addHeader("Access-Control-Allow-Origin", "*");
@@ -83,13 +69,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     }
 }
 
-class MyResponseRequestWrapper extends HttpServletResponseWrapper {
-
-    public MyResponseRequestWrapper(HttpServletResponse response) {
-        super(response);
-        response.addHeader("test", "test");
-    }
-}
 
 //@Component
 //public class JwtRequestFilter implements Filter {
