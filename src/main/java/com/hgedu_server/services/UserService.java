@@ -27,6 +27,7 @@ public class UserService {
     }
     public Optional<User> getAnUser(int userId){
         System.out.println("out");
+        System.out.println("check commit");
         return usersRepository.findById(userId);
     }
     
