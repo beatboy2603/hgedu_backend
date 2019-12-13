@@ -38,8 +38,18 @@ public class QuestionController {
         return questionAndAnswersList;
     }
     
-    @PostMapping("/wew")
-    public String test() throws Exception {
-        return "test";
+    @GetMapping("/getFormIdentifiers/{teacherId}")
+    public List<String> getFormIdentifiers(@PathVariable("teacherId") int teacherId) throws Exception {
+        return questionService.getFormIdentifiers(teacherId);
+    }
+    
+    @GetMapping("/getAllSpecialKnowledge/{teacherId}")
+    public List<String> getAllSpecialKnowledge(@PathVariable("teacherId") int teacherId) throws Exception {
+        return questionService.getAllSpecialKnowledge(teacherId);
+    }
+    
+    @GetMapping("/getFullQuestionAndAnswers/{questionId}")
+    public List<QuestionAndAnswers> getFullQuestionAndAnswers(@PathVariable("questionId") Long questionId) throws Exception {
+        return questionService.getFullQuestionAndAnswers(questionId);
     }
 }

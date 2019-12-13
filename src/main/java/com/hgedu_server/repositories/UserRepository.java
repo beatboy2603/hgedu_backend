@@ -23,7 +23,7 @@ import java.util.Optional;
  *
  * @author ADMIN
  */
-public interface UserRepository extends JpaRepository<User, Integer> {
+public interface UserRepository extends CrudRepository<User, Integer> {
 
     @Query(value = "select * from User where email = ?1", nativeQuery = true)
     List<User> getUserByEmail(String email);

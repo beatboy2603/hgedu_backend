@@ -12,7 +12,9 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.hgedu_server.repositories.UserRepository;
 import java.util.Date;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -34,13 +36,13 @@ public class JwtController {
 
     private JwtController() {
         // Link docs: https://github.com/auth0/java-jwt
-        algorithm = Algorithm.HMAC256("motcaisecretkeygido");
+        algorithm = Algorithm.HMAC256("webgiaoduc-secretkey");
     }
 
     public String createToken(String sub, int uid, int role) {
         // Create token with 30min timeline and change token each 15min
         try {
-            Date exp = new Date(System.currentTimeMillis() + 30 * 60 * 1000); // 30 min expired
+            Date exp = new Date(System.currentTimeMillis() + 60 * 60 * 1000); // 60 min expired
             Date renew = new Date(System.currentTimeMillis() + 15 * 60 * 1000); // 15 min renew token
 
             String token = JWT.create().withIssuer(issuer).withExpiresAt(exp).withClaim("sub", sub)
@@ -56,6 +58,10 @@ public class JwtController {
         try {
             JWTVerifier verifier = JWT.require(algorithm).acceptExpiresAt(System.currentTimeMillis()).build();
             DecodedJWT jwt = verifier.verify(token);
+            if (jwt.getExpiresAt().before(new Date(System.currentTimeMillis()))) {
+                System.out.println("expired");
+                return null;
+            }
             if (jwt.getClaim("renew").asDate().before(new Date(System.currentTimeMillis()))) {
                 return createToken(jwt.getClaim("sub").asString(), jwt.getClaim("uid").asInt(),
                         jwt.getClaim("role").asInt());
@@ -63,6 +69,7 @@ public class JwtController {
             return "";
         } catch (JWTVerificationException exception) {
             // Invalid signature/claims
+            System.out.println("exception");
             return null;
         }
     }
@@ -74,6 +81,16 @@ public class JwtController {
         } catch (JWTDecodeException exception) {
             // Invalid signature/claims
             return -1;
+        }
+    }
+    
+    public String getSub(String token) {
+        try {
+            DecodedJWT jwt = JWT.decode(token);
+            return jwt.getClaim("sub").asString();
+        } catch (JWTDecodeException exception) {
+            // Invalid signature/claims
+            return null;
         }
     }
 

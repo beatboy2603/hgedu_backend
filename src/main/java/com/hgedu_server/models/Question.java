@@ -31,10 +31,11 @@ public class Question {
     @Column
     private int folderId;
     @Column
-    private int questionParentId;
+    private Long questionParentId;
     @Column
-    private int formIdentifier;
-    @NotBlank(message = "content is required")
+    private String formIdentifier;
+    @Column
+//    @NotBlank(message = "content is required") //error?
     private String content;
     @Column
     private String description;
@@ -113,19 +114,19 @@ public class Question {
         this.folderId = folderId;
     }
 
-    public int getQuestionParentId() {
+    public Long getQuestionParentId() {
         return questionParentId;
     }
 
-    public void setQuestionParentId(int questionParentId) {
+    public void setQuestionParentId(Long questionParentId) {
         this.questionParentId = questionParentId;
     }
 
-    public int getFormIdentifier() {
+    public String getFormIdentifier() {
         return formIdentifier;
     }
 
-    public void setFormIdentifier(int formIdentifier) {
+    public void setFormIdentifier(String formIdentifier) {
         this.formIdentifier = formIdentifier;
     }
 
@@ -220,7 +221,7 @@ public class Question {
     public Question() {
     }
 
-    public Question(Long questionId, String questionCode, int teacherId, int folderId, int questionParentId, int formIdentifier, String content, String description, Date dateCreated, int difficultyId, int gradeLevelId, int questionTypeId, String knowledgeGroup, String specialKnowledge, String explanation, boolean isPublic, String questionKatex, String images) {
+    public Question(Long questionId, String questionCode, int teacherId, int folderId, Long questionParentId, String formIdentifier, String content, String description, Date dateCreated, int difficultyId, int gradeLevelId, int questionTypeId, String knowledgeGroup, String specialKnowledge, String explanation, boolean isPublic, String questionKatex, String images) {
         this.questionId = questionId;
         this.questionCode = questionCode;
         this.teacherId = teacherId;

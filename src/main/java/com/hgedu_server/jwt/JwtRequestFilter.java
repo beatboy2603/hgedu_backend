@@ -5,7 +5,10 @@
  */
 package com.hgedu_server.jwt;
 
+import com.hgedu_server.models.User;
+import com.hgedu_server.repositories.UserRepository;
 import java.io.IOException;
+import java.util.List;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -15,6 +18,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -24,10 +28,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  */
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
-
-    public static final String REQUEST_AT = "request-at";
-    public static final String EXECUTION_TIME = "execution-time";
-
+    
     @Override
     protected void doFilterInternal(HttpServletRequest hsr, HttpServletResponse hsr1, FilterChain fc) throws ServletException, IOException {
 
@@ -35,76 +36,42 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         String username = null;
         String jwt = null;
+        String url = hsr.getRequestURL().toString();
+//        boolean notRequired = false;
+//        if (url.endsWith("/api/hello") || url.endsWith("/api/authen")|| url.contains("/api/authen/signup")|| url.contains("/news")) {
+//            notRequired = true;
+//            fc.doFilter(hsr, hsr1);
+//        } else {
+//            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+////                System.out.println(authorizationHeader);
+//                jwt = authorizationHeader.substring(7);
+//                String verifiedToken = JwtController.getInstance().verifyToken(jwt);
+//                if (verifiedToken == null) {
+//                    System.out.println("wrong token");
+//                    return;
+//                } else if (!verifiedToken.equals("")) {
+//                    System.out.println("renew token");
+//                    hsr1.setHeader("renewtoken", verifiedToken);
+//                }
+//                fc.doFilter(hsr, hsr1);
+//            }
+//        }
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+//                System.out.println(authorizationHeader);
             jwt = authorizationHeader.substring(7);
-            System.out.println("author " + jwt);
-            System.out.println(JwtController.getInstance().getUid(jwt));
             String verifiedToken = JwtController.getInstance().verifyToken(jwt);
+            System.out.println("role: "+JwtController.getInstance().getRole(jwt));
             if (verifiedToken == null) {
                 System.out.println("wrong token");
+                hsr1.setHeader("wrongtoken", "signout");
+                fc.doFilter(hsr, hsr1);
+                return;
             } else if (!verifiedToken.equals("")) {
-                System.out.println("abc");
+                System.out.println("renew token");
                 hsr1.setHeader("renewtoken", verifiedToken);
             }
         }
-        hsr1.addHeader("renewtoken", "test");
-
         fc.doFilter(hsr, hsr1);
-
-//        if (myResponse != null) {
-//            System.out.println("đ hiểu");
-//            myResponse.addHeader("Access-Control-Allow-Origin", "*");
-//	
-//            fc.doFilter(hsr, responseWrapper);
-//            myResponse.addHeader("seta", "seta");
-//            myResponse.setHeader("seta", "seta");
-//            System.out.println(myResponse.getHeader("seta"));
-//        } else {
-//            fc.doFilter(hsr, hsr1);
-//            System.out.println("test");
-//            hsr1.addHeader("a", "b");
-//            hsr1.setHeader("seta", "setb");
-//        }
     }
 }
-
-
-//@Component
-//public class JwtRequestFilter implements Filter {
-//
-////    public void doFilter(HttpServletRequest req, HttpServletResponse res,
-////            FilterChain chain) throws IOException, ServletException {
-////        // you can modify your response here before the call of chain method
-////        //example 
-////        res.setHeader("key", "value");
-////        System.out.println("filtered");
-////        chain.doFilter(req, res);
-////        System.out.println("filter3");
-////        res.setHeader("a", "b");
-////    }
-//
-//    @Override
-//    public void destroy() {
-//    }
-//
-//    @Override
-//    public void init(FilterConfig arg0) throws ServletException {
-//    }
-//
-//    @Override
-//    public void doFilter(ServletRequest sr, ServletResponse sr1, FilterChain fc) throws IOException, ServletException {
-//        HttpServletRequest req = (HttpServletRequest) sr;
-//        System.out.println("author "+req.getHeader("Authorization"));
-//        HttpServletResponse res = (HttpServletResponse) sr1;
-//        System.out.println("filter2");
-//        res.setHeader("a", "b");
-//        res.addHeader("b", "a");
-//        fc.doFilter(sr, res);
-//        System.out.println("filter3");
-//        System.out.println(res.getHeader("a"));
-//        System.out.println(res.getHeader("b"));
-//        res.addHeader("b", "a");
-//    }
-//
-//}

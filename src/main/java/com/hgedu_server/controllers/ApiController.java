@@ -69,7 +69,13 @@ public class ApiController {
     @GetMapping("/hello")
 //    @ResponseBody
     public String hello() {
-        return "abc2";
+        return "hello";
+    }
+    
+    @GetMapping("/helloAuthen")
+//    @ResponseBody
+    public String helloAuthen() {
+        return "helloAuthen";
     }
 
 }
