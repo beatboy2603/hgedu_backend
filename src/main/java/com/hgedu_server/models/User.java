@@ -34,11 +34,23 @@ public class User {
     private boolean gender;
     @Column(name = "roleId")
     private int roleId;
+    @Column(name = "dob")
+    private String dob;
+    @Column(name = "school")
+    private String school;
+    @Column(name = "isBan")
+    private boolean isBan;
+    @Column(name = "isBanForever")
+    private boolean isBanForever;
+    @Column(name = "bannedUntil")
+    private String bannedUntil;
 
     public User() {
     }
 
-    public User(int userId, String userSub, String email, String fullName, String phoneNumber, boolean gender, int roleId) {
+    
+    
+    public User(int userId, String userSub, String email, String fullName, String phoneNumber, boolean gender, int roleId, String dob, String school, boolean isBan, boolean isBanForever, String bannedUntil) {
         this.userId = userId;
         this.userSub = userSub;
         this.email = email;
@@ -46,6 +58,11 @@ public class User {
         this.phoneNumber = phoneNumber;
         this.gender = gender;
         this.roleId = roleId;
+        this.dob = dob;
+        this.school = school;
+        this.isBan = isBan;
+        this.isBanForever = isBanForever;
+        this.bannedUntil = bannedUntil;
     }
 
     public int getUserId() {
@@ -103,5 +120,48 @@ public class User {
     public void setRoleId(int roleId) {
         this.roleId = roleId;
     }
+
+    public String getDob() {
+        return dob;
+    }
+
+    public void setDob(String dob) {
+        this.dob = dob;
+    }
+
+    public String getSchool() {
+        return school;
+    }
+
+    public void setSchool(String school) {
+        this.school = school;
+    }
+
+    public boolean isIsBan() {
+        return isBan;
+    }
+
+    public void setIsBan(boolean isBan) {
+        this.isBan = isBan;
+    }
+
+    public boolean isIsBanForever() {
+        return isBanForever;
+    }
+
+    public void setIsBanForever(boolean isBanForever) {
+        this.isBanForever = isBanForever;
+    }
+
+    public String getBannedUntil() {
+        return bannedUntil;
+    }
+
+    public void setBannedUntil(String bannedUntil) {
+        this.bannedUntil = bannedUntil;
+    }
+    
+    
+    
 
 }

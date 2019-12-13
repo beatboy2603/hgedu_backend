@@ -25,18 +25,30 @@ public class UserService {
     
     public UserService() {
     }
-    public Optional<User> getAnUser(int userId){
-        System.out.println("out");
-        System.out.println("check commit");
-        return usersRepository.findById(userId);
-    }
+    
     
     public User saveUser(User user){
         return usersRepository.save(user);
     }
     
+    public User addMod(User user){
+        return usersRepository.save(user);
+    }
+    
+    public User banUser(User user){
+        return usersRepository.save(user);
+    }
+    
+    public User unBan(User user){
+        return usersRepository.save(user);
+    }
+    
+    public User banUserForever(User user){
+        return usersRepository.save(user);
+    }
+    
     public Iterable<User> findAll(){
-        return usersRepository.findAll();
+        return usersRepository.listUser();
     }
     
     public int countUsers(){

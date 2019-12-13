@@ -25,8 +25,11 @@ import org.springframework.data.repository.CrudRepository;
 public interface UserRepository extends CrudRepository<User, Integer> {
 
     List<User> findByUserSub(String userSub);
-    @Override
-    public Iterable<User> findAll();
-    @Query(value = "select count(userId) from User")
+//    @Override
+//    public Iterable<User> findAll();
+    @Query(value = "SELECT * FROM webgiaoduc.User where roleId != 1 order by roleId", nativeQuery = true)
+    public Iterable<User> listUser();
+    
+    @Query(value = "select count(userId) from User where roleId != 1", nativeQuery = true)
     public int countUsers();
 }
