@@ -21,26 +21,41 @@ import org.springframework.stereotype.Service;
 public class UserService {
     
     @Autowired
-    private UserRepository usersRepository;
+    private UserRepository userRepository;
     
     public UserService() {
     }
+    
     public Optional<User> getAnUser(int userId){
-        System.out.println("out");
-        System.out.println("check commit");
-        return usersRepository.findById(userId);
+        return userRepository.findById(userId);
     }
     
     public User saveUser(User user){
-        return usersRepository.save(user);
+        return userRepository.save(user);
+    }
+    
+    public User addMod(User user){
+        return userRepository.save(user);
+    }
+    
+    public User banUser(User user){
+        return userRepository.save(user);
+    }
+    
+    public User unBan(User user){
+        return userRepository.save(user);
+    }
+    
+    public User banUserForever(User user){
+        return userRepository.save(user);
     }
     
     public Iterable<User> findAll(){
-        return usersRepository.findAll();
+        return userRepository.listUser();
     }
     
     public int countUsers(){
-        return usersRepository.countUsers();
+        return userRepository.countUsers();
     }
 
 }

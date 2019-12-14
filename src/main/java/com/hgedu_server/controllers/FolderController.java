@@ -33,11 +33,6 @@ public class FolderController {
     @Autowired
     private FolderService folderService;
 
-//    @GetMapping("/getFolder/{teacherId}/{folderName}")
-//    public Folder getFoldersForNav(@PathVariable("teacherId") int teacherId, 
-//            @PathVariable("folderName") String folderName){
-//        return folderService.getFolderByNameFromRootFolders(teacherId, folderName);
-//    }
     @GetMapping("/{folderId}")
     public Folder getFolderById(@PathVariable("folderId") int folderId) throws Exception {
         return folderService.getFolderById(folderId);
@@ -47,7 +42,7 @@ public class FolderController {
     public Map<String, Object> getFoldersForNav(@RequestParam("uid") int teacherId) {
         return folderService.getFoldersForNav(teacherId);
     }
-
+    
     @PostMapping("/addFolder")
     @ResponseBody
     public Folder addFolder(@RequestBody Folder folder) throws Exception {

@@ -33,6 +33,11 @@ public class QuestionController {
         return questionService.getQuestionByFolderId(teacherId, folderId);
     }
     
+    @GetMapping("/{teacherId}")
+    public List<Question> getAllQuestions(@PathVariable("teacherId") int teacherId) throws Exception {
+        return questionService.getAllQuestions(teacherId);
+    }
+    
     @PostMapping("/addQuestion")
     public List<QuestionAndAnswers> addQuestion(@RequestBody List<QuestionAndAnswers> questionAndAnswersList) throws Exception {
         return questionAndAnswersList;

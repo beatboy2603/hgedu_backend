@@ -39,7 +39,10 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     List<User> findByUserSub(String userSub);
 //    @Override
 //    public Iterable<User> findAll();
-    @Query(value = "select count(userId) from User")
+    @Query(value = "SELECT * FROM webgiaoduc.User where roleId != 1 order by roleId", nativeQuery = true)
+    public Iterable<User> listUser();
+    
+    @Query(value = "select count(userId) from User where roleId != 1", nativeQuery = true)
     public int countUsers();
     
     List<User> findByEmail(String email);

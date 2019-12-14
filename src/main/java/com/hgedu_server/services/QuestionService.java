@@ -68,18 +68,8 @@ public class QuestionService {
         return questionAndAnswersList;
     }
 
-//    private List<QuestionAndAnswers> addChildQuestions(List<QuestionAndAnswers> questionAndAnswersList,
-//            Long questionId) {
-//        List<Question> queryQuestions = questionRepository.findByQuestionParentId(questionId);
-//        for (int i = 0; i < queryQuestions.size(); i++) {
-//            QuestionAndAnswers questionAndAnswers = new QuestionAndAnswers();
-//            questionAndAnswers.setQuestion(queryQuestions.get(i));
-//            List<AnswerOption> queryAnswers = answerRepository.findByQuestionId(questionId);
-//            if (queryAnswers.size() > 0) {
-//                questionAndAnswers.setAnswers(queryAnswers);
-//            }
-//            questionAndAnswersList.add(questionAndAnswers);
-//        }
-//        return questionAndAnswersList;
-//    }
+    public List<Question> getAllQuestions(int teacherId) {
+        return questionRepository.findByTeacherId(teacherId);
+    }
+
 }
