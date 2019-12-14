@@ -30,12 +30,12 @@ public interface LinkRequestRepository extends JpaRepository<LinkRequest, Intege
     List<LinkRequest> getRequest(String studentEmail);
 
     @Modifying
-    @Query(value = "insert into ParentStudentLink (parentEmail, studentEmail) value (:parentEmail, :studentEmail)", nativeQuery = true)
+    @Query(value = "insert into ParentStudent (parentId, studentId) value (:parentId, :studentId)", nativeQuery = true)
     @Transactional
-    void addToLink(@Param("parentEmail") String parentEmail, @Param("studentEmail") String studentEmail);
+    void addToLink(@Param("parentId") int parentId, @Param("studentId") int studentId);
 
-    @Query(value = "SELECT COUNT(*) FROM ParentStudentLink WHERE parentEmail = ?1 AND studentEmail = ?2", nativeQuery = true)
-    int checkDuplicateLinkedUser(String parentEmail, String studentEmail);
+    @Query(value = "SELECT COUNT(*) FROM ParentStudent WHERE parentId = ?1 AND studentId = ?2", nativeQuery = true)
+    int checkDuplicateLinkedUser(int parentId, int studentId);
     
     
     @Modifying
