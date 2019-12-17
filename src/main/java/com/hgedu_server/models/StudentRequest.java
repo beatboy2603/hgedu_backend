@@ -14,7 +14,7 @@ import javax.persistence.Id;
  * @author Admin
  */
 @Entity
-public class StudentEnrollment {
+public class StudentRequest {
 
     @Id
     @Column(name = "requestId")
@@ -27,16 +27,28 @@ public class StudentEnrollment {
     private String teacherEmail;
 
     @Column(name = "studentId")
-    private String studentId;
+    private int studentId;
 
-    public StudentEnrollment() {
+    @Column(name = "displayedName")
+    private String displayedName;
+
+    public StudentRequest() {
     }
 
-    public StudentEnrollment(int requestId, String note, String teacherEmail, String studentId) {
+    public StudentRequest(int requestId, String note, String teacherEmail, int studentId, String displayedName) {
         this.requestId = requestId;
         this.note = note;
         this.teacherEmail = teacherEmail;
         this.studentId = studentId;
+        this.displayedName = displayedName;
+    }
+
+    public String getDisplayedName() {
+        return displayedName;
+    }
+
+    public void setDisplayedName(String displayedName) {
+        this.displayedName = displayedName;
     }
 
     public int getRequestId() {
@@ -63,12 +75,12 @@ public class StudentEnrollment {
         this.teacherEmail = teacherEmail;
     }
 
-    public String getStudentId() {
+    public int getStudentId() {
         return studentId;
     }
 
-    public void setStudentId(String studentId) {
+    public void setStudentId(int studentId) {
         this.studentId = studentId;
     }
 
-    }
+}
