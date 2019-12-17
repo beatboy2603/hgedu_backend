@@ -45,8 +45,17 @@ public class Exam {
     @Column(name = "code")
     private String code;
     
+    @Column(name = "powerLevel")
+    private Long powerLevel;
+    
     @Column(name = "isMarked")
     private Boolean isMarked;
+    
+    @Column(name = "isShowAnswers")
+    private Boolean isShowAnswers;
+    
+    @Column (name = "isShowExplanation")
+    private Boolean isShowExplanation;
     
     @Column(name = "dateCreated", updatable = false)
     private String dateCreated;
@@ -140,6 +149,30 @@ public class Exam {
 
     public void setDateUpdated(String dateUpdated) {
         this.dateUpdated = dateUpdated;
+    }
+
+    public Boolean getIsShowAnswers() {
+        return isShowAnswers;
+    }
+
+    public void setIsShowAnswers(Boolean isShowAnswers) {
+        this.isShowAnswers = isShowAnswers;
+    }
+
+    public Boolean getIsShowExplanation() {
+        return isShowExplanation;
+    }
+
+    public void setIsShowExplanation(Boolean isShowExplanation) {
+        this.isShowExplanation = isShowExplanation;
+    }
+
+    public Long getPowerLevel() {
+        return powerLevel;
+    }
+
+    public void setPowerLevel(Long powerLevel) {
+        this.powerLevel = powerLevel;
     }
     
     

@@ -32,4 +32,12 @@ public interface ExamRepository extends JpaRepository<Exam, Long>{
     
     @Query(value = "SELECT DATE(Exam.dateUpdated) FROM Exam WHERE Exam.startEntryTime > CONVERT_TZ(NOW(),@@global.time_zone,'+07:00') AND Exam.teacherId = ?1 GROUP BY DATE(Exam.dateUpdated) ORDER BY DATE(Exam.dateUpdated) ASC", nativeQuery = true)
     List<String> getExamScheduleDates(long teacherId);
+    
+    @Query(value = "SELECT Exam.* FROM Exam, ClassExam WHERE Exam.id = ClassExam.examId and ClassExam.classId = ?1 ORDER BY DATE(Exam.dateUpdated) ASC", nativeQuery = true)
+    List<Exam> getExamsForClass(Long classId);
+    
+    @Query(value = "SELECT Exam.* FROM Exam WHERE Exam.id = ?1", nativeQuery = true)
+    Exam getExamById(Long examId);
+    
+    
 }

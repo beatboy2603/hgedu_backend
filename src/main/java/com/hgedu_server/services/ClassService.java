@@ -25,5 +25,9 @@ public class ClassService {
     public List<Class> getAllClassesForTeacher(Long teacherId) {
         return classRepo.findAllByTeacherId(teacherId);
     }
+
+    public List<Class> getAllClassesForStudent(Long studentId) {
+        return classRepo.getClassesForStudent(studentId);
+    }
     
 }

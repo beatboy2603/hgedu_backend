@@ -18,8 +18,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TestRepository extends JpaRepository<Test, Long>{
     
-    @Query(value = "select * from Test where teacherId = ?1 and folderId = ?2 and isPublic = 0", nativeQuery = true)
+    @Query(value = "SELECT t.* FROM Test t, Folder f WHERE t.teacherId = ?1 AND t.folderId = f.folderId AND f.parentFolderId = ?2 AND isPublic = 0", nativeQuery = true)
     List<Test> getTestsOfFolder(Long teacherId, Long folderId);
+    
+    @Query(value = "SELECT t.* FROM Test t, ExamTest et WHERE et.examId = ?1 AND t.testId = et.testId ORDER BY RAND() LIMIT 1", nativeQuery = true)
+    Test getRandomTestForExam(Long examId);
     
     @Query(value = "select t.* from Test t, ExamTest et where t.testId = et.testId and et.examId = ?1", nativeQuery = true)
     List<Test> getSelectedExamTests(Long examId);

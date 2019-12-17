@@ -51,8 +51,8 @@ public class FolderService {
         return folderRepository.getAllSubfolders(teacherId, parentFolderId);
     }
     
-    public List<Folder> getAllSubfolders(Long teacherId, Long parentFolderId) {
-        return folderRepository.getAllSubfolders(teacherId, parentFolderId);
+    public List<Folder> getAllSubfoldersForExam(Long teacherId, Long parentFolderId) {
+        return folderRepository.getAllSubfolders(parentFolderId, teacherId);
     }
     
     public Folder getRootTestsFolder(Long teacherId) {
