@@ -43,7 +43,7 @@ public class ExamTestController {
     @GetMapping("/api/examTest/{folderId}/{teacherId}/all")
     public ResponseEntity getFolderTestList(@PathVariable("teacherId") Long teacherId, @PathVariable("folderId") Long folderId) {
         if(folderService.checkFolderExisting(folderId)) {
-            List<Folder> childFolderList = folderService.getAllSubfolders(teacherId, folderId);
+            List<Folder> childFolderList = folderService.getAllSubfoldersForExam(teacherId, folderId);
             List<Test> testList = testService.getAllTestByFolderId(teacherId,folderId);
             FolderTest folderTest = new FolderTest(folderId, childFolderList, testList);
             return ResponseEntity.ok(folderTest);

@@ -16,6 +16,10 @@ public class HgeduServerApplication {
         SpringApplication.run(HgeduServerApplication.class, args);
     }
     
+    static {
+        nu.pattern.OpenCV.loadShared();
+    }
+    
     @Bean
     CommandLineRunner init(StorageService storageService) {
         return (args) -> {

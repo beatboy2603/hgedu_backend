@@ -41,4 +41,14 @@ public class ClassController {
         }
     }
     
+    @GetMapping("/api/class/student/{studentId}")
+    public ResponseEntity getAllClassesForStudent(@PathVariable("studentId") Long studentId) {    
+        List<Class> classList = service.getAllClassesForStudent(studentId);
+        if(classList.isEmpty()) {
+            return ResponseEntity.badRequest().body("No class found");
+        } else {
+            return ResponseEntity.ok(classList);
+        }
+    }
+    
 }

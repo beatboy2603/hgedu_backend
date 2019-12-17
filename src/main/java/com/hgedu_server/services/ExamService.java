@@ -74,4 +74,12 @@ public class ExamService {
             throw new Exception(e);
         }
     }
+
+    public List<Exam> getExamsForClass(Long classId) {
+        return examRepo.getExamsForClass(classId);
+    }
+    
+    public Exam getExamById(Long examId) {
+        return examRepo.getExamById(examId);
+    }
 }

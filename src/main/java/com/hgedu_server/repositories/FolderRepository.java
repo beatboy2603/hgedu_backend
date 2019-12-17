@@ -19,8 +19,8 @@ public interface FolderRepository extends JpaRepository<Folder, Integer> {
     @Query(value = "select * from Folder where teacherId = ?1 and parentFolderId = ?2", nativeQuery = true)
     List<Folder> getAllSubfolders(int teacherId, int parentFolderId);
     
-    @Query(value = "select * from Folder where teacherId = ?1 and parentFolderId = ?2", nativeQuery = true)
-    List<Folder> getAllSubfolders(Long teacherId, Long parentFolderId);
+    @Query(value = "SELECT a.* FROM Folder a WHERE a.parentFolderId = ?1 AND a.folderId NOT IN (SELECT t.folderId FROM Test t, Folder f WHERE t.teacherId = ?2 AND t.folderId = f.folderId AND f.parentFolderId = ?1 AND isPublic = 0)", nativeQuery = true)
+    List<Folder> getAllSubfolders(Long parentFolderId, Long teacherId);
     
     Folder getOne(int folderId);
     

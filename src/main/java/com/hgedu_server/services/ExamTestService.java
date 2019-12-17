@@ -38,6 +38,14 @@ public class ExamTestService {
         return resultList;
     }
     
+    public ExamTest getExamTestById(Long examTestId) {
+        return examTestRepo.getExamTestById(examTestId);
+    }
+    
+    public ExamTest getRandomTestIdForExam(Long examId) {
+        return examTestRepo.getRandomTestIdForExam(examId);
+    }
+    
     public List<Test> getSelectedExamTests(Long examId) {
         return testRepo.getSelectedExamTests(examId);
     }
