@@ -45,6 +45,8 @@ public class LinkRequestService {
 //    }
     public Map<String, Object> checkSendRequest(String parentMail, String studentMail) {
         Map<String, Object> responseList = new LinkedHashMap<>();
+        int parentId = userRepository.getUserIdByEmail(parentMail);
+        int studentId = userRepository.getUserIdByEmail(studentMail);
         if (parentMail.equals(studentMail)) {
             responseList.put("mess", "Bạn không thể gửi cho chính bạn");
             return responseList;
@@ -53,7 +55,7 @@ public class LinkRequestService {
         if (userRepository.getUserByEmail(studentMail).isEmpty()) {
             responseList.put("mess", "Không tìm thấy người dùng");
         } else {
-            if (linkRequestRepo.checkDuplicateLinkedUser(parentMail, studentMail) >= 1) {
+            if (linkRequestRepo.checkDuplicateLinkedUser(parentId, studentId) >= 1) {
                 responseList.put("mess", "Bạn có liên kết tới người dùng này rồi");
             } else {
                 if (linkRequestRepo.checkDuplicateUser(parentMail, studentMail) >= 1) {
@@ -83,8 +85,10 @@ public class LinkRequestService {
     }
 
     public void acceptRequest(String parentEmail, String studentEmail) {
+        int parentId = userRepository.getUserIdByEmail(parentEmail);
+        int studentId = userRepository.getUserIdByEmail(studentEmail);
         System.out.println("Accept Request - Student mail: " + studentEmail);
-        linkRequestRepo.addToLink(parentEmail, studentEmail);
+        linkRequestRepo.addToLink(parentId, studentId);
         linkRequestRepo.deleteRequest(parentEmail, studentEmail);
     }
 
