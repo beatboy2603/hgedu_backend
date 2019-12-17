@@ -41,7 +41,6 @@ import org.apache.xmlbeans.XmlCursor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.openxmlformats.schemas.officeDocument.x2006.math.CTOMath;
 import org.openxmlformats.schemas.officeDocument.x2006.math.CTOMathPara;
 import org.openxmlformats.schemas.officeDocument.x2006.math.CTR;
@@ -50,6 +49,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
@@ -59,6 +59,7 @@ import uk.ac.ed.ph.snuggletex.SnuggleSession;
  * @author admin
  */
 @Service
+@Transactional
 public class TestToWordService {
 
     private Path fileStorageLocation;
@@ -136,9 +137,12 @@ public class TestToWordService {
         }
     }
 
+    
+    
     public void getQuestions() {
         FileInputStream input;
         try {
+            
             input = new FileInputStream("read3.xlsx");
             XSSFWorkbook workbook = new XSSFWorkbook(input);
             Sheet sheet0 = workbook.getSheetAt(0);
@@ -152,6 +156,8 @@ public class TestToWordService {
             Long questionId = null;
             ArrayList<AnswerOption> aos = new ArrayList<>();
             ArrayList<Question> qs = new ArrayList<>();
+            ArrayList<AnswerOption> allAnswerOptions = new ArrayList<>();
+            ArrayList<Question> allQuestions = new ArrayList<>();
             while (iteratorRow.hasNext()) {
                 Row row = iteratorRow.next();
                 if (row.getCell(1).getStringCellValue().equals("end")) {
@@ -165,17 +171,25 @@ public class TestToWordService {
                         if (checkCorrect == 1) {
                             for (Question question : qs) {
                                 try {
-                                    questionRepository.save(question);
-                                    questionId = questionRepository.findQuestionIdByQuestionCode(question.getQuestionCode());
+                                   
+                
+//                                    questionRepository.save(question);
+//                                    questionId = questionRepository.findQuestionIdByQuestionCode(question.getQuestionCode());
+                                    
+                                    allQuestions.add(question);
                                     for (int i = 0; i < aos.size(); i++) {
-                                        aos.get(i).setQuestionId(questionId);
-//                                        answerRepository.save(aos.get(i));
+
+                                   
+                                        aos.get(i).setQuestionCode(question.getQuestionCode());
+                                        allAnswerOptions.add(aos.get(i));
                                     }
-                                    answerRepository.saveAll(aos);
+//                                    answerRepository.saveAll(aos);
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
                             }
+                            questionRepository.saveAll(allQuestions);
+                            answerRepository.saveAll(allAnswerOptions);
                         }
                     }
                     break;
@@ -191,12 +205,14 @@ public class TestToWordService {
                         if (checkCorrect == 1) {
                             for (Question question : qs) {
                                 try {
-                                    questionRepository.save(question);
-                                    questionId = questionRepository.findQuestionIdByQuestionCode(question.getQuestionCode());
+//                                    questionRepository.save(question);
+                                    allQuestions.add(question);
+//                                    questionId = questionRepository.findQuestionIdByQuestionCode(question.getQuestionCode());
                                     for (int i = 0; i < aos.size(); i++) {
-                                        aos.get(i).setQuestionId(questionId);
+                                        aos.get(i).setQuestionCode(question.getQuestionCode());
+                                        allAnswerOptions.add(aos.get(i));
                                     }
-                                    answerRepository.saveAll(aos);
+//                                    answerRepository.saveAll(aos);
                                 } catch (Exception e) {
                                     System.out.println("aaa");
                                 }
@@ -232,8 +248,10 @@ public class TestToWordService {
                         }
                     }
                     json += "]}";
+                    String sJson[] = json.split(",]}");
+                    sJson[0] += "]}";
                     qtion.setQuestionCode(qCode);
-                    qtion.setContent(json);
+                    qtion.setContent(sJson[0]);
                     qtion.setDescription(description);
                     qtion.setDifficultyId(difficultyId);
                     qtion.setGradeLevelId(gradeLevelId);
@@ -243,7 +261,7 @@ public class TestToWordService {
                     aos.clear();
                 } else {
                     AnswerOption answerOption = new AnswerOption();
-                    String json = "[";
+                    String json = "{\"ops\":[";
                     String[] s1 = null;
                     String[] s2 = null;
                     String content = row.getCell(1).getStringCellValue();
@@ -263,8 +281,10 @@ public class TestToWordService {
                             json += wrapText + s1[0].trim() + "\"},";
                         }
                     }
-                    json += "]";
-                    answerOption.setContent(json);
+                    json += "]}";
+                    String sJson[] = json.split(",]}");
+                    sJson[0] += "]}";
+                    answerOption.setContent(sJson[0]);
                     answerOption.setIsCorrect(isCorrect);
                     aos.add(answerOption);
                 }
@@ -272,7 +292,6 @@ public class TestToWordService {
         } catch (Exception ex) {
             Logger.getLogger(TestToWordService.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formatWord();
     }
 
     public void formatWord() {
@@ -318,7 +337,6 @@ public class TestToWordService {
                 questions.get(i).setContent(qResult);
                 qResult = "";
             }
-            toWord(questions, answerOptions);
         } catch (Exception e) {
             Logger.getLogger(TestToWordService.class.getName()).log(Level.SEVERE, null, e);
         }
@@ -387,7 +405,6 @@ public class TestToWordService {
                                 }
                             }
                         }
-
                     } else {
                         s1 = content.split("<image>");
                         for (int q = 0; q < s1.length; q++) {

@@ -57,5 +57,9 @@ public class UserService {
     public int countUsers(){
         return userRepository.countUsers();
     }
+    
+    public Iterable<User> findUserByClassId(long classId) {
+        return userRepository.findUserByClassId(classId);
+    }
 
 }

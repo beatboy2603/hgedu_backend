@@ -10,30 +10,33 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 /**
  *
- * @author Administrator
+ * @author admin
  */
 @Entity
 public class Class {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
     
-    @Column(name = "teacherId")
-    private Long teacherId;
-    
-    @Column(name = "name")
+    @NotBlank(message = "Class name is required")
+    @Size(min = 3, max = 50, message = "Please use 3 to 50 character")
     private String name;
+    
+    @Column
+    private int teacherId;
 
-    public Long getTeacherId() {
-        return teacherId;
+    public long getId() {
+        return id;
     }
 
-    public void setTeacherId(Long teacherId) {
-        this.teacherId = teacherId;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -43,13 +46,15 @@ public class Class {
     public void setName(String name) {
         this.name = name;
     }
-    
-    public Long getId() {
-        return id;
+
+    public int getTeacherId() {
+        return teacherId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setTeacherId(int teacherId) {
+        this.teacherId = teacherId;
     }
+    
+    
     
 }

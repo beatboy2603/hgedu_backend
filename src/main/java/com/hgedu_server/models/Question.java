@@ -14,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.validation.constraints.NotBlank;
+import org.hibernate.annotations.GenericGenerator;
 
 /**
  *
@@ -21,11 +22,16 @@ import javax.validation.constraints.NotBlank;
  */
 @Entity
 public class Question {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(
+            strategy = GenerationType.AUTO
+    )
+
     private Long questionId;
     @Column(unique = false)
     private String questionCode;
+
     @Column
     private int teacherId;
     @Column
@@ -49,12 +55,12 @@ public class Question {
     }
     @JsonFormat(pattern = "yyyy-mm-dd")
     private Date dateCreated;
-    
+
     @PrePersist
     protected void onCreate() {
         this.dateCreated = new Date();
     }
-    
+
     @Column
     private int difficultyId;
     @Column
@@ -73,15 +79,10 @@ public class Question {
     private String questionKatex;
     @Column
     private String images;
-    
-    
-    
-    
-    
-            //questionId - questionCode - teacherId - folderId - folderId - questionParentId
-            // formIdentifier - content - description - dateCreated - difficultyId -
-            //gradeLevelId - questionTypeId - knowledgeGroup - specialKnowledge - explanation - isPublic - questionKatex - images
 
+    //questionId - questionCode - teacherId - folderId - folderId - questionParentId
+    // formIdentifier - content - description - dateCreated - difficultyId -
+    //gradeLevelId - questionTypeId - knowledgeGroup - specialKnowledge - explanation - isPublic - questionKatex - images
     public Long getQuestionId() {
         return questionId;
     }

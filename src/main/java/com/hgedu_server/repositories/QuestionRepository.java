@@ -24,6 +24,9 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     List<Question> findByTeacherIdAndFolderId(int teacherId, int folderId);
     @Query(value = "SELECT q.* FROM Question q, TestQuestion tq, Test t WHERE  q.questionId = tq.questionId AND tq.testId = t.testId AND t.testId = ?1 AND q.questionParentId = 0 ORDER BY Rand()", nativeQuery = true)
     List<Question> getNormalQuestionsOfTest(Long testId);
+    @Query("SELECT Count(questionId) FROM Question")
+    Long findCount();
+    
     
     List<Question> findByQuestionId(Long questionId);
     @Query(value = "SELECT q.* FROM Question q, TestQuestion tq, Test t WHERE  q.questionId = tq.questionId AND tq.testId = t.testId AND t.testId = ?1 AND tq.answersOrder = NULL", nativeQuery = true)

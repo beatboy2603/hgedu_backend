@@ -16,32 +16,32 @@ import javax.persistence.Id;
  * @author admin
  */
 @Entity
-public class ClassStudent {
+public class ParentStudent {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private long linkId;
     
     @Column
-    private long classId;
+    private long parentId;
     
     @Column
     private long studentId;
 
-    public long getId() {
-        return id;
+    public long getLinkId() {
+        return linkId;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setLinkId(long linkId) {
+        this.linkId = linkId;
     }
 
-    public long getClassId() {
-        return classId;
+    public long getParentId() {
+        return parentId;
     }
 
-    public void setClassId(long classId) {
-        this.classId = classId;
+    public void setParentId(long parentId) {
+        this.parentId = parentId;
     }
 
     public long getStudentId() {
@@ -51,6 +51,4 @@ public class ClassStudent {
     public void setStudentId(long studentId) {
         this.studentId = studentId;
     }
-    
-    
 }

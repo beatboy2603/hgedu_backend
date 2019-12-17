@@ -39,5 +39,6 @@ public interface ExamRepository extends JpaRepository<Exam, Long>{
     @Query(value = "SELECT Exam.* FROM Exam WHERE Exam.id = ?1", nativeQuery = true)
     Exam getExamById(Long examId);
     
-    
+    @Query(value = "SELECT e.id, e.title, e.startEntryTime, e.code, ce.id as classExamId, ce.classId FROM Exam e JOIN ClassExam ce ON e.id = ce.examId ORDER BY ID ASC", nativeQuery = true)
+    Iterable<Object[]> findExamsByClassId();
 }

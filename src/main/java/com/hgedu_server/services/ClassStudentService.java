@@ -12,14 +12,29 @@ import org.springframework.stereotype.Service;
 
 /**
  *
- * @author Administrator
+ * @author admin
  */
 @Service
 public class ClassStudentService {
+    
     @Autowired
-    private ClassStudentRepository classStudentRepo;
+    private ClassStudentRepository classStudentRepository;
+    
+    
+    public Iterable<ClassStudent> getStudentsByClassId(long classId) {
+        return classStudentRepository.findByClassId(classId);
+    }
+    
+    public Iterable<ClassStudent> getClassesByStudentId(long studentId) {
+        return classStudentRepository.findByStudentId(studentId);
+    }
+    
+    public void deleteById(long studentId) {
+        classStudentRepository.deleteByStudentId(studentId);
+    }
     
     public ClassStudent getByClassIdAndStudentId(Long classId, Long studentId) {
-        return classStudentRepo.getByClassIdAndStudentId(classId, studentId);
+        return classStudentRepository.getByClassIdAndStudentId(classId, studentId);
     }
+    
 }
