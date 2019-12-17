@@ -31,23 +31,38 @@ public class StudentEnrollmentController {
     @Autowired
     private StudentEnrollmentService studentEnrollmentService;
 
-    
     //----student's part            
     @PostMapping("/student/request")
     public Map<String, Object> sendEnrollmentRequest(@RequestBody HashMap<String, String> req) {
         return studentEnrollmentService.addToEnrollmentRequest(req.get("note"), req.get("teacherEmail"), req.get("studentEmail"));
     }
-    
+
     @GetMapping("/student/teacherList/{studentId}")
-    public List<Object[]> getTeacherList(@PathVariable int studentId){
+    public List<Object[]> getTeacherList(@PathVariable int studentId) {
         return studentEnrollmentService.getTeacherList(studentId);
     }
+//
+//    @GetMapping("/student/getRequest/{studentId}")
+//    public List<User> getRequestTeacher(@PathVariable int studentId) {
+//        return studentEnrollmentService.getRequestTeacher(studentId);
+//    }
+//
+//    @PostMapping("/student/requestHandle")
+//    public Map<String, String> teacherRequestHandle(@RequestBody HashMap<String, String> req) {
+//        Map<String, String> response = new LinkedHashMap<>();
+//        int studentId = Integer.parseInt(req.get("studentId"));
+//        int teacherId = Integer.parseInt(req.get("teacherId"));
+//        studentEnrollmentService.teacherRequestHandle(req.get("status"), teacherId, studentId, req.get("displayName"));
+//        response.put("status", "success");
+//        return response;
+//    }
+
     //----teacher's part
     @GetMapping("/teacher/studentList/{teacherId}")
-    public List<Object[]> getStudentList(@PathVariable int teacherId){
+    public List<Object[]> getStudentList(@PathVariable int teacherId) {
         return studentEnrollmentService.getStudentInfo(teacherId);
     }
-    
+
     @GetMapping("/teacher/studentInfo/{teacherId}")
     public List<User> getRequestedStudentInfo(@PathVariable("teacherId") int teacherId) {
         return studentEnrollmentService.getEnrollStudentInfo(teacherId);
@@ -72,14 +87,14 @@ public class StudentEnrollmentController {
     public Map<String, String> sendRequestToStudent(@RequestBody HashMap<String, String> req){
         return studentEnrollmentService.sendRequestToStudent(req.get("teacherEmail"), req.get("studentEmail"), req.get("displayedName"));
     }
-    
+
     @GetMapping("/teacher/studentDetail/{id}")
-    public User getStudentDetailedInfo(@PathVariable int id){
+    public User getStudentDetailedInfo(@PathVariable int id) {
         return studentEnrollmentService.getInfo(id);
     }
-    
+
     @GetMapping("/teacher/studentParentDetail/{id}")
-    public List<User> getStudentParentDetail(@PathVariable int id){
+    public List<User> getStudentParentDetail(@PathVariable int id) {
         return studentEnrollmentService.getStudentParentInfo(id);
     }
 }

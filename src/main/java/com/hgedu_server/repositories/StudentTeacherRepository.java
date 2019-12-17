@@ -16,6 +16,7 @@ import org.springframework.data.jpa.repository.Query;
  */
 public interface StudentTeacherRepository extends JpaRepository<StudentTeacher, Integer> {
 
+    @Query(value = "select count(*) from StudentTeacher where studentId = ?1 and teacherId = ?2", nativeQuery = true)
     long findByStudentIdAndTeacherId(int studentId, int teacherId);
 
     @Query(value = "SELECT u.userId, st.displayedname , u.`email`, u.`phoneNumber`, u.`gender`, u.`dob`\n"
