@@ -5,7 +5,7 @@
  */
 package com.hgedu_server.repositories;
 
-import com.hgedu_server.models.Question;
+import com.hgedu_server.models.Exam;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -13,14 +13,8 @@ import org.springframework.data.jpa.repository.Query;
  *
  * @author admin
  */
-public interface QuestionRepository extends JpaRepository<Question, Long> {
+public interface ExamRepository extends JpaRepository<Exam, Long>{
     
-    @Query("SELECT questionId FROM Question WHERE questionCode = ?1")
-    Long findQuestionIdByQuestionCode(String code);
-    
-    @Query("SELECT Count(questionId) FROM Question")
-    Long findCount();
-    
-    
-    
+    @Query(value = "SELECT e.id, e.title, e.startEntryTime, e.code, ce.id as classExamId, ce.classId FROM Exam e JOIN ClassExam ce ON e.id = ce.examId ORDER BY ID ASC", nativeQuery = true)
+    Iterable<Object[]> findExamsByClassId();
 }

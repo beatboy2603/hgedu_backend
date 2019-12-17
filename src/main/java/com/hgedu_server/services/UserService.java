@@ -33,5 +33,9 @@ public class UserService {
     public User saveUser(User user){
         return usersRepository.save(user);
     }
+    
+    public Iterable<User> findUserByClassId(long classId) {
+        return usersRepository.findUserByClassId(classId);
+    }
 
 }

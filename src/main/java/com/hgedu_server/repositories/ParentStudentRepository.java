@@ -5,19 +5,18 @@
  */
 package com.hgedu_server.repositories;
 
-import com.hgedu_server.models.AnswerOption;
-import java.util.ArrayList;
-import javax.transaction.Transactional;
+import com.hgedu_server.models.ParentStudent;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 
 /**
  *
  * @author admin
  */
-public interface AnswerRepository extends JpaRepository<AnswerOption, Long>{
+public interface ParentStudentRepository extends JpaRepository<ParentStudent, Long>{
     
-   
-     
+//    ParentStudent findByStudentId(long studentId);
+    
+    
+    
+    
 }

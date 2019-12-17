@@ -25,4 +25,14 @@ public class ClassStudentService {
         return classStudentRepository.findByClassId(classId);
     }
     
+    public Iterable<ClassStudent> getClassesByStudentId(long studentId) {
+        return classStudentRepository.findByStudentId(studentId);
+    }
+    
+    public void deleteById(long studentId) {
+        classStudentRepository.deleteByStudentId(studentId);
+    }
+    
+    
+    
 }

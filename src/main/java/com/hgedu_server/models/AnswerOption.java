@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import org.hibernate.annotations.GenericGenerator;
 
 /**
  *
@@ -17,9 +18,14 @@ import javax.persistence.Id;
  */
 @Entity
 public class AnswerOption {
-   // answerId - questionId - content - images - isCorrect - answerKatex - linkedAnswers
+    // answerId - questionId - content - images - isCorrect - answerKatex - linkedAnswers
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(
+            strategy = GenerationType.IDENTITY
+            
+    )
+
     private Long answerId;
     @Column
     private Long questionId;
@@ -33,6 +39,17 @@ public class AnswerOption {
     private String answerKatex;
     @Column
     private String linkedAnswers;
+
+    public String getQuestionCode() {
+        return questionCode;
+    }
+
+    public void setQuestionCode(String questionCode) {
+        this.questionCode = questionCode;
+    }
+
+    @Column
+    private String questionCode;
 
     public Long getAnswerId() {
         return answerId;
@@ -89,6 +106,5 @@ public class AnswerOption {
     public void setLinkedAnswers(String linkedAnswers) {
         this.linkedAnswers = linkedAnswers;
     }
-    
-    
+
 }
