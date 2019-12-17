@@ -5,7 +5,14 @@
  */
 package com.hgedu_server.services;
 
+import com.hgedu_server.models.AnswerOption;
+import com.hgedu_server.models.Folder;
 import com.hgedu_server.models.Test;
+import com.hgedu_server.models.TestContentPlaceholder;
+import com.hgedu_server.models.TestQuestion;
+import com.hgedu_server.repositories.AnswerRepository;
+import com.hgedu_server.repositories.FolderRepository;
+import com.hgedu_server.repositories.TestQuestionRepository;
 import com.hgedu_server.repositories.TestRepository;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +24,44 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class TestService {
+
     @Autowired
     private TestRepository testRepo;
+
+    @Autowired
+    private FolderRepository folderRepository;
     
+    @Autowired
+    private TestQuestionRepository testQuestionRepository;
+    
+    @Autowired
+    private AnswerRepository answerRepository;
+
     public List<Test> getAllTestByFolderId(Long teacherId, Long folderId) {
         return testRepo.getTestsOfFolder(teacherId, folderId);
+    }
+
+    public String addTest(TestContentPlaceholder testContentPlaceholder) {
+        Folder testFolder = testContentPlaceholder.getTestFolder();
+        folderRepository.save(testFolder);
+        Folder addedFolder = folderRepository.findByTeacherIdAndFolderNameAndParentFolderId(testFolder.getTeacherId(), testFolder.getFolderName(), testFolder.getParentFolderId());
+
+        Test test = testContentPlaceholder.getTest();
+        test.setFolderId(Long.valueOf(addedFolder.getFolderId()));
+        testRepo.save(test);
+        Test addedTest = testRepo.findByTestCode(test.getTestCode());
+
+        List<TestQuestion> testQuestionList = testContentPlaceholder.getTestQuestionList();
+        for(int i=0;i<testQuestionList.size();i++){
+            testQuestionList.get(i).setTestId(addedTest.getId().intValue());
+            List<AnswerOption> answers = answerRepository.findByQuestionId(Long.valueOf(testQuestionList.get(i).getTestQuestionIdentity().getQuestionId()));
+            String answersOrder = "";
+            for (int k=0; k<answers.size();k++){
+                answersOrder+= answers.get(k).getAnswerId()+",";
+            }
+            testQuestionList.get(i).setAnswersOrder(answersOrder);
+        }
+        testQuestionRepository.saveAll(testQuestionList);
+        return "added";
     }
 }

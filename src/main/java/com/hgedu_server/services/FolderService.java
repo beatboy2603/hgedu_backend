@@ -60,7 +60,7 @@ public class FolderService {
     }
 
     public boolean checkFolderExisting(int folderId) {
-        Folder folder = folderRepository.getOne(folderId);
+        Folder folder = folderRepository.getFolderById(folderId);
         if (folder != null) {
             System.out.println(folder.getFolderName());
             return true;
@@ -143,4 +143,12 @@ public class FolderService {
 //            Logger.getLogger(FolderService.class.getName()).log(Level.SEVERE, null, ex);
 //        }
 //    }
+
+    public List<String> getAllKnowledgeGroups(int teacherId) {
+       return folderRepository.getAllKnowledgeGroups(teacherId);
+    }
+
+    public List<Integer> getAllKnowledgeGroupsId(int teacherId) {
+        return folderRepository.getAllKnowledgeGroupsId(teacherId);
+    }
 }

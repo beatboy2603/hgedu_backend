@@ -27,6 +27,9 @@ public interface FolderRepository extends JpaRepository<Folder, Integer> {
     @Query(value = "select * from Folder where folderId = ?1", nativeQuery = true)
     Folder getFolderById(Long folderId);
     
+    @Query(value = "select * from Folder where folderId = ?1", nativeQuery = true)
+    Folder getFolderById(int folderId);
+    
     @Query(value = "select * from Folder where teacherId = ?1 and folderName = \"Thư viện đề thi\"", nativeQuery = true)
     Folder getRootTestsFolder(Long teacherId);
 
@@ -37,5 +40,11 @@ public interface FolderRepository extends JpaRepository<Folder, Integer> {
     List<Folder> findByTeacherIdAndFolderName(int teacherId, String folderName);
 
     Folder findByTeacherIdAndFolderNameAndParentFolderId(int teacherId, String folderName, int parentFolderId);
+
+    @Query(value = "select distinct(folderName) from Folder where teacherId = ?1 and folderTypeId=2", nativeQuery = true)
+    List<String> getAllKnowledgeGroups(int teacherId);
+
+    @Query(value = "select distinct(folderId) from Folder where teacherId = ?1 and folderTypeId=2", nativeQuery = true)
+    List<Integer> getAllKnowledgeGroupsId(int teacherId);
 
 }

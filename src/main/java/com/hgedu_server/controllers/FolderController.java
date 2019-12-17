@@ -69,6 +69,16 @@ public class FolderController {
         folderService.deleteFolder(folderId);
     }
     
+    @GetMapping("/getAllKnowledgeGroups/{teacherId}")
+    public List<String> getAllKnowledgeGroups(@PathVariable("teacherId") int teacherId) throws Exception {
+        return folderService.getAllKnowledgeGroups(teacherId);
+    }
+    
+    @GetMapping("/getAllKnowledgeGroupsId/{teacherId}")
+    public List<Integer> getAllKnowledgeGroupsId(@PathVariable("teacherId") int teacherId) throws Exception {
+        return folderService.getAllKnowledgeGroupsId(teacherId);
+    }
+    
     @GetMapping("/testRoot/{teacherId}")
     public ResponseEntity<?> getRootTestsFolder(@PathVariable("teacherId") Long teacherId) {
         Folder folder = folderService.getRootTestsFolder(teacherId);
