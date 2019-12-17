@@ -64,6 +64,10 @@ public class StudentEnrollmentService {
         return studentTeacherRepository.getTeacherData(studentId);
     }
 
+    public List<User> getRequestTeacher(int studentId) {
+        return userRepository.getRequestTeacher(studentId);
+    }
+
     //----teacher's part
     public List<Object[]> getStudentList(int teacherId) {
         return studentTeacherRepository.getStudentData(teacherId);
@@ -108,9 +112,13 @@ public class StudentEnrollmentService {
             res.put("error", "Không tìm thấy người dùng");
         } else {
             if (studentEnrollmentRepository.checkDuplicateEnrolledUser(teacherEmail, studentId) >= 1) {
+                System.out.println("sent request already");
                 res.put("error", "Bạn đã gửi liên kết với người dùng này rồi");
             }
+            System.out.println(studentTeacherRepository.findByStudentIdAndTeacherId(teacherId, studentId));
             if (studentTeacherRepository.findByStudentIdAndTeacherId(teacherId, studentId) >= 1) {
+
+                System.out.println("Already have link");
                 res.put("error", "Bạn đã có liên kết với người dùng này rồi");
             } else {
                 TeacherRequest tr = new TeacherRequest();
@@ -171,6 +179,27 @@ public class StudentEnrollmentService {
             }
         }
     }
+
+//    public void teacherRequestHandle(String status, int teacherId, int studentId) {
+//        StudentTeacher st = new StudentTeacher();
+//        if (status != null) {
+//            switch (status) {
+//                case "accept": {
+//                    st.setStudentId(studentId);
+//                    st.setTeacherId(teacherId);
+//                    st.setDisplayedName(displayName);
+//                    st.setIsConnected(true);
+//                    saveStudentTeacher(st);
+//                    removeRequest(userRepository.getOne(teacherId).getEmail(), studentId);
+//                    break;
+//                }
+//                case "refuse": {
+//                    removeRequest(userRepository.getOne(teacherId).getEmail(), studentId);
+//                    break;
+//                }
+//            }
+//        }
+//    }
 
     public List<Object[]> getStudentInfo(int teacherId) {
         return studentTeacherRepository.getStudentData(teacherId);
