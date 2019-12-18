@@ -13,7 +13,6 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>hgedu_server</name>
     <description>Server for HGEdu</description>
-
     <properties>
         <java.version>1.8</java.version>
         <!--<maven.version>3.1.0</maven.version>-->

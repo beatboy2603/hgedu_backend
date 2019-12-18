@@ -18,7 +18,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface ClassRepository extends JpaRepository<Class, Long>{
-    List<Class> findAllByTeacherId(Long teacherId);
+    List<Class> findAllByTeacherId(int teacherId);
     
     @Query(value = "select c.* from Class c, ClassExam ce where c.id = ce.classId and ce.examId = ?1", nativeQuery = true)
     List<Class> getSelectedExamClasses(Long examId);

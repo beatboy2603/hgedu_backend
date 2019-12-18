@@ -30,7 +30,7 @@ public class ClassController {
     private ClassService service;
     
     @GetMapping("/api/class/{teacherId}")
-    public ResponseEntity getAllClassesForTeacher(@PathVariable("teacherId") Long teacherId) {
+    public ResponseEntity getAllClassesForTeacher(@PathVariable("teacherId") int teacherId) {
         System.out.println("teacherId: " + teacherId);
         
         List<Class> classList = service.getAllClassesForTeacher(teacherId);
