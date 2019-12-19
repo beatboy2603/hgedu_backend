@@ -24,9 +24,7 @@ import org.hibernate.annotations.GenericGenerator;
 public class Question {
 
     @Id
-    @GeneratedValue(
-            strategy = GenerationType.AUTO
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 
     private Long questionId;
     @Column(unique = false)

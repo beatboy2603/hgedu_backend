@@ -21,11 +21,7 @@ public class AnswerOption {
     // answerId - questionId - content - images - isCorrect - answerKatex - linkedAnswers
 
     @Id
-    @GeneratedValue(
-            strategy = GenerationType.IDENTITY
-            
-    )
-
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long answerId;
     @Column
     private Long questionId;
