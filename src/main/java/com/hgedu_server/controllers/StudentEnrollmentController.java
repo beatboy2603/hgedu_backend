@@ -41,21 +41,21 @@ public class StudentEnrollmentController {
     public List<Object[]> getTeacherList(@PathVariable int studentId) {
         return studentEnrollmentService.getTeacherList(studentId);
     }
-//
-//    @GetMapping("/student/getRequest/{studentId}")
-//    public List<User> getRequestTeacher(@PathVariable int studentId) {
-//        return studentEnrollmentService.getRequestTeacher(studentId);
-//    }
-//
-//    @PostMapping("/student/requestHandle")
-//    public Map<String, String> teacherRequestHandle(@RequestBody HashMap<String, String> req) {
-//        Map<String, String> response = new LinkedHashMap<>();
-//        int studentId = Integer.parseInt(req.get("studentId"));
-//        int teacherId = Integer.parseInt(req.get("teacherId"));
-//        studentEnrollmentService.teacherRequestHandle(req.get("status"), teacherId, studentId, req.get("displayName"));
-//        response.put("status", "success");
-//        return response;
-//    }
+
+    @GetMapping("/student/getRequest/{studentId}")
+    public List<User> getRequestTeacher(@PathVariable int studentId) {
+        return studentEnrollmentService.getRequestTeacher(studentId);
+    }
+
+    @PostMapping("/student/requestHandle")
+    public Map<String, String> teacherRequestHandle(@RequestBody HashMap<String, String> req) {
+        Map<String, String> response = new LinkedHashMap<>();
+        int studentId = Integer.parseInt(req.get("studentId"));
+        int teacherId = Integer.parseInt(req.get("teacherId"));
+        studentEnrollmentService.teacherRequestHandle(req.get("status"), teacherId, studentId);
+        response.put("status", "success");
+        return response;
+    }
 
     //----teacher's part
     @GetMapping("/teacher/studentList/{teacherId}")

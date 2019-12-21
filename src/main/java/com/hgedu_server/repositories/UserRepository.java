@@ -35,7 +35,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     List<User> getStudentByRequestEmail(String email);
 
     // get requested student though email [role: teacher]
-    @Query(value = "select * from User where userid in (select studentId from StudentRequest where teacherEmail = ?1)", nativeQuery = true)
+    @Query(value = "select * from `User` where userid in (select studentId from StudentRequest where teacherEmail = ?1)", nativeQuery = true)
     List<User> getEnrolledStudentByRequestEmail(String email);
     
     
