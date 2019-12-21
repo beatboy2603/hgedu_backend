@@ -70,9 +70,10 @@ public class TestService {
         return "added";
     }
 
-//    public List<Question> getTestContent(Long testFolderId) {
-//        Test test = testRepo.findByFolderId(testFolderId);
-//        questionRepository.getTestQuestions(testFolderId);
-////        testQuestionRepository.findByTestId(test.getId());
-//    }
+    public List<Question> getTestContent(Long testFolderId) {
+        Test test = testRepo.findByFolderId(testFolderId);
+        System.out.println(test.getId());
+        List<Question> testQuestions = questionRepository.getTestQuestions(test.getId().intValue());
+        return testQuestions;
+    }
 }

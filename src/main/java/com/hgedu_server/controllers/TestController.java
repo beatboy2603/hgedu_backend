@@ -12,6 +12,7 @@ import com.hgedu_server.models.TestContentPlaceholder;
 import com.hgedu_server.services.TestService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,8 +34,8 @@ public class TestController {
         return testService.addTest(testContentPlaceholder);
     }
         
-//    @PostMapping("/{testFolderId}")
-//        public List<Question> getTestContent(@PathVariable Long testFolderId) throws Exception {
-//        return testService.getTestContent(testFolderId);
-//    }
+    @GetMapping("/{testFolderId}")
+        public List<Question> getTestContent(@PathVariable Long testFolderId) throws Exception {
+        return testService.getTestContent(testFolderId);
+    }
 }

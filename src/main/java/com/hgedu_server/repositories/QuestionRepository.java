@@ -54,6 +54,6 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     List<Question> findByTeacherId(int teacherId);
 
-    @Query(value = "SELECT DISTINCT(specialKnowledge) FROM `Question` where teacherId=?1 and specialKnowledge != '' and specialKnowledge is not null", nativeQuery = true)
-    List<Question> getTestQuestions(Long testFolderId);
+    @Query(value = "SELECT * FROM `Question` where questionId in (SELECT questionId from TestQuestion where testId = ?1)", nativeQuery = true)
+    List<Question> getTestQuestions(int testId);
 }
