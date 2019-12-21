@@ -5,7 +5,6 @@
  */
 package com.hgedu_server.controllers;
 
-import com.hgedu_server.repositories.StorageService;
 import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.hgedu_server.repositories.IStorageService;
 
 /**
  *
@@ -34,7 +34,7 @@ public class FileController {
     private static final Logger logger = LoggerFactory.getLogger(FileController.class);
     
     @Autowired
-    private StorageService storage;
+    private IStorageService storage;
     
     @GetMapping("/files/{filename:.+}")
     @ResponseBody

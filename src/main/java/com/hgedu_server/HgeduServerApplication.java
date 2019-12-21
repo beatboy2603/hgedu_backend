@@ -1,12 +1,12 @@
 package com.hgedu_server;
 
 import com.hgedu_server.configs.StorageProperties;
-import com.hgedu_server.repositories.StorageService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import com.hgedu_server.repositories.IStorageService;
 
 @SpringBootApplication
 @EnableConfigurationProperties(StorageProperties.class)
@@ -21,7 +21,7 @@ public class HgeduServerApplication {
     }
     
     @Bean
-    CommandLineRunner init(StorageService storageService) {
+    CommandLineRunner init(IStorageService storageService) {
         return (args) -> {
             storageService.init();
         };

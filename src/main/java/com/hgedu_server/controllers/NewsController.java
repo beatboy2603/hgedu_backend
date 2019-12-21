@@ -34,25 +34,25 @@ public class NewsController {
     @Autowired
     private NewsService newsService;
     
-    @PostMapping(value = "/create-news")
+    @PostMapping(value = "/api/news")
     public ResponseEntity createNews(@Valid @RequestBody News news ) {
         News createdNews = newsService.createNews(news);
         return ResponseEntity.ok(createdNews);
     }
     
-    @GetMapping("/news/{modId}/all")
+    @GetMapping("api/news/{modId}/all")
     public ResponseEntity getAllNews(@PathVariable("modId") Long modId) {
       List<News> list = newsService.getAllNews(modId);
       return ResponseEntity.ok(list);
     }
     
-    @GetMapping("/news")
+    @GetMapping("/api/news")
     public ResponseEntity getAllNews() {
       List<News> list = newsService.getAllNews();
       return ResponseEntity.ok(list);
     }
     
-    @GetMapping("/news/{id}")
+    @GetMapping("/api/news/{id}")
     public ResponseEntity getNewsById(@PathVariable("id") Long id) {
       News news = newsService.getOne(id);
       if (news != null) {
@@ -62,7 +62,7 @@ public class NewsController {
       }
     }
     
-    @PostMapping("/news/{id}")
+    @PostMapping("/api/news/{id}")
     public ResponseEntity updateNews(@PathVariable("id") Long id, @RequestBody Map<String, Object> news) {
       Optional<News> data = newsService.getNewsById(id);
       if (data.isPresent()) {
@@ -81,7 +81,7 @@ public class NewsController {
       }
     }
     
-    @DeleteMapping("/news/{id}")
+    @DeleteMapping("/api/news/{id}")
     public ResponseEntity deleteNews(@PathVariable("id") Long id) {
       logger.info("delete: " + id);
       try {
