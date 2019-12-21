@@ -124,7 +124,7 @@ public class ExamController {
     }
     
     @PostMapping("/api/doExam/{examId}/{userId}")
-    public ResponseEntity<?> getTestForExam(@PathVariable("examId") Long examId, @PathVariable("userId") Long userId, @RequestBody Map<Long, Long> studentAnswers) {
+    public ResponseEntity<?> SubmitTest(@PathVariable("examId") Long examId, @PathVariable("userId") Long userId, @RequestBody Map<Long, Long> studentAnswers) {
         //get examResultId
         ExamResult examResult = examResultService.getExamResultForTest(examId, userId);
         Exam exam = examService.getExamById(examId);
@@ -201,7 +201,7 @@ public class ExamController {
     }
     
     @DeleteMapping("/api/exam/{id}")
-    public ResponseEntity deleteNews(@PathVariable("id") Long id) {
+    public ResponseEntity deleteExam(@PathVariable("id") Long id) {
       try {
         examService.deleteExam(id);
       } catch (Exception e) {

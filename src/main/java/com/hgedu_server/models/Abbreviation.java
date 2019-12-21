@@ -18,7 +18,7 @@ import javax.persistence.Id;
 @Entity
 public class Abbreviation implements Comparable<Abbreviation> {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="abbreviationId")
     private int abbreviationId;
     @Column(name="teacherId")

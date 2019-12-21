@@ -25,7 +25,7 @@ public class Question {
 
     @Id
     @GeneratedValue(
-            strategy = GenerationType.AUTO
+            strategy = GenerationType.IDENTITY
     )
 
     private Long questionId;

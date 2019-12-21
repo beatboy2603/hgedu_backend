@@ -22,8 +22,8 @@ public class ClassService {
     @Autowired
     private ClassRepository classRepo;
     
-    public List<Class> getAllClassesForTeacher(Long teacherId) {
-        return classRepo.findAllByTeacherId(teacherId);
+    public List<Class> getAllClassesForTeacher(Integer teacherId) {
+        return classRepo.getClassesForExam(teacherId);
     }
 
     public List<Class> getAllClassesForStudent(Long studentId) {

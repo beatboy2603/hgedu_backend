@@ -5,7 +5,6 @@
  */
 package com.hgedu_server.services;
 
-import com.hgedu_server.repositories.StorageService;
 import com.hgedu_server.configs.StorageProperties;
 import com.hgedu_server.exceptions.StorageException;
 import java.io.IOException;
@@ -23,18 +22,19 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import com.hgedu_server.repositories.IStorageService;
 
 /**
  *
  * @author Administrator
  */
 @Service
-public class StorageServiceImpl implements StorageService {
+public class StorageService implements IStorageService {
     
     private final Path rootLocation;
 
     @Autowired
-    public StorageServiceImpl(StorageProperties properties) {
+    public StorageService(StorageProperties properties) {
         this.rootLocation = Paths.get(properties.getLocation());
     }
 

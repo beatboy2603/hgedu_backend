@@ -19,7 +19,7 @@ import javax.persistence.Id;
 @Entity
 public class Folder {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="folderId")
     private int folderId;
     @Column(name="teacherId")
