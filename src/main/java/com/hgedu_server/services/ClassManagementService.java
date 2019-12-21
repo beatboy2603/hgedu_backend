@@ -9,6 +9,7 @@ import com.hgedu_server.repositories.ClassManagementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.hgedu_server.models.Class;
+import com.hgedu_server.models.ClassStudent;
 import com.hgedu_server.models.Exam;
 import com.hgedu_server.models.Grade;
 import com.hgedu_server.models.StudentTeacher;
@@ -110,7 +111,9 @@ public class ClassManagementService {
         return userRepository.parentFindTeacherInformationByStudentId(studentId);
     }
     
-    
+    public Iterable<ClassStudent> addStudentToClass(Iterable<ClassStudent> students) {
+        return classStudentRepository.saveAll(students);
+    }
     
 
 }

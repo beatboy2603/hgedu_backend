@@ -169,5 +169,11 @@ public class ClassManagementController {
         Iterable<Object[]> teachers = classManagementService.parentFindTeacherByStudentId(studentId);
         return new ResponseEntity<Iterable<Object[]>>(teachers, HttpStatus.OK); 
     }
+    
+    @PostMapping("/addStudent") 
+    public ResponseEntity<?> addToClass(@RequestBody Iterable<ClassStudent> students) {
+        Iterable<ClassStudent> classStudents = classManagementService.addStudentToClass(students);
+        return new ResponseEntity<Iterable<ClassStudent>>(classStudents, HttpStatus.OK);
+    }
 
 }
