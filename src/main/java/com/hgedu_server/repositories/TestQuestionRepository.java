@@ -8,6 +8,7 @@ package com.hgedu_server.repositories;
 import com.hgedu_server.models.ExamTest;
 import com.hgedu_server.models.TestQuestion;
 import com.hgedu_server.models.TestQuestionIdentity;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -15,5 +16,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author ADMIN
  */
 public interface TestQuestionRepository extends JpaRepository<TestQuestion, TestQuestionIdentity>  {
+
+//    List<TestQuestion> findByTestId(Long id);
     
 }

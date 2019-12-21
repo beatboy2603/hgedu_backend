@@ -28,4 +28,6 @@ public interface TestRepository extends JpaRepository<Test, Long>{
     List<Test> getSelectedExamTests(Long examId);
 
     public Test findByTestCode(String testCode);
+
+    public Test findByFolderId(Long testFolderId);
 }

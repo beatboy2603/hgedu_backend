@@ -5,6 +5,7 @@
  */
 package com.hgedu_server.controllers;
 
+import com.hgedu_server.models.Question;
 import com.hgedu_server.models.QuestionAndAnswers;
 import com.hgedu_server.models.Test;
 import com.hgedu_server.models.TestContentPlaceholder;
@@ -29,9 +30,11 @@ public class TestController {
     
     @PostMapping("/addTest")
         public String addTest(@RequestBody TestContentPlaceholder testContentPlaceholder) throws Exception {
-//        System.out.println(testContentPlaceholder.getTestFolder().getFolderName());
-//        System.out.println(testContentPlaceholder.getTest().getTestCode());
-//        System.out.println(testContentPlaceholder.getTestQuestionList().size());
         return testService.addTest(testContentPlaceholder);
     }
+        
+//    @PostMapping("/{testFolderId}")
+//        public List<Question> getTestContent(@PathVariable Long testFolderId) throws Exception {
+//        return testService.getTestContent(testFolderId);
+//    }
 }

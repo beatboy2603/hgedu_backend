@@ -7,11 +7,13 @@ package com.hgedu_server.services;
 
 import com.hgedu_server.models.AnswerOption;
 import com.hgedu_server.models.Folder;
+import com.hgedu_server.models.Question;
 import com.hgedu_server.models.Test;
 import com.hgedu_server.models.TestContentPlaceholder;
 import com.hgedu_server.models.TestQuestion;
 import com.hgedu_server.repositories.AnswerRepository;
 import com.hgedu_server.repositories.FolderRepository;
+import com.hgedu_server.repositories.QuestionRepository;
 import com.hgedu_server.repositories.TestQuestionRepository;
 import com.hgedu_server.repositories.TestRepository;
 import java.util.List;
@@ -30,6 +32,9 @@ public class TestService {
 
     @Autowired
     private FolderRepository folderRepository;
+    
+    @Autowired
+    private QuestionRepository questionRepository;
     
     @Autowired
     private TestQuestionRepository testQuestionRepository;
@@ -64,4 +69,10 @@ public class TestService {
         testQuestionRepository.saveAll(testQuestionList);
         return "added";
     }
+
+//    public List<Question> getTestContent(Long testFolderId) {
+//        Test test = testRepo.findByFolderId(testFolderId);
+//        questionRepository.getTestQuestions(testFolderId);
+////        testQuestionRepository.findByTestId(test.getId());
+//    }
 }
