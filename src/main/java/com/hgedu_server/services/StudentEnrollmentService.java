@@ -39,7 +39,8 @@ public class StudentEnrollmentService {
     //----student's part----
     public Map<String, Object> addToEnrollmentRequest(String note, String teacherEmail, String studentEmail) {
         Map<String, Object> resMessage = new LinkedHashMap<>();
-        int studentId = userRepository.getUserIdByEmail(studentEmail);
+        System.out.println(teacherEmail);
+        System.out.println(studentEmail);
         if (teacherEmail.equals(studentEmail)) {
             System.out.println("yourself");
             resMessage.put("error", "Bạn không thể gửi cho chính bạn");
@@ -49,12 +50,23 @@ public class StudentEnrollmentService {
             System.out.println("User not found");
             resMessage.put("error", "Không tìm thấy người dùng");
         } else {
-            if (studentEnrollmentRepository.checkDuplicateEnrolledUser(teacherEmail, studentId) >= 1) {
-                resMessage.put("error", "Bạn đã gửi liên kết với người dùng này rồi");
+            System.out.println("1");
+            int studentId = userRepository.getUserIdByEmail(studentEmail);
+            int teacherId = userRepository.getUserIdByEmail(teacherEmail);
+            if (studentTeacherRepository.findByStudentIdAndTeacherId(studentId, teacherId) >= 1) {
+                System.out.println("2");
+                System.out.println("Already have link");
+                resMessage.put("error", "Bạn đã có liên kết với người dùng này rồi");
             } else {
-                studentEnrollmentRepository.addToEnrollmentRequest(note, teacherEmail, studentId);
-                System.out.println("Success");
-                resMessage.put("success", "Gửi thành công!");
+                System.out.println("3");
+                if (studentEnrollmentRepository.checkDuplicateEnrolledUser(teacherEmail, studentId) >= 1) {
+                    resMessage.put("error", "Bạn đã gửi liên kết với người dùng này rồi");
+                } else {
+                    System.out.println("4");
+                    studentEnrollmentRepository.addToEnrollmentRequest(note, teacherEmail, studentId);
+                    System.out.println("Success");
+                    resMessage.put("success", "Gửi thành công!");
+                }
             }
         }
         return resMessage;
@@ -100,33 +112,39 @@ public class StudentEnrollmentService {
 
     public Map<String, String> sendRequestToStudent(String teacherEmail, String studentEmail, String displayName) {
         Map<String, String> res = new LinkedHashMap<>();
-        int studentId = userRepository.getUserIdByEmail(studentEmail);
-        int teacherId = userRepository.getUserIdByEmail(teacherEmail);
+        System.out.println("Teacher send request ở đây");
         if (teacherEmail.equals(studentEmail)) {
-            System.out.println("yourself");
             res.put("error", "Bạn không thể gửi cho chính bạn");
             return res;
         }
-        if (userRepository.getUserByEmail(teacherEmail).isEmpty()) {
+        if (userRepository.getUserByEmail(studentEmail).isEmpty()) {
             System.out.println("User not found");
             res.put("error", "Không tìm thấy người dùng");
         } else {
-            if (studentEnrollmentRepository.checkDuplicateEnrolledUser(teacherEmail, studentId) >= 1) {
-                System.out.println("sent request already");
-                res.put("error", "Bạn đã gửi liên kết với người dùng này rồi");
-            }
-            System.out.println(studentTeacherRepository.findByStudentIdAndTeacherId(teacherId, studentId));
-            if (studentTeacherRepository.findByStudentIdAndTeacherId(teacherId, studentId) >= 1) {
+            int studentId = userRepository.getUserIdByEmail(studentEmail);
+            int teacherId = userRepository.getUserIdByEmail(teacherEmail);
 
+            System.out.println("student: " + studentId);
+            System.out.println("teacher: " + teacherId);
+            if (studentTeacherRepository.findByStudentIdAndTeacherId(studentId, teacherId) >= 1) {
                 System.out.println("Already have link");
                 res.put("error", "Bạn đã có liên kết với người dùng này rồi");
             } else {
-                TeacherRequest tr = new TeacherRequest();
-                tr.setTeacherEmail(teacherEmail);
-                tr.setStudentId(studentId);
-                tr.setDisplayedName(displayName);
-                teacherRequestRepository.save(tr);
-                res.put("response", "Gửi thành công");
+                if (teacherRequestRepository.checkDuplicateEnrolledUser(teacherEmail, studentId) >= 1) {
+                    System.out.println("sent request already");
+                    res.put("error", "Bạn đã gửi liên kết với người dùng này rồi");
+                } else {
+                    System.out.println(displayName);
+                    if (displayName == null)  {
+                        displayName = userRepository.getOne(studentId).getFullName();
+                    }
+                    TeacherRequest tr = new TeacherRequest();
+                    tr.setTeacherEmail(teacherEmail);
+                    tr.setStudentId(studentId);
+                    tr.setDisplayedName(displayName);
+                    teacherRequestRepository.save(tr);
+                    res.put("success", "Gửi thành công");
+                }
             }
         }
         return res;
@@ -152,13 +170,17 @@ public class StudentEnrollmentService {
         return studentTeacherRepository.save(st);
     }
 
-    public void removeRequest(String teacherEmail, int studentId) {
-        System.out.println("teacherEmail: " + teacherEmail);
-        System.out.println("studentId: " + studentId);
-        studentEnrollmentRepository.deleteByTeacherEmailAndStudentId(teacherEmail, studentId);
-        teacherRequestRepository.deleteByTeacherEmailAndStudentId(teacherEmail, studentId);
-    }
-
+//    public void removeRequest(String teacherEmail, int studentId) {
+//        System.out.println("teacherEmail: " + teacherEmail);
+//        System.out.println("studentId: " + studentId);
+//        if (Integer.toString(studentId) != null && teacherEmail != null) {
+//            studentEnrollmentRepository.deleteByTeacherEmailAndStudentId(teacherEmail, studentId);
+//        }
+//        if (Integer.toString(studentId) != null && teacherEmail != null) {
+//
+//            teacherRequestRepository.deleteByTeacherEmailAndStudentId(teacherEmail, studentId);
+//        }
+//    }
     public void studentRequestHandle(String status, int teacherId, int studentId, String displayName) {
         StudentTeacher st = new StudentTeacher();
         if (status != null) {
@@ -169,37 +191,40 @@ public class StudentEnrollmentService {
                     st.setDisplayedName(displayName);
                     st.setIsConnected(true);
                     saveStudentTeacher(st);
-                    removeRequest(userRepository.getOne(teacherId).getEmail(), studentId);
+                    studentEnrollmentRepository.deleteByTeacherEmailAndStudentId(userRepository.getOne(teacherId).getEmail(), studentId);
                     break;
                 }
                 case "refuse": {
-                    removeRequest(userRepository.getOne(teacherId).getEmail(), studentId);
+                    studentEnrollmentRepository.deleteByTeacherEmailAndStudentId(userRepository.getOne(teacherId).getEmail(), studentId);
                     break;
                 }
             }
         }
     }
 
-//    public void teacherRequestHandle(String status, int teacherId, int studentId) {
-//        StudentTeacher st = new StudentTeacher();
-//        if (status != null) {
-//            switch (status) {
-//                case "accept": {
-//                    st.setStudentId(studentId);
-//                    st.setTeacherId(teacherId);
-//                    st.setDisplayedName(displayName);
-//                    st.setIsConnected(true);
-//                    saveStudentTeacher(st);
-//                    removeRequest(userRepository.getOne(teacherId).getEmail(), studentId);
-//                    break;
-//                }
-//                case "refuse": {
-//                    removeRequest(userRepository.getOne(teacherId).getEmail(), studentId);
-//                    break;
-//                }
-//            }
-//        }
-//    }
+    public void teacherRequestHandle(String status, int teacherId, int studentId) {
+        StudentTeacher st = new StudentTeacher();
+        String displayName = teacherRequestRepository.findByTeacherEmailAndStudentId(userRepository.getOne(teacherId).getEmail(), studentId).getDisplayedName();
+        if (status != null) {
+            switch (status) {
+                case "accept": {
+                    st.setStudentId(studentId);
+                    st.setTeacherId(teacherId);
+                    st.setDisplayedName(displayName);
+                    st.setIsConnected(true);
+                    saveStudentTeacher(st);
+                    teacherRequestRepository.removeByTeacherEmailAndStudentId(userRepository.getOne(teacherId).getEmail(), studentId);
+                    break;
+                }
+                case "refuse": {
+                    System.out.println("teacher email: " + userRepository.getOne(teacherId).getEmail());
+                    System.out.println("student id: " + studentId);
+                    teacherRequestRepository.removeByTeacherEmailAndStudentId(userRepository.getOne(teacherId).getEmail(), studentId);
+                    break;
+                }
+            }
+        }
+    }
 
     public List<Object[]> getStudentInfo(int teacherId) {
         return studentTeacherRepository.getStudentData(teacherId);

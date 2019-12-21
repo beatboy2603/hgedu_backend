@@ -62,6 +62,7 @@ public class UserSettingController {
             getUser.setDob(user.get("dob").toString());
             System.out.println(user.get("dob").toString());
             getUser.setGender(Boolean.valueOf(String.valueOf(user.get("gender"))));
+            getUser.setSchool(user.get("school").toString());
             User savedUser = userService.saveUser(getUser);
             return ResponseEntity.ok(savedUser);
         } else {
