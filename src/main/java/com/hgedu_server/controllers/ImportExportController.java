@@ -5,12 +5,18 @@
  */
 package com.hgedu_server.controllers;
 
+import com.hgedu_server.models.Folder;
+import com.hgedu_server.models.Question;
+import com.hgedu_server.repositories.FolderRepository;
+import com.hgedu_server.repositories.QuestionRepository;
+import com.hgedu_server.services.FolderService;
 import com.hgedu_server.services.TestToWordService;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -18,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,6 +41,11 @@ public class ImportExportController {
 
     @Autowired
     private TestToWordService testToWordService;
+    
+    @Autowired
+    private QuestionRepository folderRepository;
+    
+    
 
     @GetMapping("/hello")
     public String Hello() {
@@ -52,27 +64,22 @@ public class ImportExportController {
         return "FIle has uploaded successfully";
     }
 
-    @GetMapping("/import")
-    public String importData() {
-        testToWordService.getQuestions();
+    @GetMapping("/import/{folderId}/{teacherId}")
+    public String importData(@PathVariable int teacherId, @PathVariable int folderId) {
+        testToWordService.getQuestions(teacherId, folderId);
         return "import ok";
     }
     
-    @GetMapping("/export")
-    public String exportData() {
-        testToWordService.formatWord();
-        return "export ok";
-    }
-    
-//    @GetMapping("/test")
-//    public String test() {
-//        testToWordService.test2();
-//        return "test ok";
+//    @GetMapping("/export/{testId}")
+//    public String exportData(@PathVariable long testId) {
+//
 //    }
 
-    @GetMapping("/download")
-    public ResponseEntity<Object> downloadFile() {
+    @GetMapping("/download/{testId}")
+    public ResponseEntity<Object> downloadFile(@PathVariable long testId) {
         try {
+            testToWordService.formatWord(testId);
+            System.out.println("Export ok");
             File file = new File("format_file.docx");
             InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
             HttpHeaders headers = new HttpHeaders();

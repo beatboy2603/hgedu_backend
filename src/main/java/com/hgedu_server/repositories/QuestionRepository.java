@@ -21,6 +21,10 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     @Query(value = "SELECT questionId FROM Question WHERE questionCode = ?1", nativeQuery = true)
     Long findQuestionIdByQuestionCode(String code);
     
+   @Query(value = "SELECT * FROM Question q, TestQuestion tq WHERE q.questionId = tq.questionId and tq.testId = ?1", nativeQuery = true)
+   List<Question> findByTestId(long testId); 
+    
+    
     List<Question> findByTeacherIdAndFolderId(int teacherId, int folderId);
     @Query(value = "SELECT q.* FROM Question q, TestQuestion tq, Test t WHERE  q.questionId = tq.questionId AND tq.testId = t.testId AND t.testId = ?1 AND q.questionParentId = 0 ORDER BY Rand()", nativeQuery = true)
     List<Question> getNormalQuestionsOfTest(Long testId);

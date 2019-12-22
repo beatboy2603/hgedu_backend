@@ -36,16 +36,16 @@ public class AnswerOption {
     @Column
     private String linkedAnswers;
 
-    public String getQuestionCode() {
-        return questionCode;
-    }
-
-    public void setQuestionCode(String questionCode) {
-        this.questionCode = questionCode;
-    }
-
-    @Column
-    private String questionCode;
+//    public String getQuestionCode() {
+//        return questionCode;
+//    }
+//
+//    public void setQuestionCode(String questionCode) {
+//        this.questionCode = questionCode;
+//    }
+//
+//    @Column
+//    private String questionCode;
 
     public Long getAnswerId() {
         return answerId;

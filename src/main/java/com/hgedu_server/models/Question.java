@@ -13,8 +13,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
-import javax.validation.constraints.NotBlank;
-import org.hibernate.annotations.GenericGenerator;
 
 /**
  *
@@ -27,7 +25,6 @@ public class Question {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
     private Long questionId;
-    @Column(unique = false)
     private String questionCode;
 
     @Column

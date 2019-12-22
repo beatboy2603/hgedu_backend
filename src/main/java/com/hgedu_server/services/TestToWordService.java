@@ -59,7 +59,6 @@ import uk.ac.ed.ph.snuggletex.SnuggleSession;
  * @author admin
  */
 @Service
-@Transactional
 public class TestToWordService {
 
     private Path fileStorageLocation;
@@ -137,12 +136,21 @@ public class TestToWordService {
         }
     }
 
-    
-    
-    public void getQuestions() {
+    public boolean checkCode(String questionCode, List<Question> questions) {
+        boolean check = false;
+        for (Question q : questions) {
+            if (q.getQuestionCode().equalsIgnoreCase(questionCode)) {
+                check = true;
+            }
+        }
+        return check;
+
+    }
+
+    public void getQuestions(int teacherId, int folderId) {
         FileInputStream input;
         try {
-            
+
             input = new FileInputStream("read3.xlsx");
             XSSFWorkbook workbook = new XSSFWorkbook(input);
             Sheet sheet0 = workbook.getSheetAt(0);
@@ -156,8 +164,6 @@ public class TestToWordService {
             Long questionId = null;
             ArrayList<AnswerOption> aos = new ArrayList<>();
             ArrayList<Question> qs = new ArrayList<>();
-            ArrayList<AnswerOption> allAnswerOptions = new ArrayList<>();
-            ArrayList<Question> allQuestions = new ArrayList<>();
             while (iteratorRow.hasNext()) {
                 Row row = iteratorRow.next();
                 if (row.getCell(1).getStringCellValue().equals("end")) {
@@ -170,26 +176,23 @@ public class TestToWordService {
                         }
                         if (checkCorrect == 1) {
                             for (Question question : qs) {
-                                try {
-                                   
-                
-//                                    questionRepository.save(question);
-//                                    questionId = questionRepository.findQuestionIdByQuestionCode(question.getQuestionCode());
-                                    
-                                    allQuestions.add(question);
-                                    for (int i = 0; i < aos.size(); i++) {
-
-                                   
-                                        aos.get(i).setQuestionCode(question.getQuestionCode());
-                                        allAnswerOptions.add(aos.get(i));
+                                List<Question> teacherQuestions = questionRepository.findByTeacherId(teacherId);
+                                boolean checkQuestionCode = checkCode(question.getQuestionCode(), teacherQuestions);
+                                if (!checkQuestionCode) {
+                                    try {
+                                        questionRepository.save(question);
+                                        questionId = questionRepository.findQuestionIdByQuestionCode(question.getQuestionCode());
+                                        for (int i = 0; i < aos.size(); i++) {
+                                            aos.get(i).setQuestionId(questionId);
+                                            answerRepository.save(aos.get(i));
+                                        }
+                                        answerRepository.saveAll(aos);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
                                     }
-//                                    answerRepository.saveAll(aos);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
                                 }
+
                             }
-                            questionRepository.saveAll(allQuestions);
-                            answerRepository.saveAll(allAnswerOptions);
                         }
                     }
                     break;
@@ -204,17 +207,20 @@ public class TestToWordService {
                         }
                         if (checkCorrect == 1) {
                             for (Question question : qs) {
-                                try {
-//                                    questionRepository.save(question);
-                                    allQuestions.add(question);
-//                                    questionId = questionRepository.findQuestionIdByQuestionCode(question.getQuestionCode());
-                                    for (int i = 0; i < aos.size(); i++) {
-                                        aos.get(i).setQuestionCode(question.getQuestionCode());
-                                        allAnswerOptions.add(aos.get(i));
+                                List<Question> teacherQuestions = questionRepository.findByTeacherId(teacherId);
+                                boolean checkQuestionCode = checkCode(question.getQuestionCode(), teacherQuestions);
+                                if (!checkQuestionCode) {
+                                    try {
+                                        questionRepository.save(question);
+                                        questionId = questionRepository.findQuestionIdByQuestionCode(question.getQuestionCode());
+                                        for (int i = 0; i < aos.size(); i++) {
+                                            aos.get(i).setQuestionId(questionId);
+                                            answerRepository.save(aos.get(i));
+                                        }
+                                        answerRepository.saveAll(aos);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
                                     }
-//                                    answerRepository.saveAll(aos);
-                                } catch (Exception e) {
-                                    System.out.println("aaa");
                                 }
                             }
 
@@ -223,8 +229,11 @@ public class TestToWordService {
                     qs.clear();
                     Question qtion = new Question();
                     String json = "{\"ops\":[";
+                    String explanationJson = "{\"ops\":[";
                     String[] s1 = null;
                     String[] s2 = null;
+                    String[] s3 = null;
+                    String[] s4 = null;
                     qCode = row.getCell(1).getStringCellValue();
                     String question = row.getCell(2).getStringCellValue();
                     String description = row.getCell(3).getStringCellValue();
@@ -247,16 +256,37 @@ public class TestToWordService {
                             json += wrapText + s1[0].trim() + "\"},";
                         }
                     }
+                    s3 = explanation.split(regex);
+                    for (int k = 0; k < s3.length; k++) {
+                        if (s3[k].contains("</ct>")) {
+                            s4 = s3[k].split("</ct>");
+                            for (int a = 0; a < s4.length; a++) {
+                                if (a == 0) {
+                                    explanationJson += wrapFormular + s4[a].trim() + "\"}},";
+                                } else {
+                                    explanationJson += wrapText + s4[a].trim() + "\"},";
+                                }
+                            }
+                        } else {
+                            explanationJson += wrapText + s3[0].trim() + "\"},";
+                        }
+                    }
                     json += "]}";
+                    explanationJson += "]}";
                     String sJson[] = json.split(",]}");
                     sJson[0] += "]}";
+                    String eJSon[] = explanationJson.split(",]}");
+                    eJSon[0] += "]}";
                     qtion.setQuestionCode(qCode);
                     qtion.setContent(sJson[0]);
                     qtion.setDescription(description);
                     qtion.setDifficultyId(difficultyId);
                     qtion.setGradeLevelId(gradeLevelId);
                     qtion.setQuestionTypeId(qTypeId);
-                    qtion.setExplanation(explanation);
+                    qtion.setExplanation(eJSon[0]);
+                    qtion.setTeacherId(teacherId);
+                    qtion.setFolderId(folderId);
+                    qtion.setQuestionParentId((long) 0);
                     qs.add(qtion);
                     aos.clear();
                 } else {
@@ -294,15 +324,21 @@ public class TestToWordService {
         }
     }
 
-    public void formatWord() {
+    public void formatWord(long testId) {
         try {
             String qResult = "";
             String aResult = "";
             List<AnswerOption> answerOptions = answerRepository.findAll();
-            List<Question> questions = questionRepository.findAll();
+            List<Question> questions = questionRepository.findByTestId(testId);
+            
             for (int i = 0; i < answerOptions.size(); i++) {
                 JSONParser parser = new JSONParser();
-                JSONArray jsonArr = (JSONArray) parser.parse(answerOptions.get(i).getContent());
+//                System.out.println(answerOptions.get(i).getContent());
+//                System.out.println(answerOptions.get(i).getContent() instanceof String);
+                JSONObject contenJSONObject = (JSONObject) parser.parse(answerOptions.get(i).getContent());
+                
+//                JSONArray jsonArr = (JSONArray) parser.parse(answerOptions.get(i).getContent());
+                JSONArray jsonArr = (JSONArray) contenJSONObject.get("ops");
                 for (int j = 0; j < jsonArr.size(); j++) {
                     JSONObject object = (JSONObject) jsonArr.get(j);
                     if (object.get("insert") instanceof String) {
@@ -312,7 +348,10 @@ public class TestToWordService {
                         aResult += formula;
                     }
                 }
+                System.out.println("before" + answerOptions.get(i).getContent());
                 answerOptions.get(i).setContent(aResult);
+                 System.out.println("after" + answerOptions.get(i).getContent());
+            
                 aResult = "";
             }
             for (int i = 0; i < questions.size(); i++) {
@@ -337,6 +376,7 @@ public class TestToWordService {
                 questions.get(i).setContent(qResult);
                 qResult = "";
             }
+            toWord(questions, answerOptions);
         } catch (Exception e) {
             Logger.getLogger(TestToWordService.class.getName()).log(Level.SEVERE, null, e);
         }
