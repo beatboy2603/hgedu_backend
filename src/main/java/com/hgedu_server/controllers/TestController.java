@@ -9,6 +9,7 @@ import com.hgedu_server.models.Question;
 import com.hgedu_server.models.QuestionAndAnswers;
 import com.hgedu_server.models.Test;
 import com.hgedu_server.models.TestContentPlaceholder;
+import com.hgedu_server.models.TestQuestion;
 import com.hgedu_server.services.TestService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,16 +27,27 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/test")
 public class TestController {
+
     @Autowired
     private TestService testService;
-    
+
     @PostMapping("/addTest")
-        public String addTest(@RequestBody TestContentPlaceholder testContentPlaceholder) throws Exception {
+    public String addTest(@RequestBody TestContentPlaceholder testContentPlaceholder) throws Exception {
         return testService.addTest(testContentPlaceholder);
     }
-        
+
     @GetMapping("/{testFolderId}")
-        public List<Question> getTestContent(@PathVariable Long testFolderId) throws Exception {
+    public List<Question> getTestContent(@PathVariable Long testFolderId) throws Exception {
         return testService.getTestContent(testFolderId);
+    }
+
+    @GetMapping("/getAllTests/{teacherId}")
+    public List<Test> getAllTests(@PathVariable int teacherId) throws Exception {
+        return testService.getAllTests(teacherId);
+    }
+    
+    @GetMapping("/getAllTestQuestions/{teacherId}")
+    public List<TestQuestion> getAllTestQuestions(@PathVariable int teacherId) throws Exception {
+        return testService.getAllTestQuestions(teacherId);
     }
 }

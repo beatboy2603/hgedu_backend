@@ -30,4 +30,6 @@ public interface TestRepository extends JpaRepository<Test, Long>{
     public Test findByTestCode(String testCode);
 
     public Test findByFolderId(Long testFolderId);
+
+    List<Test> findByTeacherId(Long teacherId);
 }

@@ -76,4 +76,12 @@ public class TestService {
         List<Question> testQuestions = questionRepository.getTestQuestions(test.getId().intValue());
         return testQuestions;
     }
+
+    public List<Test> getAllTests(int teacherId) {
+        return testRepo.findByTeacherId(Long.valueOf(teacherId));
+    }
+
+    public List<TestQuestion> getAllTestQuestions(int teacherId) {
+        return testQuestionRepository.findByTeacherId(teacherId);
+    }
 }
