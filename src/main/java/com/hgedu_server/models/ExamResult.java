@@ -26,11 +26,8 @@ public class ExamResult {
     @Column(name = "examTestId")
     private Long examTestId;
     
-    @Column(name = "studentId")
-    private Long studentId;
-    
-    @Column(name = "classId")
-    private Long classId;
+    @Column(name = "classStudentId")
+    private Long classStudentId;
     
     @Column(name = "mark")
     private float mark;
@@ -69,20 +66,12 @@ public class ExamResult {
         this.examTestId = examTestId;
     }
 
-    public Long getStudentId() {
-        return studentId;
+    public Long getClassStudentId() {
+        return classStudentId;
     }
 
-    public void setStudentId(Long studentId) {
-        this.studentId = studentId;
-    }
-
-    public Long getClassId() {
-        return classId;
-    }
-
-    public void setClassId(Long classId) {
-        this.classId = classId;
+    public void setClassStudentId(Long classStudentId) {
+        this.classStudentId = classStudentId;
     }
 
     public float getMark() {
