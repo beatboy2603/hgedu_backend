@@ -29,8 +29,8 @@ public class ClassStudentService {
         return classStudentRepository.findByStudentId(studentId);
     }
     
-    public void deleteById(long studentId) {
-        classStudentRepository.deleteByStudentId(studentId);
+    public void deleteById(long id) {
+        classStudentRepository.deleteById(id);
     }
     
     public ClassStudent getByClassIdAndStudentId(Long classId, Long studentId) {
