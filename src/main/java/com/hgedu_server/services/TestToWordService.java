@@ -66,7 +66,7 @@ public class TestToWordService {
 
     @Autowired
     private TestToWordRepository testToWordRepository;
-    
+
     @Autowired
     private StorageService storageService;
 
@@ -337,25 +337,31 @@ public class TestToWordService {
 
             for (int i = 0; i < answerOptions.size(); i++) {
                 JSONParser parser = new JSONParser();
-//                System.out.println(answerOptions.get(i).getContent());
-//                System.out.println(answerOptions.get(i).getContent() instanceof String);
-                JSONObject contenJSONObject = (JSONObject) parser.parse(answerOptions.get(i).getContent());
-
-//                JSONArray jsonArr = (JSONArray) parser.parse(answerOptions.get(i).getContent());
-                JSONArray jsonArr = (JSONArray) contenJSONObject.get("ops");
+                JSONObject jsonObject = (JSONObject) parser.parse(answerOptions.get(i).getContent());
+                JSONArray jsonArr = (JSONArray) jsonObject.get("ops");
                 for (int j = 0; j < jsonArr.size(); j++) {
                     JSONObject object = (JSONObject) jsonArr.get(j);
                     if (object.get("insert") instanceof String) {
                         aResult += object.get("insert");
                     } else {
-                        String formula = " $" + ((JSONObject) object.get("insert")).get("formula") + "$ ";
-                        aResult += formula;
+                        try {
+                            String width = ((JSONObject) object.get("attributes")).get("width") + "<size>";
+                            String imageLink = ((JSONObject) object.get("insert")).get("image") + "";
+                            String[] imageLinkArr = imageLink.split("/");
+                            imageLink = imageLinkArr[imageLinkArr.length - 1];
+
+//                            String imageLink = ((JSONObject) object.get("insert")).get("image") + "</image>";
+                            imageLink += "</image>";
+                            aResult += "<image>" + width + imageLink;
+                        } catch (Exception e) {
+                            String formula = " $" + ((JSONObject) object.get("insert")).get("formula") + "$ ";
+                            aResult += formula;
+                        }
                     }
                 }
-                System.out.println("before" + answerOptions.get(i).getContent());
+//                System.out.println("a----before: " + answerOptions.get(i).getContent());
                 answerOptions.get(i).setContent(aResult);
-                System.out.println("after" + answerOptions.get(i).getContent());
-
+//                System.out.println("a----after: " + answerOptions.get(i).getContent());
                 aResult = "";
             }
             for (int i = 0; i < questions.size(); i++) {
@@ -372,7 +378,7 @@ public class TestToWordService {
                             String imageLink = ((JSONObject) object.get("insert")).get("image") + "";
                             String[] imageLinkArr = imageLink.split("/");
                             imageLink = imageLinkArr[imageLinkArr.length - 1];
-                            
+
 //                            String imageLink = ((JSONObject) object.get("insert")).get("image") + "</image>";
                             imageLink += "</image>";
                             qResult += "<image>" + width + imageLink;
@@ -382,7 +388,9 @@ public class TestToWordService {
                         }
                     }
                 }
+//                System.out.println("q----before: " + questions.get(i).getContent());
                 questions.get(i).setContent(qResult);
+//                System.out.println("q----after: " + questions.get(i).getContent());
                 qResult = "";
             }
             toWord(questions, answerOptions);
@@ -501,20 +509,29 @@ public class TestToWordService {
                 }
                 int type = 0;
                 for (String outputItem : answerContent) {
-                    if (outputItem.length() < 15 && type <= 0) {
-                        type = 1;
+                    if (outputItem.contains("<image>")) {
+                        type = 4;
+                    } else {
+                        if (outputItem.length() < 15 && type <= 0) {
+                            type = 1;
+                        }
+                        if (outputItem.length() >= 15 && outputItem.length() < 30 && type <= 1) {
+                            type = 2;
+                        }
+                        if (outputItem.length() >= 30 && type <= 2) {
+                            type = 3;
+                        }
                     }
-                    if (outputItem.length() >= 15 && outputItem.length() < 30 && type <= 1) {
-                        type = 2;
-                    }
-                    if (outputItem.length() >= 30 && type <= 2) {
-                        type = 3;
-                    }
+
                 }
                 XmlCursor cursor = answerPara.getCTP().newCursor();
                 XWPFTable nestedTable = answerPara.getBody().insertNewTbl(cursor);
                 XWPFTableRow nestedTableRow = null;
                 XWPFTableCell cellOfNestedTable;
+                String s5[] = null;
+                String s6[] = null;
+                String s7[] = null;
+                String s8[] = null;
                 for (int j = 0; j < answerContent.size(); j++) {
                     String choice = "";
                     switch (j) {
@@ -540,10 +557,13 @@ public class TestToWordService {
                         XWPFParagraph para = cellOfNestedTable.addParagraph();
                         cellOfNestedTable.removeParagraph(0);
                         XWPFRun answerRun = null;
-                        String answerParseForm = choice + ".  " + answerContent.get(j);
+                        String answerParseForm = choice + ". " + answerContent.get(j);
                         parseTextWithMathML(para, answerRun, answerParseForm);
+
                     }
                     if (type == 2) {
+                        System.out.println("TYPE: " + type);
+
                         if (j == 0 || j % 2 == 0) {
                             nestedTableRow = nestedTable.createRow();
                         }
@@ -564,6 +584,8 @@ public class TestToWordService {
                         parseTextWithMathML(para, answerRun, answerParseForm);
                     }
                     if (type == 3) {
+                        System.out.println("TYPE: " + type);
+
                         nestedTableRow = nestedTable.createRow();
                         if (j == 0) {
                             cellOfNestedTable = nestedTableRow.createCell();
@@ -576,6 +598,93 @@ public class TestToWordService {
                         XWPFRun answerRun = null;
                         String answerParseForm = choice + "." + answerContent.get(j);
                         parseTextWithMathML(para, answerRun, answerParseForm);
+                    }
+                    if (type == 4) {
+                        System.out.println("TYPE: " + type);
+                        nestedTableRow = nestedTable.createRow();
+                        if (j == 0) {
+                            cellOfNestedTable = nestedTableRow.createCell();
+                        } else {
+                            cellOfNestedTable = nestedTableRow.getCell(0);
+                        }
+                        cellOfNestedTable.setWidth("9000");
+                        XWPFParagraph para = cellOfNestedTable.addParagraph();
+                        cellOfNestedTable.removeParagraph(0);
+                        String content1 = answerContent.get(i);
+                        if (content1.contains("<image>")) {
+                            if (content1.contains("</image><image>")) {
+                                s5 = content1.split("</image><image>");
+                                for (String s : s5) {
+                                    
+                                    s6 = s.split("<image>");
+                                    for (String s6Item : s6) {
+                                        if (!s6Item.contains("<size>")) {
+                                            XmlCursor cursor1 = para.getCTP().newCursor();
+                                            XWPFParagraph p1 = para.getBody().insertNewParagraph(cursor1);
+                                            XWPFRun runP1 = null;
+                                            System.out.println("S6: " + s6Item);
+                                            String answerParseForm = choice + ". " + s6Item;
+                                            parseTextWithMathML(p1, runP1, answerParseForm);
+                                        } else {
+                                            s7 = s6Item.split("</image>");
+                                            for (String s7Item : s7) {
+                                                if (!s7Item.contains("<size>")) {
+                                                    XmlCursor cursor2 = para.getCTP().newCursor();
+                                                    XWPFParagraph p2 = para.getBody().insertNewParagraph(cursor2);
+                                                    XWPFRun runP2 = null;
+                                                    String answerParseForm = s7Item;
+                                                    parseTextWithMathML(p2, runP2, answerParseForm);
+                                                } else {
+                                                    s8 = s7Item.split("<size>");
+                                                    Double width = Double.parseDouble(s8[0]);
+                                                    XmlCursor cursor3 = para.getCTP().newCursor();
+                                                    XWPFParagraph p3 = para.getBody().insertNewParagraph(cursor3);
+                                                    XWPFRun runP3 = p3.createRun();
+                                                    runP3.addPicture(new FileInputStream(storageService.loadAsResource(s8[1]).getFile().getPath()), XWPFDocument.PICTURE_TYPE_PNG, s8[1], Units.toEMU(width), Units.toEMU(width));
+                                                    p3.setAlignment(ParagraphAlignment.CENTER);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            } else {
+                                s5 = content1.split("<image>");
+                                for (int q = 0; q < s5.length; q++) {
+                                    if (q == 0) {
+                                        XmlCursor cursor1 = para.getCTP().newCursor();
+                                        XWPFParagraph p1 = para.getBody().insertNewParagraph(cursor1);
+                                        XWPFRun runP1 = null;
+                                        String parseForm = choice + ". " + s5[0];
+                                        
+                                        parseTextWithMathML(p1, runP1, parseForm);
+                                    } else {
+                                        s6 = s5[q].split("</image>");
+                                        for (int w = 0; w < s6.length; w++) {
+                                            if (w == 1) {
+                                                XmlCursor cursor2 = para.getCTP().newCursor();
+                                                XWPFParagraph p2 = para.getBody().insertNewParagraph(cursor2);
+                                                XWPFRun runP2 = null;
+                                                String parseForm = s6[1];
+                                                parseTextWithMathML(p2, runP2, parseForm);
+                                                p2.setAlignment(ParagraphAlignment.LEFT);
+                                            } else {
+                                                s7 = s6[0].split("<size>");
+                                                Double width = Double.parseDouble(s7[0]);
+                                                XmlCursor cursor1 = para.getCTP().newCursor();
+                                                XWPFParagraph p3 = para.getBody().insertNewParagraph(cursor1);
+                                                XWPFRun runP3 = p3.createRun();
+                                                runP3.addPicture(new FileInputStream(storageService.loadAsResource(s7[1]).getFile().getPath()), XWPFDocument.PICTURE_TYPE_PNG, s7[1], Units.toEMU(width), Units.toEMU(width));
+                                                p3.setAlignment(ParagraphAlignment.CENTER);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            XWPFRun qRun = null;
+                            parseTextWithMathML(para, qRun, content1);
+                        }
+
                     }
                 }
                 answerContent.clear();
@@ -601,6 +710,10 @@ public class TestToWordService {
             System.out.println("File not found " + fileName);
         }
         return null;
+    }
+
+    public void checkImage(String content) {
+
     }
 
 }

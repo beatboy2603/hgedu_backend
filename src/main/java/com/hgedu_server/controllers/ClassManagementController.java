@@ -143,7 +143,7 @@ public class ClassManagementController {
     @DeleteMapping("/student/{id}")
     public ResponseEntity<?> deleteStudentById(@PathVariable long id) {
         classStudentService.deleteById(id);
-        return new ResponseEntity<String>("Student with ID " + id + " was deleted", HttpStatus.OK);
+        return new ResponseEntity<String>("ClassStudent with ID " + id + " was deleted", HttpStatus.OK);
     }
 
     @DeleteMapping("/studentTeacher/{studentId}")

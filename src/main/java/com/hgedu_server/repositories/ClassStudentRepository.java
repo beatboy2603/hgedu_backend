@@ -19,10 +19,10 @@ public interface ClassStudentRepository extends JpaRepository<ClassStudent, Long
 
     Iterable<ClassStudent> findByStudentId(long studentId);
 
-    @Transactional
-    @Modifying
-    @Query(value = "DELETE FROM ClassStudent WHERE studentId = ?1", nativeQuery = true)
-    void deleteByStudentId(long studentId);
+//    @Transactional
+//    @Modifying
+//    @Query(value = "DELETE FROM ClassStudent WHERE studentId = ?1", nativeQuery = true)
+//    void deleteByClassStudentId(long studentId);
 
     @Query(value = "SELECT * FROM ClassStudent cs WHERE cs.classId = ?1 AND cs.studentId =?2", nativeQuery = true)
     ClassStudent getByClassIdAndStudentId(Long classId, Long studentId);
