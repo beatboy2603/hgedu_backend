@@ -12,6 +12,7 @@ import com.hgedu_server.models.TestContentPlaceholder;
 import com.hgedu_server.models.TestQuestion;
 import com.hgedu_server.services.TestService;
 import java.util.List;
+import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,9 +46,25 @@ public class TestController {
     public List<Test> getAllTests(@PathVariable int teacherId) throws Exception {
         return testService.getAllTests(teacherId);
     }
-    
+
     @GetMapping("/getAllTestQuestions/{teacherId}")
     public List<TestQuestion> getAllTestQuestions(@PathVariable int teacherId) throws Exception {
         return testService.getAllTestQuestions(teacherId);
+    }
+
+    @GetMapping("/genRandomString")
+    public String genRandomString() {
+        int leftLimit = 48; // numeral '0'
+        int rightLimit = 122; // letter 'z'
+        int targetStringLength = 10;
+        Random random = new Random();
+
+        String generatedString = random.ints(leftLimit, rightLimit + 1)
+                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+
+        return generatedString;
     }
 }
