@@ -46,6 +46,7 @@ import org.openxmlformats.schemas.officeDocument.x2006.math.CTOMathPara;
 import org.openxmlformats.schemas.officeDocument.x2006.math.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -65,6 +66,9 @@ public class TestToWordService {
 
     @Autowired
     private TestToWordRepository testToWordRepository;
+    
+    @Autowired
+    private StorageService storageService;
 
     @Autowired
     private QuestionRepository questionRepository;
@@ -181,7 +185,7 @@ public class TestToWordService {
                                 if (!checkQuestionCode) {
                                     try {
                                         questionRepository.save(question);
-                                        questionId = questionRepository.findQuestionIdByQuestionCode(question.getQuestionCode());
+                                        questionId = questionRepository.findQuestionIdByQuestionCodeAndTeacherId(question.getQuestionCode(), teacherId);
                                         for (int i = 0; i < aos.size(); i++) {
                                             aos.get(i).setQuestionId(questionId);
                                             answerRepository.save(aos.get(i));
@@ -212,7 +216,7 @@ public class TestToWordService {
                                 if (!checkQuestionCode) {
                                     try {
                                         questionRepository.save(question);
-                                        questionId = questionRepository.findQuestionIdByQuestionCode(question.getQuestionCode());
+                                        questionId = questionRepository.findQuestionIdByQuestionCodeAndTeacherId(question.getQuestionCode(), teacherId);
                                         for (int i = 0; i < aos.size(); i++) {
                                             aos.get(i).setQuestionId(questionId);
                                             answerRepository.save(aos.get(i));
@@ -330,13 +334,13 @@ public class TestToWordService {
             String aResult = "";
             List<AnswerOption> answerOptions = answerRepository.findAll();
             List<Question> questions = questionRepository.findByTestId(testId);
-            
+
             for (int i = 0; i < answerOptions.size(); i++) {
                 JSONParser parser = new JSONParser();
 //                System.out.println(answerOptions.get(i).getContent());
 //                System.out.println(answerOptions.get(i).getContent() instanceof String);
                 JSONObject contenJSONObject = (JSONObject) parser.parse(answerOptions.get(i).getContent());
-                
+
 //                JSONArray jsonArr = (JSONArray) parser.parse(answerOptions.get(i).getContent());
                 JSONArray jsonArr = (JSONArray) contenJSONObject.get("ops");
                 for (int j = 0; j < jsonArr.size(); j++) {
@@ -350,8 +354,8 @@ public class TestToWordService {
                 }
                 System.out.println("before" + answerOptions.get(i).getContent());
                 answerOptions.get(i).setContent(aResult);
-                 System.out.println("after" + answerOptions.get(i).getContent());
-            
+                System.out.println("after" + answerOptions.get(i).getContent());
+
                 aResult = "";
             }
             for (int i = 0; i < questions.size(); i++) {
@@ -365,7 +369,12 @@ public class TestToWordService {
                     } else {
                         try {
                             String width = ((JSONObject) object.get("attributes")).get("width") + "<size>";
-                            String imageLink = ((JSONObject) object.get("insert")).get("image") + "</image>";
+                            String imageLink = ((JSONObject) object.get("insert")).get("image") + "";
+                            String[] imageLinkArr = imageLink.split("/");
+                            imageLink = imageLinkArr[imageLinkArr.length - 1];
+                            
+//                            String imageLink = ((JSONObject) object.get("insert")).get("image") + "</image>";
+                            imageLink += "</image>";
                             qResult += "<image>" + width + imageLink;
                         } catch (Exception e) {
                             String formula = " $" + ((JSONObject) object.get("insert")).get("formula") + "$ ";
@@ -438,7 +447,7 @@ public class TestToWordService {
                                             XmlCursor cursor3 = questionPara1Q.getCTP().newCursor();
                                             XWPFParagraph p3 = questionPara1Q.getBody().insertNewParagraph(cursor3);
                                             XWPFRun runP3 = p3.createRun();
-                                            runP3.addPicture(new FileInputStream(s4[1]), XWPFDocument.PICTURE_TYPE_PNG, s4[1], Units.toEMU(width), Units.toEMU(width));
+                                            runP3.addPicture(new FileInputStream(storageService.loadAsResource(s4[1]).getFile().getPath()), XWPFDocument.PICTURE_TYPE_PNG, s4[1], Units.toEMU(width), Units.toEMU(width));
                                             p3.setAlignment(ParagraphAlignment.CENTER);
                                         }
                                     }
@@ -470,7 +479,7 @@ public class TestToWordService {
                                         XmlCursor cursor1 = questionPara1Q.getCTP().newCursor();
                                         XWPFParagraph p3 = questionPara1Q.getBody().insertNewParagraph(cursor1);
                                         XWPFRun runP3 = p3.createRun();
-                                        runP3.addPicture(new FileInputStream(s3[1]), XWPFDocument.PICTURE_TYPE_PNG, s3[1], Units.toEMU(width), Units.toEMU(width));
+                                        runP3.addPicture(new FileInputStream(storageService.loadAsResource(s3[1]).getFile().getPath()), XWPFDocument.PICTURE_TYPE_PNG, s3[1], Units.toEMU(width), Units.toEMU(width));
                                         p3.setAlignment(ParagraphAlignment.CENTER);
                                     }
                                 }

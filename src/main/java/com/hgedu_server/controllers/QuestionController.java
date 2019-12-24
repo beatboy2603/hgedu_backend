@@ -48,6 +48,11 @@ public class QuestionController {
             @PathVariable("teacherId") int teacherId) throws Exception {
         return questionService.addQuestion(questionAndAnswersList, teacherId);
     }
+    
+    @PostMapping("/deleteQuestion/{questionId}")
+    public String deleteQuestion(@PathVariable int questionId) throws Exception {
+        return questionService.deleteQuestion(questionId);
+    }
 
     @GetMapping("/getFormIdentifiers/{teacherId}")
     public List<String> getFormIdentifiers(@PathVariable("teacherId") int teacherId) throws Exception {

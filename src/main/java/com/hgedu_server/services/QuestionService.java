@@ -226,4 +226,20 @@ public class QuestionService {
         return "added";
     }
 
+    public String deleteQuestion(int questionId) {
+        List<Question> questions = questionRepo.findByQuestionId(Long.valueOf(questionId));
+        Question question = null;
+        if(questions.size()>0){
+            question = questions.get(0);
+        }
+        if(question != null && question.getQuestionTypeId()==3){
+            List<Question> childQuestions = questionRepo.findByQuestionParentId(question.getQuestionId());
+            questionRepo.deleteAll(childQuestions);
+        }
+        if(question!=null){
+            questionRepo.delete(question);
+        }
+        return "deleted";
+    }
+
 }
