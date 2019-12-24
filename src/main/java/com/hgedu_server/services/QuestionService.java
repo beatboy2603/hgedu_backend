@@ -125,7 +125,10 @@ public class QuestionService {
         studentAnswers.values().forEach((answerId) -> {
             answers.add(answerId);
         });
-        return questionRepo.getTestMark(testId, answers);
+        if(!answers.isEmpty())
+            return questionRepo.getTestMark(testId, answers);
+        else
+            return 0.0f;
     }
     
     public List<AnswerOption> getAnswersBySpecificOrder(Long questionId, Set<String> answersOrder) {

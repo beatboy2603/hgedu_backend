@@ -26,4 +26,7 @@ public interface ClassRepository extends JpaRepository<Class, Long>{
     
     @Query(value = "select c.* from Class c, ClassStudent cs where c.id = cs.classId and cs.studentId = ?1", nativeQuery = true)
     List<Class> getClassesForStudent(Long studentId);
+    
+    @Query(value = "select c.name from Class c where c.id = ?1", nativeQuery = true)
+    String getClassNameByClassId(Long classId);
 }

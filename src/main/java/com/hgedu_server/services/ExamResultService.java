@@ -21,16 +21,16 @@ public class ExamResultService {
     @Autowired
     private ExamResultRepository examResultRepo;
     
-    public List<ExamResult> getExamResultsForStudent(Long examId, Long studentId) {
-        return examResultRepo.getExamResultsForStudent(examId, studentId);
+    public List<ExamResult> getExamResultsForStudent(Long examId, Long classId, Long studentId) {
+        return examResultRepo.getExamResultsForStudent(examId, classId, studentId);
     }
     
-    public Long getNthTrial(Long examId, Long studentId) {
-        return examResultRepo.getNthTrial(examId, studentId);
+    public Long getNthTrial(Long examId, Long classStudentId) {
+        return examResultRepo.getNthTrial(examId, classStudentId);
     }
     
-    public ExamResult getExamResultForTest(Long examId, Long studentId) {
-        return examResultRepo.getExamResultForTest(examId, studentId);
+    public ExamResult getExamResultForTest(Long examId, Long classStudentId) {
+        return examResultRepo.getExamResultForTest(examId, classStudentId);
     }
 
     public ExamResult createNewExamResult(ExamResult result) {
@@ -39,5 +39,9 @@ public class ExamResultService {
     
     public ExamResult updateExamResult(ExamResult result) {
         return examResultRepo.save(result);
+    }
+
+    public List<ExamResult> getExamResultsForTeacher(Long examId, Long teacherId) {
+        return examResultRepo.getExamResultsForTeacher(examId, teacherId);
     }
 }

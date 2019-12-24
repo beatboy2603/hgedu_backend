@@ -26,4 +26,8 @@ public class GradeService {
     public Grade updateGrade(Grade grade) {
         return gradeRepo.save(grade);
     }
+    
+    public Grade getStudentGradeByClassStudentIdAndPowerLevel(Long classStudentId, Long powerLevel) {
+        return gradeRepo.getStudentGradeByClassStudentIdAndPowerLevel(classStudentId, powerLevel);
+    }
 }

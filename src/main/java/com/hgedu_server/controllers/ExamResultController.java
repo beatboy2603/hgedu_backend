@@ -24,21 +24,27 @@ public class ExamResultController {
     @Autowired
     private ExamResultService resultService;
     
-    @GetMapping("/api/exam/{examId}/result/{studentId}")
-    public ResponseEntity<?> getExamsForClass(@PathVariable("examId") Long examId, @PathVariable("studentId") Long studentId) {
-        List<ExamResult> resultList = resultService.getExamResultsForStudent(examId, studentId);
+    @GetMapping("/api/exam/{examId}/result/{classId}/{studentId}")
+    public ResponseEntity<?> getExamsForClass(@PathVariable("examId") Long examId, @PathVariable("classId") Long classId, @PathVariable("studentId") Long studentId) {
+        List<ExamResult> resultList = resultService.getExamResultsForStudent(examId, classId, studentId);
         return ResponseEntity.ok(resultList);
     }
     
-    @GetMapping("/api/exam/{examId}/attempt/{studentId}")
-    public ResponseEntity<?> getNthTrial(@PathVariable("examId") Long examId, @PathVariable("studentId") Long studentId) {
-        Long attempt = resultService.getNthTrial(examId, studentId);
-        return ResponseEntity.ok(attempt);
+    @GetMapping("/api/exam/{examId}/history/{teacherId}")
+    public ResponseEntity<?> getExamResult(@PathVariable("examId") Long examId, @PathVariable("teacherId") Long teacherId) {
+        List<ExamResult> resultList = resultService.getExamResultsForTeacher(examId, teacherId);
+        return ResponseEntity.ok(resultList);
     }
     
-     @GetMapping("/api/exam/{examId}/{studentId}/latest")
-    public ResponseEntity<?> getExamResultForTest(@PathVariable("examId") Long examId, @PathVariable("studentId") Long studentId) {
-        ExamResult result = resultService.getExamResultForTest(examId, studentId);
-        return ResponseEntity.ok(result);
-    }
+//    @GetMapping("/api/exam/{examId}/attempt/{studentId}")
+//    public ResponseEntity<?> getNthTrial(@PathVariable("examId") Long examId, @PathVariable("studentId") Long studentId) {
+//        Long attempt = resultService.getNthTrial(examId, studentId);
+//        return ResponseEntity.ok(attempt);
+//    }
+//    
+//     @GetMapping("/api/exam/{examId}/{studentId}/latest")
+//    public ResponseEntity<?> getExamResultForTest(@PathVariable("examId") Long examId, @PathVariable("studentId") Long studentId) {
+//        ExamResult result = resultService.getExamResultForTest(examId, studentId);
+//        return ResponseEntity.ok(result);
+//    }
 }
