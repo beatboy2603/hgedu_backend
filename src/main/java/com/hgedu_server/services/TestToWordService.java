@@ -26,6 +26,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.util.Units;
@@ -427,6 +428,8 @@ public class TestToWordService {
             for (int i = 0; i < questions.size(); i++) {
                 XWPFTableRow tableRow = table.createRow();
                 XWPFParagraph questionPara0 = tableRow.getCell(0).addParagraph();
+                tableRow.getCell(0).removeParagraph(0);
+                questionPara0.setSpacingBefore(100);
                 setRun(questionPara0.createRun(), "Verdana", 10, "000000", " Câu " + (i + 1) + ":", true, false);
                 XWPFParagraph questionPara1Q = tableRow.getCell(1).addParagraph();
                 String content = questions.get(i).getContent();
@@ -610,12 +613,12 @@ public class TestToWordService {
                         cellOfNestedTable.setWidth("9000");
                         XWPFParagraph para = cellOfNestedTable.addParagraph();
                         cellOfNestedTable.removeParagraph(0);
-                        String content1 = answerContent.get(i);
+                        String content1 = answerContent.get(j);
                         if (content1.contains("<image>")) {
                             if (content1.contains("</image><image>")) {
                                 s5 = content1.split("</image><image>");
                                 for (String s : s5) {
-                                    
+
                                     s6 = s.split("<image>");
                                     for (String s6Item : s6) {
                                         if (!s6Item.contains("<size>")) {
@@ -655,7 +658,7 @@ public class TestToWordService {
                                         XWPFParagraph p1 = para.getBody().insertNewParagraph(cursor1);
                                         XWPFRun runP1 = null;
                                         String parseForm = choice + ". " + s5[0];
-                                        
+
                                         parseTextWithMathML(p1, runP1, parseForm);
                                     } else {
                                         s6 = s5[q].split("</image>");

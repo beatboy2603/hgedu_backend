@@ -8,6 +8,7 @@ package com.hgedu_server.services;
 import com.hgedu_server.models.LinkRequest;
 import com.hgedu_server.models.User;
 import com.hgedu_server.repositories.LinkRequestRepository;
+import com.hgedu_server.repositories.ParentStudentRepository;
 import com.hgedu_server.repositories.UserRepository;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -27,6 +28,8 @@ public class LinkRequestService {
     private LinkRequestRepository linkRequestRepo;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private ParentStudentRepository parentStudent;
 
 //    public boolean sendRequest(String parentMail, String studentMail) {
 //        if (userRepository.getUserByEmail(studentMail).isEmpty()) {
@@ -49,13 +52,14 @@ public class LinkRequestService {
             responseList.put("mess", "Bạn không thể gửi cho chính bạn");
             return responseList;
         }
-        System.out.println("dcu may");
         if (userRepository.getUserByEmail(studentMail).isEmpty()) {
             responseList.put("mess", "Không tìm thấy người dùng");
         } else {
             int parentId = userRepository.getUserIdByEmail(parentMail);
             int studentId = userRepository.getUserIdByEmail(studentMail);
-            if (linkRequestRepo.checkDuplicateLinkedUser(parentId, studentId) >= 1) {
+            if(parentStudent.findByStudentIdAndParentId(parentId, studentId).size()>0){
+                responseList.put("mess", "Người này đang là phụ huynh của bạn");
+            } else if (linkRequestRepo.checkDuplicateLinkedUser(parentId, studentId) >= 1) {
                 responseList.put("mess", "Bạn có liên kết tới người dùng này rồi");
             } else {
                 if (linkRequestRepo.checkDuplicateUser(parentMail, studentMail) >= 1) {

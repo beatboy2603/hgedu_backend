@@ -8,6 +8,7 @@ package com.hgedu_server.controllers;
 import com.hgedu_server.models.Question;
 import com.hgedu_server.models.QuestionAndAnswers;
 import com.hgedu_server.models.Test;
+import com.hgedu_server.models.TestAutoPlaceholder;
 import com.hgedu_server.models.TestContentPlaceholder;
 import com.hgedu_server.models.TestQuestion;
 import com.hgedu_server.services.TestService;
@@ -35,6 +36,12 @@ public class TestController {
     @PostMapping("/addTest")
     public String addTest(@RequestBody TestContentPlaceholder testContentPlaceholder) throws Exception {
         return testService.addTest(testContentPlaceholder);
+    }
+    
+    @PostMapping("/addTestAuto")
+    public TestAutoPlaceholder addTestAuto(@RequestBody TestAutoPlaceholder testAutoPlaceholder) throws Exception {
+        return testAutoPlaceholder;
+//        return testService.addTest(testAutoPlaceholder);
     }
 
     @GetMapping("/{testFolderId}")

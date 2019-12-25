@@ -6,6 +6,7 @@
 package com.hgedu_server.repositories;
 
 import com.hgedu_server.models.ParentStudent;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -13,6 +14,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author admin
  */
 public interface ParentStudentRepository extends JpaRepository<ParentStudent, Long>{
+
+    List<ParentStudent> findByStudentIdAndParentId(int parentId, int studentId);
     
 //    ParentStudent findByStudentId(long studentId);
     
