@@ -14,12 +14,16 @@ import com.hgedu_server.models.ExamTest;
 import com.hgedu_server.models.Grade;
 import com.hgedu_server.models.Question;
 import com.hgedu_server.models.QuestionDetail;
+import com.hgedu_server.models.Test;
 import com.hgedu_server.services.ClassStudentService;
 import com.hgedu_server.services.ExamResultService;
 import com.hgedu_server.services.ExamService;
 import com.hgedu_server.services.ExamTestService;
 import com.hgedu_server.services.GradeService;
 import com.hgedu_server.services.QuestionService;
+import com.hgedu_server.services.StorageService;
+import com.hgedu_server.services.TestService;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -28,6 +32,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Locale;
@@ -39,6 +44,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.validation.Valid;
+import org.opencv.core.Core;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,9 +61,11 @@ import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.core.Point;
+import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.CLAHE;
 
 /**
  *
@@ -83,6 +91,12 @@ public class ExamController {
     @Autowired
     private ClassStudentService classStudentService;
     
+    @Autowired
+    private TestService testService;
+    
+    @Autowired
+    private StorageService storageService;
+    
     @PostMapping("/api/exam") 
     public ResponseEntity<?> createExam(@Valid @RequestBody Exam exam) {
         Exam createdExam = examService.createExam(exam);
@@ -101,28 +115,109 @@ public class ExamController {
         return ResponseEntity.ok(progress);
     }
     
-    @GetMapping("/api/exam/imageProcess") 
-    public void processImage() {
+    //@GetMapping("/api/exam/imageProcess") 
+    public String processImage(String imageFilePath, Map<Integer, Integer> testQuestionMap) {
         Mat grayImage = new Mat();
         Mat detectedEdges = new Mat();
+        Mat threshOuput = new Mat();
+        Mat bitwiseOuput = new Mat();
         Mat cannyEdges = new Mat();
         Mat morphoImg = new Mat();
-        Mat hierarchy = new Mat();
-
-        List<MatOfPoint> contourList = new ArrayList<MatOfPoint>(); //A list to store all the contours
         
-        Mat originalMat = Imgcodecs.imread("C:/Users/Administrator/Pictures/test2.jpg");
+        Mat originalMat = Imgcodecs.imread(imageFilePath);
         Imgproc.cvtColor(originalMat, grayImage, Imgproc.COLOR_BGR2GRAY);
         // reduce noise with a 3x3 kernel
-        Imgproc.blur(grayImage, detectedEdges, new Size(5, 5));
+        Imgproc.GaussianBlur(grayImage, detectedEdges, new Size(3, 3),0);
+        //threshold
+        Imgproc.adaptiveThreshold(detectedEdges,threshOuput,255,Imgproc.ADAPTIVE_THRESH_MEAN_C,Imgproc.THRESH_BINARY,75,10);
+        //bitwise_not
+        Core.bitwise_not(threshOuput, bitwiseOuput);
+        //find answer blocks
+        List<MatOfPoint> answerBlocks = getAnswerBlocks(bitwiseOuput);
+        if(answerBlocks.size() == 4) {
+            Map<Integer, List<Integer>> allBlockAnswers = new HashMap<>();
+            System.out.println("point " + answerBlocks.get(0).get(0, 0)[0]);
+            //sort answer blocks
+            Collections.sort(answerBlocks, (MatOfPoint mat1, MatOfPoint mat2) -> {
+                double xValueMat1 = mat1.get(0, 0)[0];
+                double xValueMat2 = mat2.get(0, 0)[0];
+                if (Double.compare(xValueMat1, xValueMat2) > 0)
+                    return 1;
+                if (Double.compare(xValueMat1, xValueMat2) < 0)
+                    return -1;
+                return 0;
+            });
+            int count = 0;
+            for(MatOfPoint block: answerBlocks) {
+                Mat blockGray = new Mat();
+                Mat appliedClahe = new Mat();
+                Mat blurred = new Mat();
+                Mat thresh = new Mat();
+                Mat bitwise = new Mat();
+                Mat croppedBlock = cropImage(originalMat, block);
+                //Imgcodecs.imwrite("C:/Users/Administrator/Pictures/test4_procressed" + count++ + ".jpg", croppedBlock);
+                List<MatOfPoint> questionList = new ArrayList<>();
+                //block to grayscale
+                Imgproc.cvtColor(croppedBlock, blockGray, Imgproc.COLOR_BGR2GRAY);
+                //apply CLAHE (Contrast Limited Adaptive Histogram Equalization) to increate brightness
+                CLAHE clahe = Imgproc.createCLAHE(2.0, new Size(8, 8));
+                clahe.apply(blockGray, appliedClahe);
+                //apply Gaussian Blur
+                Imgproc.GaussianBlur(appliedClahe, blurred, new Size(3, 3),0);
+                //threshold
+                Imgproc.adaptiveThreshold(blurred,thresh,255,Imgproc.ADAPTIVE_THRESH_MEAN_C,Imgproc.THRESH_BINARY,75,10);
+                //bitwise_not
+                Core.bitwise_not(thresh, bitwise);
+             
+                //get question list
+                questionList = getQuestions(thresh);
+                if(questionList.size() >= 120) {
+                    questionList = questionList.subList(0, 120);
+                    //get center point of answer contour
+                    List<Point> answerContourCenter = getContourCenter(questionList);
+                    answerContourCenter = sortPointByY(answerContourCenter, Boolean.FALSE);
+                    //get question map
+                    Map<Integer, List<Point>> questionMap = getQuestionMap(answerContourCenter);
+                    //get list of chosen answers
+                    List<Point> chosenAnswers = getChosenAnswers(croppedBlock, count);
+                    //sort chosen answers
+                    chosenAnswers = sortPointByY(chosenAnswers, Boolean.FALSE);
+                    //get answers index map
+                    //get data
+                    Map<Integer, List<Integer>> answerMap = getAnswerMap(questionMap, chosenAnswers);
+                    for(Integer x: answerMap.keySet()) {
+                        //System.out.println("x: " + x);
+                        //System.out.println("size: " + answerMap.get(x).size());
+                        //turn all block answer from 1-30 to 1-120 question index
+                        allBlockAnswers.put(x + 30 * count, answerMap.get(x));
+                        answerMap.get(x).forEach(item -> 
+                               System.out.println("q" + x + " :" + item)
+                        );
+                    }
+                } else {
+                    return "Failed";
+                }
+                count++;
+            }
+            //get mark
+            for(Integer key: allBlockAnswers.keySet()) {
+                System.out.println("question " + key + ": ");
+                for(Integer answer: allBlockAnswers.get(key)) {
+                    System.out.print(answer + ", ");
+                }
+            }
+            float sheetMark = getSheetMark(testQuestionMap, allBlockAnswers);
+            return String.valueOf(sheetMark);
+        } else {
+            return "Failed";
+        }
         // canny detector
-        Imgproc.Canny(detectedEdges, cannyEdges, 10, 20);
-        Mat kernel = new Mat(new Size(3, 3), CvType.CV_8UC1, new Scalar(255));
-        Imgproc.morphologyEx(cannyEdges, morphoImg, Imgproc.MORPH_CLOSE, kernel);
-        Imgcodecs.imwrite("C:/Users/Administrator/Pictures/test4_procressed.jpg", cannyEdges);
+//        Imgproc.Canny(detectedEdges, cannyEdges, 10, 20);
+//        Mat kernel = new Mat(new Size(3, 3), CvType.CV_8UC1, new Scalar(255));
+//        Imgproc.morphologyEx(cannyEdges, morphoImg, Imgproc.MORPH_CLOSE, kernel);
+//        Imgcodecs.imwrite("C:/Users/Administrator/Pictures/test4_procressed.jpg", cannyEdges);
         //finding contours
-        Imgproc.findContours(morphoImg, contourList, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-
+        
         //Drawing contours on a new image
 //        Mat contours = new Mat();
 //        contours.create(cannyEdges.rows(), cannyEdges.cols(), CvType.CV_8UC3);
@@ -130,6 +225,130 @@ public class ExamController {
 //        for (int i = 0; i < contourList.size(); i++) {
 //            Imgproc.drawContours(contours, contourList, i, new Scalar(r.nextInt(255), r.nextInt(255), r.nextInt(255)), -1);
 //        }
+
+
+//        Imgproc.drawContours(originalMat, answerRegions, 3, new Scalar(0,255,0), 2);
+//        Imgcodecs.imwrite("C:/Users/Administrator/Pictures/test4_procressed.jpg", cannyEdges);
+//        return "OK";
+    }
+    
+    private float getSheetMark(Map<Integer, Integer> testQuestionMap, Map<Integer, List<Integer>> allBlockAnswers) {
+        Integer numberOfRightAnswers = 0;
+        for(int questionIndex = 1; questionIndex < testQuestionMap.size(); questionIndex++ ) {
+            List<Integer> questionAnswers = allBlockAnswers.get(questionIndex);
+            if(!questionAnswers.isEmpty() && questionAnswers.size() == 1) {
+                Integer answerIndex = questionAnswers.get(0);
+                if(Objects.equals(answerIndex, testQuestionMap.get(questionIndex))) {
+                    numberOfRightAnswers++;
+                }
+            }
+        }
+        System.out.println("Right answers: " + numberOfRightAnswers);
+        return ((float)numberOfRightAnswers)*10/testQuestionMap.keySet().size();
+    }
+    
+    private List<Point> getChosenAnswers(Mat inputImage, Integer index) {
+        Mat mask = new Mat();
+        
+        Scalar lowerBound = new Scalar(0, 0, 10);
+        Scalar upperBound = new Scalar(255,255,165);
+        
+        Core.inRange(inputImage, lowerBound, upperBound, mask);
+        
+        Mat kernel = Mat.ones(3, 3, CvType.CV_8U);
+        Imgproc.erode(mask, mask, kernel, new Point(-1,-1), 6);
+        Imgproc.dilate(mask, mask, kernel, new Point(-1,-1), 3);
+        
+        Mat hierarchy = new Mat();
+        List<MatOfPoint> contourList = new ArrayList<>(); //A list to store all the contours
+        Imgproc.findContours(mask.clone(), contourList, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+        
+        MatOfPoint2f[] contoursPoly  = new MatOfPoint2f[contourList.size()];
+        List<MatOfPoint> contoursPolyList = new ArrayList<>(contoursPoly.length);
+        List<Point> chosenAnswerCenterList = new ArrayList<>();
+        Rect[] boundRect = new Rect[contourList.size()];
+        Point[] centers = new Point[contourList.size()];
+        float[][] radius = new float[contourList.size()][1];
+        for(int i = 0; i < contourList.size(); i++) {
+            contoursPoly[i] = new MatOfPoint2f();
+            Imgproc.approxPolyDP(new MatOfPoint2f(contourList.get(i).toArray()), contoursPoly[i], 3, true);
+            boundRect[i] = Imgproc.boundingRect(new MatOfPoint(contoursPoly[i].toArray()));
+            centers[i] = new Point();
+            Imgproc.minEnclosingCircle(contoursPoly[i], centers[i], radius[i]);
+            contoursPolyList.add(new MatOfPoint(contoursPoly[i].toArray()));
+            if(Float.compare(radius[i][0], 8) >= 0  && Float.compare(radius[i][0], 15) <= 0) {
+                chosenAnswerCenterList.add(centers[i]);
+            }
+        }
+        
+//        Imgproc.drawContours(inputImage, contoursPolyList, 0, new Scalar(0,255,0), 2);
+//        Imgcodecs.imwrite("C:/Users/Administrator/Pictures/test_procressed" + index + ".jpg", inputImage);
+        
+        return chosenAnswerCenterList;
+    }
+    
+    private Map<Integer, List<Point>> getQuestionMap(List<Point> answerCenterList) {
+        Integer numberOfQuestions = 1;
+        Integer coeff = 0;
+        Map<Integer, List<Point>> questionMap = new HashMap<>();
+        while(numberOfQuestions <= 30) {
+            List<Point> sortedAnswerPoints = sortPointByX(answerCenterList.subList(coeff, coeff+4), Boolean.FALSE);
+            questionMap.put(numberOfQuestions, sortedAnswerPoints);
+            coeff += 4;
+            numberOfQuestions++;
+        }
+//        for(Point p: questionMap.get(1)) {
+//            System.out.println("dap an " + p.x + " " + p.y);
+//        }
+        return questionMap;
+    }
+    
+    private Map<Integer, List<Integer>> getAnswerMap(Map<Integer, List<Point>> questionMap, List<Point> answerList) {
+        //initialize answers map
+        Map<Integer, List<Integer>> answerMap = new HashMap<>();
+        Integer numberOfQuestion = 1;
+        while(numberOfQuestion <= 30) {
+            answerMap.put(numberOfQuestion, new ArrayList<>());
+            numberOfQuestion++;
+        }
+        //get data
+        for(Point answer: answerList) {
+            for(Integer key: questionMap.keySet()) {
+                //System.out.println(">>>>>>>>there");
+                Integer counter = 0;
+                Boolean isNext = true;
+                while(counter < questionMap.get(key).size()) {
+                    //System.out.println(key + " :" + Math.abs(answer.y - questionMap.get(key).get(counter).y));
+                    //System.out.println(key + " :" + Math.abs(answer.x - questionMap.get(key).get(counter).x));
+                    if(Math.abs(answer.y - questionMap.get(key).get(counter).y) <= 10 && 
+                            Math.abs(answer.x - questionMap.get(key).get(counter).x) <= 10) {
+                        //System.out.println("counter " + counter);
+                        answerMap.get(key).add(counter);
+                        isNext = false;
+                        break;
+                    }
+                    counter++;
+                }
+                if(isNext == false) {
+                    break;
+                }
+            }
+        }
+        return answerMap;
+    }
+    
+    private Mat cropImage(Mat inputImage, MatOfPoint boundingContour) {
+        //Find the bounding rectangle of a selected contour
+        Rect rect = Imgproc.boundingRect(boundingContour);
+        Mat ROI = inputImage.submat(rect.y, rect.y + rect.height, rect.x + 65, rect.x + rect.width);
+        return ROI;
+    }
+    
+    private List<MatOfPoint> getAnswerBlocks(Mat inputImage) {
+        Mat hierarchy = new Mat();
+        List<MatOfPoint> contourList = new ArrayList<>(); //A list to store all the contours
+        Imgproc.findContours(inputImage, contourList, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+
         Collections.sort(contourList, (MatOfPoint mat1, MatOfPoint mat2) -> {
             double contourAreaMat1 = Imgproc.contourArea(mat1);
             double contourAreaMat2 = Imgproc.contourArea(mat2);
@@ -155,138 +374,190 @@ public class ExamController {
                 break;
             }
         }
-        System.out.println(answerRegions.size());
-        Imgproc.drawContours(originalMat, answerRegions, 3, new Scalar(0,255,0), 2);
-        Imgcodecs.imwrite("C:/Users/Administrator/Pictures/test4_procressed.jpg", cannyEdges);
-//blurred = cv2.GaussianBlur(gray, (11, 11), 2)
-//edged = cv2.Canny(blurred, 10, 20)
-//#out = get_circles(image);
-//#plt.imshow(edged)
-//out = extract_color(image)
-//
-//#th = cv2.adaptiveThreshold(blurred, 255, cv2.THRESH_BINARY, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 115, 1)
-//th = cv2.threshold(blurred, 255, cv2.THRESH_BINARY, 115, 1)
-//ret,thresh1 = cv2.threshold(image,160,255,cv2.THRESH_TRUNC)
-//kernel = np.ones((5,5),np.uint8)
-//opening = cv2.morphologyEx(edged, cv2.MORPH_CLOSE, kernel)
-//contours = cv2.findContours(opening, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[1]
-//con = cv2.drawContours(image, contours, -1, (0,255,0), 2)
-//#cv2.imshow("someth",con)
-//#plt.imshow(con)
-//contours = sorted(contours, key=cv2.contourArea, reverse=True)
-//
-//arr = []
-//for contour in contours:
-//    p=cv2.arcLength(contour,True)
-//    approx=cv2.approxPolyDP(contour,0.02*p,True)
-//
-//    if len(arr) < 4 and len(approx)==4:
-//        arr.append(approx)
-//    else:
-//        break
-//
-//img = crop_image(image, arr[2])
-//print(arr)
-//#------Get an ordered list of answer blocks--------
-//gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-//blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-//#blurred = cv2.medianBlur(gray, 3)
-//edged = cv2.Canny(blurred, 50, 100)
-//
-//kernel = np.ones((5,5),np.uint8)
-//opening = cv2.morphologyEx(edged, cv2.MORPH_CLOSE, kernel)
-//th = cv2.adaptiveThreshold(blurred, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 115, 1)
-//
-//cnts = cv2.findContours(th, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)[1]
-//
-//con = cv2.drawContours(img, cnts, -1, (0,255,0), 2)
-//
-//
-//
-//cnts = sorted(cnts, key=cv2.contourArea, reverse=True)
-//arr = []
-//for c in cnts:
-//    p=cv2.arcLength(c,True)
-//    approx=cv2.approxPolyDP(c,0.02*p,True)
-//
-//    if len(arr) < 24 and len(approx)==4:
-//        arr.append(approx)
-//    else:
-//        break
-//#con = cv2.drawContours(img, arr, -1, (0,255,0), 2)
-//
-//sorted_arr = sorted(arr, key=lambda ctr: cv2.boundingRect(ctr)[0] )
-//print(sorted_arr)
-//print(len(sorted_arr))
-//min_index = 0
-//max_index = 6
-//while max_index <= len(sorted_arr):
-//    sorted_arr[min_index:max_index] = sorted(sorted_arr[min_index:max_index], 
-//              key=lambda ctr: cv2.boundingRect(ctr)[0] + cv2.boundingRect(ctr)[1] * image.shape[1])
-//    min_index = min_index + 6
-//    max_index = max_index + 6
-//
-//con = cv2.drawContours(img, sorted_arr, -1, (0,255,0), 2)
-//print(sorted_arr)
-//cropped_block = crop_image(img, sorted_arr[0])
-//cv2.imshow("c",cropped_block)
-//#------Get chosen answer-------
-//cropped_block = cv2.cvtColor(cropped_block, cv2.COLOR_BGR2RGB)
-//gray = cv2.cvtColor(cropped_block, cv2.COLOR_BGR2GRAY)
-//blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-//th = cv2.adaptiveThreshold(blurred, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 25, 15)
-//kernel = np.ones((5,5),np.uint8)
-//opening = cv2.morphologyEx(th, cv2.MORPH_CLOSE, kernel)
-//edged = cv2.Canny(opening, 50, 100)
-//cnts = cv2.findContours(edged, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)[1]
-//con = cv2.drawContours(cropped_block, cnts, -1, (0,255,0), 2)
-//
-//
-//#answers_blocks = get_answers_blocks(cropped_answers)
-//#cropped_block = crop_image(cropped_answers, answers_blocks[0])
-//
-//#-------Get answers from a block -- experimenting
-//gray = cv2.cvtColor(cropped_block, cv2.COLOR_BGR2GRAY)
-//thresh = cv2.threshold(gray,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)[1]
-//thresh = cv2.bitwise_not(thresh)
-//
-//element = cv2.getStructuringElement(shape=cv2.MORPH_RECT, ksize=(7, 7))
-//
-//morph_img = thresh.copy()
-//kernel = np.ones((5,5),np.uint8)
-//
-//morph_img = cv2.morphologyEx(src=thresh, op=cv2.MORPH_CLOSE, kernel=kernel)
-//
-//bgr = cv2.cvtColor(morph_img, cv2.COLOR_GRAY2BGR)
-//
-//contours = get_contours(bgr, cv2.RETR_CCOMP)
-//contours = sorted(contours, key=cv2.contourArea, reverse=True)
-//contours = contours[1:]
-//
-//ellipses = {}
-//questions_dict = {}
-//for contour in contours:
-//    if len(contour) > 5:
-//        (x, y), (MA, ma), angle = cv2.fitEllipse(contour)
-//        ellipse = (x, y), (MA, ma), angle
-//        area = (math.pi / 4) * MA * ma
-//        ellipses[ellipse] = area
-//
-//sorted_ellipses = sorted(ellipses.items(), key=lambda x: x[1], reverse=True)
-//sorted_ellipses = sorted_ellipses[0:20]
-//ellipse_arr = []
-//for ellipse in sorted_ellipses:
-//    center = ellipse[0][0]
-//    ellipse_arr.append(tuple([round(x) for x in center]))
-//
-//ellipse_arr = sorted(ellipse_arr, key=lambda k: k[1]) 
-//
-//questions_dict[1] = sorted(ellipse_arr[0:4], key=lambda x: x[0])
-//questions_dict[2] = sorted(ellipse_arr[4:8], key=lambda x: x[0])
-//questions_dict[3] = sorted(ellipse_arr[8:12], key=lambda x: x[0])
-//questions_dict[4] = sorted(ellipse_arr[12:16], key=lambda x: x[0])
-//questions_dict[5] = sorted(ellipse_arr[16:20], key=lambda x: x[0])
+        return answerRegions;
+    }
+    
+    private List<MatOfPoint> getQuestions(Mat inputImage) {
+        Mat hierarchy = new Mat();
+        List<MatOfPoint> allContourList = new ArrayList<>(); //A list to store all the contours
+        Imgproc.findContours(inputImage, allContourList, hierarchy, Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
 
+        allContourList = sortContoursByArea(allContourList, Boolean.TRUE);
+        
+        MatOfPoint2f[] contoursPoly  = new MatOfPoint2f[allContourList.size()];
+        List<MatOfPoint> contoursPolyList = new ArrayList<>(contoursPoly.length);
+        Rect[] boundRect = new Rect[allContourList.size()];
+        Point[] centers = new Point[allContourList.size()];
+        float[][] radius = new float[allContourList.size()][1];
+        for(int i = 0; i < allContourList.size(); i++) {
+            contoursPoly[i] = new MatOfPoint2f();
+            Imgproc.approxPolyDP(new MatOfPoint2f(allContourList.get(i).toArray()), contoursPoly[i], 3, true);
+            boundRect[i] = Imgproc.boundingRect(new MatOfPoint(contoursPoly[i].toArray()));
+            centers[i] = new Point();
+            Imgproc.minEnclosingCircle(contoursPoly[i], centers[i], radius[i]);
+            if(Float.compare(radius[i][0], 15) >= 0  && Float.compare(radius[i][0], 21) <= 0) {
+                contoursPolyList.add(new MatOfPoint(contoursPoly[i].toArray()));
+            }
+        }
+        
+        contoursPolyList = sortContoursByArea(contoursPolyList, Boolean.TRUE);
+        
+        return contoursPolyList;
+    }
+    
+    private List<Point> getContourCenter(List<MatOfPoint> contourList) {
+        MatOfPoint2f[] contoursPoly  = new MatOfPoint2f[contourList.size()];
+        Rect[] boundRect = new Rect[contourList.size()];
+        Point[] centers = new Point[contourList.size()];
+        float[][] radius = new float[contourList.size()][1];
+        for(int i = 0; i < contourList.size(); i++) {
+            contoursPoly[i] = new MatOfPoint2f();
+            Imgproc.approxPolyDP(new MatOfPoint2f(contourList.get(i).toArray()), contoursPoly[i], 3, true);
+            boundRect[i] = Imgproc.boundingRect(new MatOfPoint(contoursPoly[i].toArray()));
+            centers[i] = new Point();
+            Imgproc.minEnclosingCircle(contoursPoly[i], centers[i], radius[i]);
+        }
+        return Arrays.asList(centers);
+    }
+    
+    private List<MatOfPoint> sortContoursByArea(List<MatOfPoint> contourList, Boolean reverse) {
+        Collections.sort(contourList, (MatOfPoint mat1, MatOfPoint mat2) -> {
+            double contourAreaMat1 = Imgproc.contourArea(mat1);
+            double contourAreaMat2 = Imgproc.contourArea(mat2);
+            if (Double.compare(contourAreaMat1, contourAreaMat2) > 0)
+                return 1;
+            if (Double.compare(contourAreaMat1, contourAreaMat2) < 0)
+                return -1;
+            return 0;
+        });
+        if(reverse == true) {
+            Collections.reverse(contourList);
+        }
+        return contourList;
+    }
+    
+    private List<Point> sortPointByY(List<Point> pointList, Boolean reverse) {
+        Collections.sort(pointList, (Point p1, Point p2) -> {
+            if (Double.compare(p1.y, p2.y) > 0)
+                return 1;
+            if (Double.compare(p1.y, p2.y) < 0)
+                return -1;
+            return 0;
+        });
+        if(reverse == true) {
+            Collections.reverse(pointList);
+        }
+        return pointList;
+    }
+    
+    private List<Point> sortPointByX(List<Point> pointList, Boolean reverse) {
+        Collections.sort(pointList, (Point p1, Point p2) -> {
+            if (Double.compare(p1.x, p2.x) > 0)
+                return 1;
+            if (Double.compare(p1.x, p2.x) < 0)
+                return -1;
+            return 0;
+        });
+        if(reverse == true) {
+            Collections.reverse(pointList);
+        }
+        return pointList;
+    }
+    
+    @GetMapping("/api/omr/{teacherEmail}/{testCode}")
+    public ResponseEntity<?> getTestForOMR(@PathVariable("teacherEmail") String teacherEmail, @PathVariable("testCode") String testCode) {
+        Test test = testService.getTestForOMR(testCode, teacherEmail);
+        if(test == null) {
+            return ResponseEntity.ok("Either test code or email is wrong!");
+        }
+        return ResponseEntity.ok(test);
+    }
+    
+    @PostMapping("/api/omr/{testId}")
+    public ResponseEntity<?> markTestForOMR(@PathVariable("testId") Long testId, @RequestBody Map<String, String> imageLink) {
+        try {
+            System.out.println(">>>>>>>running here");
+            Map<Integer, Integer> testQuestionMap = questionService.getQuestionMapForOMR(testId);
+            System.out.println("size: " + testQuestionMap.keySet().size());
+            String[] imageStrArr = imageLink.get("image").split("/");
+            String imageFileName = imageStrArr[imageStrArr.length-1];
+            System.out.println("File name: " + imageFileName);
+            String imageFilePath = storageService.loadAsResource(imageFileName).getFile().getPath();
+            System.out.println("File path: " + imageFilePath);
+            String result = processImage(imageFilePath, testQuestionMap);
+            if(result.equals("failed")) {
+                return ResponseEntity.ok("failed");
+            } else if(result.equals("OK")) {
+                return ResponseEntity.ok("OK");
+            }
+            return ResponseEntity.ok(result);
+        } catch (IOException ex) {
+            Logger.getLogger(ExamController.class.getName()).log(Level.SEVERE, null, ex);
+            return ResponseEntity.ok("failed");
+        }
+    }
+    
+    @GetMapping("/api/omr/{testId}/test")
+    public ResponseEntity<?> markTestForOMR_Test(@PathVariable("testId") Long testId){ //, @RequestBody String imageLink) {
+        try {
+            //Map<Integer, Integer> testQuestionMap = questionService.getQuestionMapForOMR(testId);
+            Map<Integer, Integer> testQuestionMap = new HashMap<>();
+            testQuestionMap.put(1, 2);
+            testQuestionMap.put(2, 0);
+            testQuestionMap.put(3, 1);
+            testQuestionMap.put(4, 1);
+            testQuestionMap.put(5, 3);
+            
+            testQuestionMap.put(6, 2);
+            testQuestionMap.put(7, 1);
+            testQuestionMap.put(8, 3);
+            testQuestionMap.put(9, 0);
+            testQuestionMap.put(10, 1);
+            
+            testQuestionMap.put(11, 1);
+            testQuestionMap.put(12, 3);
+            testQuestionMap.put(13, 1);
+            testQuestionMap.put(14, 2);
+            testQuestionMap.put(15, 2);
+            
+            testQuestionMap.put(16, 2);
+            testQuestionMap.put(17, 2);
+            testQuestionMap.put(18, 2);
+            testQuestionMap.put(19, 2);
+            testQuestionMap.put(20, 2);
+            
+            testQuestionMap.put(21, 2);
+            testQuestionMap.put(22, 2);
+            testQuestionMap.put(23, 2);
+            testQuestionMap.put(24, 2);
+            testQuestionMap.put(25, 2);
+            
+            testQuestionMap.put(26, 2);
+            testQuestionMap.put(27, 2);
+            testQuestionMap.put(28, 2);
+            testQuestionMap.put(29, 2);
+            testQuestionMap.put(30, 2);
+            String imageLink = "http://localhost:8084/files/test5.jpg";
+            String[] imageStrArr = imageLink.split("/");
+            String imageFileName = imageStrArr[imageStrArr.length-1];
+            String imageFilePath = storageService.loadAsResource(imageFileName).getFile().getPath();
+            String result = processImage(imageFilePath, testQuestionMap);
+            if(result.equals("failed")) {
+                return ResponseEntity.ok("failed");
+            } else if(result.equals("OK")) {
+                return ResponseEntity.ok("OK");
+            }
+            return ResponseEntity.ok(result);
+        } catch (IOException ex) {
+            Logger.getLogger(ExamController.class.getName()).log(Level.SEVERE, null, ex);
+            return ResponseEntity.ok("failed");
+        }
+    }
+    
+    @GetMapping("/api/omr/{testId}")
+    public ResponseEntity<?> getAnswersForOMR(@PathVariable("testId") Long testId) {
+        Map<Integer, Integer> testQuestionMap = questionService.getQuestionMapForOMR(testId);
+        return ResponseEntity.ok(testQuestionMap);
     }
     
     @GetMapping("/api/doExam/{examId}/{userId}/{classId}/{nthTrial}")

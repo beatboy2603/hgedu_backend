@@ -142,6 +142,55 @@ public class QuestionService {
     public List<AnswerOption> getAnswersByNormalOrder(Long questionId) {
         return answerRepo.getAnswersByNormalOrder(questionId);
     }
+    
+    public Map<Integer, Integer> getQuestionMapForOMR(Long testId) {
+        Map<Integer, Integer> questionMap = new HashMap<>();
+        //get normal questions
+        List<Question> normalQuestions = questionRepo.getNormalQuestionsInOrder(testId);
+        //get answers for normal question
+        Integer questionNumber = 1;
+        for(int i = 0; i < normalQuestions.size(); i++) {
+            System.out.println("test: " + testId + " question: " + normalQuestions.get(i).getQuestionId());
+            String answersOrderStr = questionRepo.getQuestionAnswersOrder(testId, normalQuestions.get(i).getQuestionId());
+            if(answersOrderStr.isEmpty()) {
+                //get questions of special question
+                List<Question> childQuestions = questionRepo.getQuestionsForSpecialQuestion(testId, normalQuestions.get(i).getQuestionId());
+                for(int j = 0; j < childQuestions.size(); j++) {
+                    Integer rightAnswerIndex = 0;
+                    String childAnswersOrderStr = questionRepo.getQuestionAnswersOrder(testId, childQuestions.get(j).getQuestionId());
+                    String[] answersOrderArr = childAnswersOrderStr.split(",");
+                    Set<Integer> answersOrder = new LinkedHashSet<>();
+                    Arrays.asList(answersOrderArr).forEach(item -> answersOrder.add(Integer.valueOf(item)));
+                    List<AnswerOption> answerList = answerRepo.getAnswersInOrder(childQuestions.get(j).getQuestionId(), answersOrder);
+                    for(int k = 0; k < answerList.size(); k++) { 
+                        if(answerList.get(k).isIsCorrect()) {
+                            rightAnswerIndex = k;
+                            break;
+                        }
+                    }
+                    questionMap.put(questionNumber, rightAnswerIndex);
+                    questionNumber++;
+                }
+            } else {
+                Integer rightAnswerIndex = 0;
+                String[] answersOrderArr = answersOrderStr.split(",");
+                Set<Integer> answersOrder = new LinkedHashSet<>();
+                Arrays.asList(answersOrderArr).forEach(item -> answersOrder.add(Integer.valueOf(item)));
+                List<AnswerOption> answerList = answerRepo.getAnswersInOrder(normalQuestions.get(i).getQuestionId(), answersOrder);
+                System.out.println("size: " + answerList.size());
+                for(int k = 0; k < answerList.size(); k++) { 
+                    System.out.println("answer: " + answerList.get(k).getAnswerId());
+                    if(answerList.get(k).isIsCorrect()) {
+                        rightAnswerIndex = k;
+                        break;
+                    }
+                }
+                questionMap.put(questionNumber, rightAnswerIndex);
+                questionNumber++;
+            }
+        }
+        return questionMap;
+    }
 
     @Autowired
     private QuestionRepository questionRepository;
