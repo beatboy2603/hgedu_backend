@@ -171,6 +171,9 @@ public class TestToWordService {
             ArrayList<Question> qs = new ArrayList<>();
             while (iteratorRow.hasNext()) {
                 Row row = iteratorRow.next();
+                if (row.getCell(1).getCellType() == CellType.STRING) {
+                    
+               
                 if (row.getCell(1).getStringCellValue().equals("end")) {
                     if (aos.size() > 1 && aos.size() < 5) {
                         int checkCorrect = 0;
@@ -201,7 +204,7 @@ public class TestToWordService {
                         }
                     }
                     break;
-                }
+                } }
                 if (row.getCell(0) != null) {
                     int checkCorrect = 0;
                     if (aos.size() > 1 && aos.size() < 5) {
@@ -241,6 +244,7 @@ public class TestToWordService {
                     String[] s4 = null;
                     qCode = row.getCell(1).getStringCellValue();
                     String question = row.getCell(2).getStringCellValue();
+                    System.out.println("||||" + question);
                     String description = row.getCell(3).getStringCellValue();
                     int difficultyId = (int) row.getCell(4).getNumericCellValue();
                     int gradeLevelId = (int) row.getCell(5).getNumericCellValue();
@@ -299,7 +303,17 @@ public class TestToWordService {
                     String json = "{\"ops\":[";
                     String[] s1 = null;
                     String[] s2 = null;
-                    String content = row.getCell(1).getStringCellValue();
+                    String content = "";
+                    if (row.getCell(1).getCellType() == CellType.STRING) {
+                        System.out.println("---------------------------STRING");
+                        content = row.getCell(1).getStringCellValue();
+                        System.out.println("----------------------------- " + content);
+                    } else {
+                        System.out.println("----------------------------NUMERIC");
+                        content= row.getCell(1).getNumericCellValue() + "";
+                        System.out.println("----------------------------- " + content);
+                    }
+                    
                     boolean isCorrect = row.getCell(2).getBooleanCellValue();
                     s1 = content.split(regex);
                     for (int k = 0; k < s1.length; k++) {
