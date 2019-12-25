@@ -26,4 +26,6 @@ public interface ClassStudentRepository extends JpaRepository<ClassStudent, Long
 
     @Query(value = "SELECT * FROM ClassStudent cs WHERE cs.classId = ?1 AND cs.studentId =?2", nativeQuery = true)
     ClassStudent getByClassIdAndStudentId(Long classId, Long studentId);
+
+    ClassStudent findByClassIdAndStudentId(long classId, long studentId);
 }

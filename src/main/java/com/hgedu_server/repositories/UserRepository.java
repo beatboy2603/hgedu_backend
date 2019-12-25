@@ -64,7 +64,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value = "SELECT * FROM ParentStudent ps INNER JOIN User u ON ps.parentId = u.userId WHERE ps.studentId = ?1", nativeQuery = true)
     User findParentInformationByStudentId(int studentId);
     
-    @Query(value = "SELECT * FROM ParentStudent ps INNER JOIN User u ON ps.studentId = u.userId WHERE ps.parentId = 150", nativeQuery = true)
+    @Query(value = "SELECT * FROM ParentStudent ps INNER JOIN User u ON ps.studentId = u.userId WHERE ps.parentId = ?1", nativeQuery = true)
     Iterable<User> findStudentByParentId(long parentId);
     
     @Query(value = "SELECT * FROM User u INNER JOIN StudentTeacher st ON u.userId =  st.studentId WHERE st.teacherId = ?1 and st.isConnected = ?2", nativeQuery = true)

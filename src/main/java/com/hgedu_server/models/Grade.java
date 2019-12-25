@@ -62,6 +62,15 @@ public class Grade {
     public void setValue(String value) {
         this.value = value;
     }
+
+    public Grade(Long classStudentId, Long powerId, String value) {
+        this.classStudentId = classStudentId;
+        this.powerId = powerId;
+        this.value = value;
+    }
+
+    public Grade() {
+    }
     
     
 }
