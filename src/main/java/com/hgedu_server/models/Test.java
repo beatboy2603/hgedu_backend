@@ -35,7 +35,7 @@ public class Test {
     private String title;
     
     @Column(name = "isPublic")
-    private int isPublic;
+    private boolean isPublic;
     
     @Column(name = "permutatedFrom")
     private int permutatedFrom;
@@ -83,11 +83,11 @@ public class Test {
         this.title = title;
     }
 
-    public int getIsPublic() {
+    public boolean getIsPublic() {
         return isPublic;
     }
 
-    public void setIsPublic(int isPublic) {
+    public void setIsPublic(boolean isPublic) {
         this.isPublic = isPublic;
     }
 

@@ -61,7 +61,7 @@ public class TestServiceTest {
         t.setFolderId((long)266);
         t.setDateCreated(null);
         t.setPermutatedFrom(-1);
-        t.setIsPublic(0);
+        t.setIsPublic(false);
         t.setTitle("Thi học kì I Toán 11");
         List<com.hgedu_server.models.Test> result = tservice.getAllTestByFolderId(teacherId, folderId);
         t2 = result.get(0);
