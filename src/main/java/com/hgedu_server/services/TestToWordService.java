@@ -172,7 +172,7 @@ public class TestToWordService {
             while (iteratorRow.hasNext()) {
                 Row row = iteratorRow.next();
               
-                    
+                    if (row.getCell(1).getCellType() == CellType.STRING) {
                 
                 if (row.getCell(1).getStringCellValue().equals("end")) {
                     if (aos.size() > 1 && aos.size() < 5) {
@@ -204,7 +204,7 @@ public class TestToWordService {
                         }
                     }
                     break;
-                }
+                }}
                 if (row.getCell(0) != null) {
                     int checkCorrect = 0;
                     if (aos.size() > 1 && aos.size() < 5) {
@@ -302,7 +302,13 @@ public class TestToWordService {
                     String json = "{\"ops\":[";
                     String[] s1 = null;
                     String[] s2 = null;
-                    String content = row.getCell(1).getStringCellValue();
+                    String content = "";
+                    if (row.getCell(1).getCellType() == CellType.STRING) {
+                        content = row.getCell(1).getStringCellValue();
+                    } else {
+                        content = row.getCell(1).getNumericCellValue() + "";
+                    }
+                    
                     boolean isCorrect = row.getCell(2).getBooleanCellValue();
                     s1 = content.split(regex);
                     for (int k = 0; k < s1.length; k++) {
