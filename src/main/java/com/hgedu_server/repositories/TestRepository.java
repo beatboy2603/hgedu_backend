@@ -26,6 +26,9 @@ public interface TestRepository extends JpaRepository<Test, Long>{
     
     @Query(value = "select t.* from Test t, ExamTest et where t.testId = et.testId and et.examId = ?1", nativeQuery = true)
     List<Test> getSelectedExamTests(Long examId);
+    
+    @Query(value = "SELECT t.* FROM Test t, User u WHERE t.testCode = ?1 AND t.teacherId = u.userId AND u.email =  ?2", nativeQuery = true)
+    Test getTestForOMR(String testCode, String teacherEmail);
 
     public Test findByTestCode(String testCode);
 }

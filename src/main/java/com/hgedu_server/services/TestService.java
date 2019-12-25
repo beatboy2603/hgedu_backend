@@ -36,6 +36,10 @@ public class TestService {
     
     @Autowired
     private AnswerRepository answerRepository;
+    
+    public Test getTestForOMR(String testCode, String teacherEmail) {
+        return testRepo.getTestForOMR(testCode, teacherEmail);
+    }
 
     public List<Test> getAllTestByFolderId(Long teacherId, Long folderId) {
         return testRepo.getTestsOfFolder(teacherId, folderId);
