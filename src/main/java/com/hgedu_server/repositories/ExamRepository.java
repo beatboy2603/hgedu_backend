@@ -23,8 +23,8 @@ public interface ExamRepository extends JpaRepository<Exam, Long>{
     @Query(value = "SELECT * FROM Exam WHERE Exam.startEntryTime < CONVERT_TZ(NOW(),@@global.time_zone,'+07:00') AND Exam.startEntryTime != '0000-00-00 00:00:00' AND Exam.teacherId = ?1 AND DATE(Exam.dateUpdated) = ?2 ORDER BY DATE(Exam.dateUpdated) ASC", nativeQuery = true)
     List<Exam> getExamHistory(Long teacherId, String date);
     
-    @Query(value = "SELECT IF(a.Current = b.Total, 'Xong', CONCAT(a.Current,'/',b.Total)) 'Progress' FROM (SELECT COUNT(er.studentId) 'Current' FROM ExamResult er, ExamTest et WHERE er.examTestId = et.id AND et.examId = ?1) a, \n" +
-                    "(SELECT COUNT(cs.studentId) 'Total' FROM ClassStudent cs WHERE cs.classId IN ( SELECT c.id FROM ClassExam ce, Class c WHERE ce.classId = c.id AND ce.examId = ?1)) b ", nativeQuery = true)
+    @Query(value = "SELECT IF(a.Current = b.Total, 'Xong', CONCAT(a.Current,'/',b.Total)) 'Progress' FROM (SELECT COUNT(er.classStudentId) 'Current' FROM ExamResult er, ExamTest et WHERE er.examTestId = et.id AND et.examId = ?1) a, \n" +
+                    "(SELECT COUNT(cs.id) 'Total' FROM ClassStudent cs WHERE cs.classId IN ( SELECT c.id FROM ClassExam ce, Class c WHERE ce.classId = c.id AND ce.examId = ?1)) b ", nativeQuery = true)
     String getExamProgress(Long examId);
     
     @Query(value = "SELECT DATE(Exam.dateUpdated) FROM Exam WHERE Exam.startEntryTime <= CONVERT_TZ(NOW(),@@global.time_zone,'+07:00') AND Exam.startEntryTime != '0000-00-00 00:00:00' AND Exam.teacherId = ?1 GROUP BY DATE(Exam.dateUpdated) ORDER BY DATE(Exam.dateUpdated) ASC", nativeQuery = true)
