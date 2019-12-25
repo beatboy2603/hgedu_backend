@@ -51,6 +51,12 @@ public class NewsController {
       List<News> list = newsService.getAllNews();
       return ResponseEntity.ok(list);
     }
+    //đây là hàm copy hàm getAllNews
+    @GetMapping("/news")
+    public ResponseEntity getAllNewsNoApi() {
+      List<News> list = newsService.getAllNews();
+      return ResponseEntity.ok(list);
+    }
     
     @GetMapping("/api/news/{id}")
     public ResponseEntity getNewsById(@PathVariable("id") Long id) {

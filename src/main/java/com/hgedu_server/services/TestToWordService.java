@@ -404,7 +404,7 @@ public class TestToWordService {
     public void toWord(List<Question> questions, List<AnswerOption> answerOptions) {
         try {
             XWPFDocument doc = new XWPFDocument();
-            FileOutputStream fos = new FileOutputStream(new File("format_file.docx"));
+            FileOutputStream fos = new FileOutputStream(new File("test.docx"));
             XWPFTable table = doc.createTable(1, 2);
             table.setWidth(10000);
             XWPFTableRow tableRowOne = table.getRow(0);
