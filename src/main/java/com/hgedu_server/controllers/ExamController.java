@@ -249,42 +249,81 @@ public class ExamController {
     
     private List<Point> getChosenAnswers(Mat inputImage, Integer index) {
         Mat mask = new Mat();
-        
+        Mat blur = new Mat();
+        Imgproc.blur(inputImage, blur, new Size(5,5));
         Scalar lowerBound = new Scalar(0, 0, 10);
-        Scalar upperBound = new Scalar(255,255,165);
+        Scalar brightness = Core.mean(blur);
+        if(Double.compare(brightness.val[0],192) < 0) {
+            Scalar upperBound = new Scalar(255,255,165);
         
-        Core.inRange(inputImage, lowerBound, upperBound, mask);
-        
-        Mat kernel = Mat.ones(3, 3, CvType.CV_8U);
-        Imgproc.erode(mask, mask, kernel, new Point(-1,-1), 6);
-        Imgproc.dilate(mask, mask, kernel, new Point(-1,-1), 3);
-        
-        Mat hierarchy = new Mat();
-        List<MatOfPoint> contourList = new ArrayList<>(); //A list to store all the contours
-        Imgproc.findContours(mask.clone(), contourList, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-        
-        MatOfPoint2f[] contoursPoly  = new MatOfPoint2f[contourList.size()];
-        List<MatOfPoint> contoursPolyList = new ArrayList<>(contoursPoly.length);
-        List<Point> chosenAnswerCenterList = new ArrayList<>();
-        Rect[] boundRect = new Rect[contourList.size()];
-        Point[] centers = new Point[contourList.size()];
-        float[][] radius = new float[contourList.size()][1];
-        for(int i = 0; i < contourList.size(); i++) {
-            contoursPoly[i] = new MatOfPoint2f();
-            Imgproc.approxPolyDP(new MatOfPoint2f(contourList.get(i).toArray()), contoursPoly[i], 3, true);
-            boundRect[i] = Imgproc.boundingRect(new MatOfPoint(contoursPoly[i].toArray()));
-            centers[i] = new Point();
-            Imgproc.minEnclosingCircle(contoursPoly[i], centers[i], radius[i]);
-            contoursPolyList.add(new MatOfPoint(contoursPoly[i].toArray()));
-            if(Float.compare(radius[i][0], 8) >= 0  && Float.compare(radius[i][0], 15) <= 0) {
-                chosenAnswerCenterList.add(centers[i]);
+            Core.inRange(inputImage, lowerBound, upperBound, mask);
+
+            Mat kernel = Mat.ones(3, 3, CvType.CV_8U);
+            Imgproc.erode(mask, mask, kernel, new Point(-1,-1), 6);
+            Imgproc.dilate(mask, mask, kernel, new Point(-1,-1), 3);
+
+            Mat hierarchy = new Mat();
+            List<MatOfPoint> contourList = new ArrayList<>(); //A list to store all the contours
+            Imgproc.findContours(mask.clone(), contourList, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+
+            MatOfPoint2f[] contoursPoly  = new MatOfPoint2f[contourList.size()];
+            List<MatOfPoint> contoursPolyList = new ArrayList<>(contoursPoly.length);
+            List<Point> chosenAnswerCenterList = new ArrayList<>();
+            Rect[] boundRect = new Rect[contourList.size()];
+            Point[] centers = new Point[contourList.size()];
+            float[][] radius = new float[contourList.size()][1];
+            for(int i = 0; i < contourList.size(); i++) {
+                contoursPoly[i] = new MatOfPoint2f();
+                Imgproc.approxPolyDP(new MatOfPoint2f(contourList.get(i).toArray()), contoursPoly[i], 3, true);
+                boundRect[i] = Imgproc.boundingRect(new MatOfPoint(contoursPoly[i].toArray()));
+                centers[i] = new Point();
+                Imgproc.minEnclosingCircle(contoursPoly[i], centers[i], radius[i]);
+                contoursPolyList.add(new MatOfPoint(contoursPoly[i].toArray()));
+                if(Float.compare(radius[i][0], 8) >= 0  && Float.compare(radius[i][0], 15) <= 0) {
+                    chosenAnswerCenterList.add(centers[i]);
+                }
             }
+
+    //        Imgproc.drawContours(inputImage, contoursPolyList, 0, new Scalar(0,255,0), 2);
+    //        Imgcodecs.imwrite("C:/Users/Administrator/Pictures/test_procressed" + index + ".jpg", inputImage);
+
+            return chosenAnswerCenterList;
+        } else {
+            Scalar upperBound = new Scalar(255,255,175);
+
+            Core.inRange(inputImage, lowerBound, upperBound, mask);
+
+            Mat kernel = Mat.ones(3, 3, CvType.CV_8U);
+            Imgproc.erode(mask, mask, kernel, new Point(-1,-1), 4);
+            Imgproc.dilate(mask, mask, kernel, new Point(-1,-1), 3);
+
+            Mat hierarchy = new Mat();
+            List<MatOfPoint> contourList = new ArrayList<>(); //A list to store all the contours
+            Imgproc.findContours(mask.clone(), contourList, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+
+            MatOfPoint2f[] contoursPoly  = new MatOfPoint2f[contourList.size()];
+            List<MatOfPoint> contoursPolyList = new ArrayList<>(contoursPoly.length);
+            List<Point> chosenAnswerCenterList = new ArrayList<>();
+            Rect[] boundRect = new Rect[contourList.size()];
+            Point[] centers = new Point[contourList.size()];
+            float[][] radius = new float[contourList.size()][1];
+            for(int i = 0; i < contourList.size(); i++) {
+                contoursPoly[i] = new MatOfPoint2f();
+                Imgproc.approxPolyDP(new MatOfPoint2f(contourList.get(i).toArray()), contoursPoly[i], 3, true);
+                boundRect[i] = Imgproc.boundingRect(new MatOfPoint(contoursPoly[i].toArray()));
+                centers[i] = new Point();
+                Imgproc.minEnclosingCircle(contoursPoly[i], centers[i], radius[i]);
+                contoursPolyList.add(new MatOfPoint(contoursPoly[i].toArray()));
+                if(Float.compare(radius[i][0], 8) >= 0  && Float.compare(radius[i][0], 15) <= 0) {
+                    chosenAnswerCenterList.add(centers[i]);
+                }
+            }
+
+    //        Imgproc.drawContours(inputImage, contoursPolyList, 0, new Scalar(0,255,0), 2);
+    //        Imgcodecs.imwrite("C:/Users/Administrator/Pictures/test_procressed" + index + ".jpg", inputImage);
+
+            return chosenAnswerCenterList;
         }
-        
-//        Imgproc.drawContours(inputImage, contoursPolyList, 0, new Scalar(0,255,0), 2);
-//        Imgcodecs.imwrite("C:/Users/Administrator/Pictures/test_procressed" + index + ".jpg", inputImage);
-        
-        return chosenAnswerCenterList;
     }
     
     private Map<Integer, List<Point>> getQuestionMap(List<Point> answerCenterList) {
