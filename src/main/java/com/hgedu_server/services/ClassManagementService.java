@@ -48,11 +48,11 @@ public class ClassManagementService {
     @Autowired
     private ExamRepository examRepository;
 
-    public Iterable<Class> findClassesByTeacherId(int teacherId) {
+    public Iterable<Class> findClassesByTeacherId(Long teacherId) {
         return classManagementRepository.findByTeacherId(teacherId);
     }
 
-    public Iterable<Class> findClassesByStudentId(long studentId) {
+    public Iterable<Class> findClassesByStudentId(Long studentId) {
         return classManagementRepository.findClassByStudentId(studentId);
     }
 
@@ -60,43 +60,43 @@ public class ClassManagementService {
         return classManagementRepository.save(cl);
     }
 
-    public void deleteById(long classId) {
+    public void deleteById(Long classId) {
         classManagementRepository.deleteById(classId);
     }
 
-    public Iterable<Grade> findByClassStudentId(long id) {
+    public Iterable<Grade> findByClassStudentId(Long id) {
         return gradeRepository.findByClassStudentIdOrderByPowerIdAsc(id);
     }
 
-    public User findParentInformationByStudentId(int studentId) {
+    public User findParentInformationByStudentId(Long studentId) {
         return userRepository.findParentInformationByStudentId(studentId);
     }
 
-    public Iterable<StudentTeacher> findByIsConnected(long teacherId) {
+    public Iterable<StudentTeacher> findByIsConnected(Long teacherId) {
         boolean isConnected = true;
         return studentTeacherRepository.findByIsConnectedAndTeacherId(isConnected, teacherId);
     }
 
-    public Iterable<StudentTeacher> findByIsConnectedAndStudentId(long studentId) {
+    public Iterable<StudentTeacher> findByIsConnectedAndStudentId(Long studentId) {
         boolean isConnected = true;
         return studentTeacherRepository.findByIsConnectedAndStudentId(isConnected, studentId);
     }
 
-    public Iterable<User> findConnectedStudentByTeacherId(int teacherId) {
+    public Iterable<User> findConnectedStudentByTeacherId(Long teacherId) {
         boolean isConnected = true;
         return userRepository.findConnectedStudentByTeacherId(teacherId, isConnected);
     }
 
-    public Iterable<User> findConnectedTeacherByStudentId(int studentId) {
+    public Iterable<User> findConnectedTeacherByStudentId(Long studentId) {
         boolean isConnected = true;
         return userRepository.findConnectedTeacherByStudentId(studentId, isConnected);
     }
 
-    public void deleteStudentTeacher(long studentId) {
+    public void deleteStudentTeacher(Long studentId) {
         studentTeacherRepository.deleteByStudentId(studentId);
     }
 
-    public User findTeacherInformation(int userId) {
+    public User findTeacherInformation(Long userId) {
         return userRepository.findByUserId(userId);
     }
 
@@ -104,11 +104,11 @@ public class ClassManagementService {
         return examRepository.findExamsByClassId();
     }
 
-    public Iterable<User> findStudentByParentId(long parentId) {
+    public Iterable<User> findStudentByParentId(Long parentId) {
         return userRepository.findStudentByParentId(parentId);
     }
 
-    public Iterable<Object[]> parentFindTeacherByStudentId(long studentId) {
+    public Iterable<Object[]> parentFindTeacherByStudentId(Long studentId) {
         return userRepository.parentFindTeacherInformationByStudentId(studentId);
     }
 

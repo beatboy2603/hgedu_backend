@@ -22,7 +22,7 @@ public class AbbreviationService {
     @Autowired
     private AbbreviationRepository abbreviationRepository;
 
-    public List<Abbreviation> getAllAbbreviations(int teacherId) {
+    public List<Abbreviation> getAllAbbreviations(Long teacherId) {
         List<Abbreviation> abbreviationList = abbreviationRepository.findByTeacherId(teacherId);
         Collections.sort(abbreviationList, Collections.reverseOrder());         
         return abbreviationList;
@@ -32,7 +32,7 @@ public class AbbreviationService {
         abbreviationRepository.save(abbreviation);
     }
 
-    public void deleteAbbreviation(int abbreviationId) throws Exception {
+    public void deleteAbbreviation(Long abbreviationId) throws Exception {
         try {
             abbreviationRepository.deleteById(abbreviationId);
         } catch (Exception e) {

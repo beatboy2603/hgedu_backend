@@ -22,13 +22,13 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     Long findQuestionIdByQuestionCode(String code);
     
     @Query(value = "SELECT questionId FROM Question WHERE questionCode = ?1 AND teacherId  = ?2", nativeQuery = true)
-    Long findQuestionIdByQuestionCodeAndTeacherId(String code, int teacherId);
+    Long findQuestionIdByQuestionCodeAndTeacherId(String code, Long teacherId);
     
    @Query(value = "SELECT * FROM Question q, TestQuestion tq WHERE q.questionId = tq.questionId and tq.testId = ?1", nativeQuery = true)
-   List<Question> findByTestId(long testId); 
+   List<Question> findByTestId(Long testId); 
     
     
-    List<Question> findByTeacherIdAndFolderId(int teacherId, int folderId);
+    List<Question> findByTeacherIdAndFolderId(Long teacherId, Long folderId);
     @Query(value = "SELECT q.* FROM Question q, TestQuestion tq, Test t WHERE  q.questionId = tq.questionId AND tq.testId = t.testId AND t.testId = ?1 AND q.questionParentId = 0 ORDER BY Rand()", nativeQuery = true)
     List<Question> getNormalQuestionsOfTest(Long testId);
     
@@ -58,13 +58,13 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     List<Question> findByQuestionParentId(Long questionId);
 
     @Query(value = "SELECT DISTINCT(formIdentifier) FROM `Question` where teacherId = ?1 and formIdentifier != '' and formIdentifier is not null", nativeQuery = true)
-    List<String> getAllFormIdentifiersByTeacherId(int teacherId);
+    List<String> getAllFormIdentifiersByTeacherId(Long teacherId);
     
     @Query(value = "SELECT DISTINCT(specialKnowledge) FROM `Question` where teacherId=?1 and specialKnowledge != '' and specialKnowledge is not null", nativeQuery = true)
-    List<String> getAllSpecialKnowledgeByTeacherId(int teacherId);
+    List<String> getAllSpecialKnowledgeByTeacherId(Long teacherId);
 
-    List<Question> findByTeacherId(int teacherId);
+    List<Question> findByTeacherId(Long teacherId);
 
     @Query(value = "SELECT * FROM `Question` where questionId in (SELECT questionId from TestQuestion where testId = ?1)", nativeQuery = true)
-    List<Question> getTestQuestions(int testId);
+    List<Question> getTestQuestions(Long testId);
 }

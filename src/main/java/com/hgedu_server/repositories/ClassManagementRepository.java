@@ -16,9 +16,9 @@ import org.springframework.data.jpa.repository.Query;
  */
 public interface ClassManagementRepository extends JpaRepository<Class, Long> {
 
-    Iterable<Class> findByTeacherId(int teacherId);
+    Iterable<Class> findByTeacherId(Long teacherId);
     
     @Query(value = "SELECT * FROM Class c INNER JOIN ClassStudent ct ON c.id = ct.classId WHERE studentid = ?1", nativeQuery = true)
-    Iterable<Class> findClassByStudentId(long studentId);
+    Iterable<Class> findClassByStudentId(Long studentId);
     
 }

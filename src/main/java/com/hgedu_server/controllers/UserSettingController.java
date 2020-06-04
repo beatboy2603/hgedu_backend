@@ -44,7 +44,7 @@ public class UserSettingController {
 //    ----- Check and get whether user has link request or not -----
     @GetMapping("/request/{userId}")
     @ResponseBody
-    public List<User> getRequest(@PathVariable("userId") int userId) {
+    public List<User> getRequest(@PathVariable("userId") Long userId) {
         String getAnUser = userService.getAnUser(userId).get().getEmail();
         return linkRequestService.getUserByRequest(getAnUser);
     }
@@ -52,7 +52,7 @@ public class UserSettingController {
 //    ----- edit user information -----
 //    userService
     @PutMapping("/{userId}")
-    public ResponseEntity edit(@PathVariable("userId") int userId, @RequestBody HashMap<String, Object> user) {
+    public ResponseEntity edit(@PathVariable("userId") Long userId, @RequestBody HashMap<String, Object> user) {
         Optional<User> users = userService.getAnUser(userId);
         if (users.isPresent()) {
             User getUser = users.get();

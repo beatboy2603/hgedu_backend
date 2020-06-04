@@ -28,9 +28,9 @@ public class Question {
     private String questionCode;
 
     @Column
-    private int teacherId;
+    private Long teacherId;
     @Column
-    private int folderId;
+    private Long folderId;
     @Column
     private Long questionParentId;
     @Column
@@ -70,10 +70,6 @@ public class Question {
     private String explanation;
     @Column
     private boolean isPublic;
-    @Column
-    private String questionKatex;
-    @Column
-    private String images;
 
     //questionId - questionCode - teacherId - folderId - folderId - questionParentId
     // formIdentifier - content - description - dateCreated - difficultyId -
@@ -94,19 +90,19 @@ public class Question {
         this.questionCode = questionCode;
     }
 
-    public int getTeacherId() {
+    public Long getTeacherId() {
         return teacherId;
     }
 
-    public void setTeacherId(int teacherId) {
+    public void setTeacherId(Long teacherId) {
         this.teacherId = teacherId;
     }
 
-    public int getFolderId() {
+    public Long getFolderId() {
         return folderId;
     }
 
-    public void setFolderId(int folderId) {
+    public void setFolderId(Long folderId) {
         this.folderId = folderId;
     }
 
@@ -198,26 +194,10 @@ public class Question {
         this.isPublic = isPublic;
     }
 
-    public String getQuestionKatex() {
-        return questionKatex;
-    }
-
-    public void setQuestionKatex(String questionKatex) {
-        this.questionKatex = questionKatex;
-    }
-
-    public String getImages() {
-        return images;
-    }
-
-    public void setImages(String images) {
-        this.images = images;
-    }
-
     public Question() {
     }
 
-    public Question(Long questionId, String questionCode, int teacherId, int folderId, Long questionParentId, String formIdentifier, String content, String description, Date dateCreated, int difficultyId, int gradeLevelId, int questionTypeId, String knowledgeGroup, String specialKnowledge, String explanation, boolean isPublic, String questionKatex, String images) {
+    public Question(Long questionId, String questionCode, Long teacherId, Long folderId, Long questionParentId, String formIdentifier, String content, String description, Date dateCreated, int difficultyId, int gradeLevelId, int questionTypeId, String knowledgeGroup, String specialKnowledge, String explanation, boolean isPublic) {
         this.questionId = questionId;
         this.questionCode = questionCode;
         this.teacherId = teacherId;
@@ -234,8 +214,6 @@ public class Question {
         this.specialKnowledge = specialKnowledge;
         this.explanation = explanation;
         this.isPublic = isPublic;
-        this.questionKatex = questionKatex;
-        this.images = images;
     }
     
     

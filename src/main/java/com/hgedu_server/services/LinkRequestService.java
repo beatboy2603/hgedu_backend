@@ -55,8 +55,8 @@ public class LinkRequestService {
         if (userRepository.getUserByEmail(studentMail).isEmpty()) {
             responseList.put("mess", "Không tìm thấy người dùng");
         } else {
-            int parentId = userRepository.getUserIdByEmail(parentMail);
-            int studentId = userRepository.getUserIdByEmail(studentMail);
+            Long parentId = userRepository.getUserIdByEmail(parentMail);
+            Long studentId = userRepository.getUserIdByEmail(studentMail);
             if(parentStudent.findByStudentIdAndParentId(parentId, studentId).size()>0){
                 responseList.put("mess", "Người này đang là phụ huynh của bạn");
             } else if (linkRequestRepo.checkDuplicateLinkedUser(parentId, studentId) >= 1) {
@@ -73,7 +73,7 @@ public class LinkRequestService {
         return responseList;
     }
 
-    public List<LinkRequest> getRequest(int id) {
+    public List<LinkRequest> getRequest(Long id) {
         User user = userRepository.getOne(id);
         return linkRequestRepo.getRequest(user.getEmail());
     }
@@ -89,8 +89,8 @@ public class LinkRequestService {
     }
 
     public void acceptRequest(String parentEmail, String studentEmail) {
-        int parentId = userRepository.getUserIdByEmail(parentEmail);
-        int studentId = userRepository.getUserIdByEmail(studentEmail);
+        Long parentId = userRepository.getUserIdByEmail(parentEmail);
+        Long studentId = userRepository.getUserIdByEmail(studentEmail);
         System.out.println("Accept Request - Student mail: " + studentEmail);
         linkRequestRepo.addToLink(parentId, studentId);
         linkRequestRepo.deleteRequest(parentEmail, studentEmail);

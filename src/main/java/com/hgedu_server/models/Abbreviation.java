@@ -20,9 +20,9 @@ public class Abbreviation implements Comparable<Abbreviation> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="abbreviationId")
-    private int abbreviationId;
+    private Long abbreviationId;
     @Column(name="teacherId")
-    private int teacherId;
+    private Long teacherId;
     @Column(name="shortenForm")
     private String shortenForm;
     @Column(name="originalForm")
@@ -33,7 +33,7 @@ public class Abbreviation implements Comparable<Abbreviation> {
     public Abbreviation() {
     }
 
-    public Abbreviation(int abbreviationId, int teacherId, String shortenForm, String originalForm, boolean isKatex) {
+    public Abbreviation(Long abbreviationId, Long teacherId, String shortenForm, String originalForm, boolean isKatex) {
         this.abbreviationId = abbreviationId;
         this.teacherId = teacherId;
         this.shortenForm = shortenForm;
@@ -41,19 +41,19 @@ public class Abbreviation implements Comparable<Abbreviation> {
         this.isKatex = isKatex;
     }
 
-    public int getAbbreviationId() {
+    public Long getAbbreviationId() {
         return abbreviationId;
     }
 
-    public void setAbbreviationId(int abbreviationId) {
+    public void setAbbreviationId(Long abbreviationId) {
         this.abbreviationId = abbreviationId;
     }
 
-    public int getTeacherId() {
+    public Long getTeacherId() {
         return teacherId;
     }
 
-    public void setTeacherId(int teacherId) {
+    public void setTeacherId(Long teacherId) {
         this.teacherId = teacherId;
     }
 

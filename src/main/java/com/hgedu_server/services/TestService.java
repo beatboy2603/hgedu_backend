@@ -62,7 +62,7 @@ public class TestService {
 
         List<TestQuestion> testQuestionList = testContentPlaceholder.getTestQuestionList();
         for(int i=0;i<testQuestionList.size();i++){
-            testQuestionList.get(i).setTestId(addedTest.getId().intValue());
+            testQuestionList.get(i).setTestId(addedTest.getId());
             List<AnswerOption> answers = answerRepository.findByQuestionId(Long.valueOf(testQuestionList.get(i).getTestQuestionIdentity().getQuestionId()));
             String answersOrder = "";
             for (int k=0; k<answers.size();k++){
@@ -77,15 +77,15 @@ public class TestService {
     public List<Question> getTestContent(Long testFolderId) {
         Test test = testRepo.findByFolderId(testFolderId);
         System.out.println(test.getId());
-        List<Question> testQuestions = questionRepository.getTestQuestions(test.getId().intValue());
+        List<Question> testQuestions = questionRepository.getTestQuestions(test.getId());
         return testQuestions;
     }
 
-    public List<Test> getAllTests(int teacherId) {
-        return testRepo.findByTeacherId(Long.valueOf(teacherId));
+    public List<Test> getAllTests(Long teacherId) {
+        return testRepo.findByTeacherId(teacherId);
     }
 
-    public List<TestQuestion> getAllTestQuestions(int teacherId) {
+    public List<TestQuestion> getAllTestQuestions(Long teacherId) {
         return testQuestionRepository.findByTeacherId(teacherId);
     }
 }

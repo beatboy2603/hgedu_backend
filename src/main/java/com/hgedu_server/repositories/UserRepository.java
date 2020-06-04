@@ -23,7 +23,7 @@ import java.util.Optional;
  *
  * @author ADMIN
  */
-public interface UserRepository extends JpaRepository<User, Integer> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query(value = "select * from User where email = ?1", nativeQuery = true)
     List<User> getUserByEmail(String email);
@@ -41,42 +41,42 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     
     // parent info show in student detail [role: teacher, page: studentCustomizedTable]
     @Query(value = "SELECT * FROM `User` WHERE userId in (SELECT parentId FROM `ParentStudent` WHERE studentId = ?1)",nativeQuery = true)
-    List<User> getParentInfoByStudentId(int studentId);
+    List<User> getParentInfoByStudentId(Long studentId);
     
 //    ---- student-teacher ----
     @Query(value = "SELECT * FROM USER WHERE userid IN (SELECT teacherId FROM StudentTeacher WHERE studentId = ?1)", nativeQuery = true)
-    List<User> getTeacherList(int studentId);
+    List<User> getTeacherList(Long studentId);
     
     @Query(value = "SELECT * FROM USER WHERE userid IN (SELECT studentId FROM StudentTeacher WHERE teacherId = ?1)", nativeQuery = true)
-    List<User> getStudentList(int studentId);
+    List<User> getStudentList(Long studentId);
     
     @Query(value = " select userId from User where email = ?1", nativeQuery = true)
-    int getUserIdByEmail(String email);
+    Long getUserIdByEmail(String email);
      
     @Query(value = "SELECT * FROM `User` WHERE email IN (SELECT teacherEmail FROM TeacherRequest WHERE studentId = ?1)", nativeQuery = true)
-    List<User> getRequestTeacher(int studentId);
+    List<User> getRequestTeacher(Long studentId);
 
     List<User> findByUserSub(String userSub);
     
     @Query(value = "SELECT * FROM ClassStudent cs INNER JOIN User u ON cs.studentId = u.userId WHERE cs.classId = ?1", nativeQuery = true)
-    Iterable<User> findUserByClassId(long classId);
+    Iterable<User> findUserByClassId(Long classId);
     
     @Query(value = "SELECT * FROM ParentStudent ps INNER JOIN User u ON ps.parentId = u.userId WHERE ps.studentId = ?1", nativeQuery = true)
-    User findParentInformationByStudentId(int studentId);
+    User findParentInformationByStudentId(Long studentId);
     
     @Query(value = "SELECT * FROM ParentStudent ps INNER JOIN User u ON ps.studentId = u.userId WHERE ps.parentId = ?1", nativeQuery = true)
-    Iterable<User> findStudentByParentId(long parentId);
+    Iterable<User> findStudentByParentId(Long parentId);
     
     @Query(value = "SELECT * FROM User u INNER JOIN StudentTeacher st ON u.userId =  st.studentId WHERE st.teacherId = ?1 and st.isConnected = ?2", nativeQuery = true)
-    Iterable<User> findConnectedStudentByTeacherId(int teacherId, boolean isConnected);
+    Iterable<User> findConnectedStudentByTeacherId(Long teacherId, boolean isConnected);
     
     @Query(value = "SELECT * FROM User u INNER JOIN StudentTeacher st ON u.userId =  st.teacherId WHERE st.studentId = ?1 and st.isConnected = ?2", nativeQuery = true)
-    Iterable<User> findConnectedTeacherByStudentId(int student, boolean isConnected);
+    Iterable<User> findConnectedTeacherByStudentId(Long student, boolean isConnected);
     
     @Query(value = "SELECT u.fullName, u.gender, u.dob, a.teacherId,u.phoneNumber, u.school, u.email, a.classId, a.name, a.classStudentId FROM (SELECT cs.id as classStudentId,  cs.ClassId, c.teacherId, c.name FROM ClassStudent cs JOIN Class c ON cs.classId = c.id WHERE studentId = ?1) as a JOIN User u ON a.teacherId = u.userId", nativeQuery = true)
-    Iterable<Object[]> parentFindTeacherInformationByStudentId(long studentId);
+    Iterable<Object[]> parentFindTeacherInformationByStudentId(Long studentId);
     
-    User findByUserId(int userId);
+    User findByUserId(Long userId);
 //    @Override
 //    public Iterable<User> findAll();
     @Query(value = "SELECT * FROM webgiaoduc.User where roleId != 1 order by roleId", nativeQuery = true)

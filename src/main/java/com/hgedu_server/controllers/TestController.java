@@ -50,12 +50,12 @@ public class TestController {
     }
 
     @GetMapping("/getAllTests/{teacherId}")
-    public List<Test> getAllTests(@PathVariable int teacherId) throws Exception {
+    public List<Test> getAllTests(@PathVariable Long teacherId) throws Exception {
         return testService.getAllTests(teacherId);
     }
 
     @GetMapping("/getAllTestQuestions/{teacherId}")
-    public List<TestQuestion> getAllTestQuestions(@PathVariable int teacherId) throws Exception {
+    public List<TestQuestion> getAllTestQuestions(@PathVariable Long teacherId) throws Exception {
         return testService.getAllTestQuestions(teacherId);
     }
 

@@ -28,11 +28,7 @@ public class AnswerOption {
     @Column
     private String content;
     @Column
-    private String images;
-    @Column
     private boolean isCorrect;
-    @Column
-    private String answerKatex;
     @Column
     private String linkedAnswers;
 
@@ -71,28 +67,12 @@ public class AnswerOption {
         this.content = content;
     }
 
-    public String getImages() {
-        return images;
-    }
-
-    public void setImages(String images) {
-        this.images = images;
-    }
-
     public boolean isIsCorrect() {
         return isCorrect;
     }
 
     public void setIsCorrect(boolean isCorrect) {
         this.isCorrect = isCorrect;
-    }
-
-    public String getAnswerKatex() {
-        return answerKatex;
-    }
-
-    public void setAnswerKatex(String answerKatex) {
-        this.answerKatex = answerKatex;
     }
 
     public String getLinkedAnswers() {
@@ -106,13 +86,11 @@ public class AnswerOption {
     public AnswerOption() {
     }
 
-    public AnswerOption(Long answerId, Long questionId, String content, String images, boolean isCorrect, String answerKatex, String linkedAnswers) {
+    public AnswerOption(Long answerId, Long questionId, String content, boolean isCorrect, String linkedAnswers) {
         this.answerId = answerId;
         this.questionId = questionId;
         this.content = content;
-        this.images = images;
         this.isCorrect = isCorrect;
-        this.answerKatex = answerKatex;
         this.linkedAnswers = linkedAnswers;
     }
     

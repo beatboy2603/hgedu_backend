@@ -57,7 +57,7 @@ public class TestQuestion implements Serializable{
         this.answersOrder = answersOrder;
     }
     
-    public void setTestId(int testId) {
+    public void setTestId(Long testId) {
         this.testQuestionIdentity.setTestId(testId);
     }
 

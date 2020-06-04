@@ -20,35 +20,35 @@ public class ClassStudent {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     
     @Column
-    private long classId;
+    private Long classId;
     
     @Column
-    private long studentId;
+    private Long studentId;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public long getClassId() {
+    public Long getClassId() {
         return classId;
     }
 
-    public void setClassId(long classId) {
+    public void setClassId(Long classId) {
         this.classId = classId;
     }
 
-    public long getStudentId() {
+    public Long getStudentId() {
         return studentId;
     }
 
-    public void setStudentId(long studentId) {
+    public void setStudentId(Long studentId) {
         this.studentId = studentId;
     }
     

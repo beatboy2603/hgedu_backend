@@ -14,37 +14,37 @@ import org.springframework.data.jpa.repository.Query;
  *
  * @author ADMIN
  */
-public interface FolderRepository extends JpaRepository<Folder, Integer> {
+public interface FolderRepository extends JpaRepository<Folder, Long> {
 
     @Query(value = "select * from Folder where teacherId = ?1 and parentFolderId = ?2", nativeQuery = true)
-    List<Folder> getAllSubfolders(int teacherId, int parentFolderId);
+    List<Folder> getAllSubfolders(Long teacherId, Long parentFolderId);
     
     @Query(value = "SELECT a.* FROM Folder a WHERE a.parentFolderId = ?1 AND a.folderId NOT IN (SELECT t.folderId FROM Test t, Folder f WHERE t.teacherId = ?2 AND t.folderId = f.folderId AND f.parentFolderId = ?1 AND isPublic = 0)", nativeQuery = true)
-    List<Folder> getAllSubfolders(Long parentFolderId, Long teacherId);
+    List<Folder> getAllSubfoldersForExam(Long parentFolderId, Long teacherId);
     
-    Folder getOne(int folderId);
+    Folder getOne(Long folderId);
     
     @Query(value = "select * from Folder where folderId = ?1", nativeQuery = true)
     Folder getFolderById(Long folderId);
     
-    @Query(value = "select * from Folder where folderId = ?1", nativeQuery = true)
-    Folder getFolderById(int folderId);
+//    @Query(value = "select * from Folder where folderId = ?1", nativeQuery = true)
+//    Folder getFolderById(int folderId);
     
     @Query(value = "select * from Folder where teacherId = ?1 and folderName = \"Thư viện đề thi\"", nativeQuery = true)
     Folder getRootTestsFolder(Long teacherId);
 
-    List<Folder> findByTeacherId(int teacherId);
+    List<Folder> findByTeacherId(Long teacherId);
     
-    List<Folder> findByFolderId(int folderId);
+    List<Folder> findByFolderId(Long folderId);
 
-    List<Folder> findByTeacherIdAndFolderName(int teacherId, String folderName);
+    List<Folder> findByTeacherIdAndFolderName(Long teacherId, String folderName);
 
-    Folder findByTeacherIdAndFolderNameAndParentFolderId(int teacherId, String folderName, int parentFolderId);
+    Folder findByTeacherIdAndFolderNameAndParentFolderId(Long teacherId, String folderName, Long parentFolderId);
 
     @Query(value = "select distinct(folderName) from Folder where teacherId = ?1 and folderTypeId=2", nativeQuery = true)
-    List<String> getAllKnowledgeGroups(int teacherId);
+    List<String> getAllKnowledgeGroups(Long teacherId);
 
     @Query(value = "select distinct(folderId) from Folder where teacherId = ?1 and folderTypeId=2", nativeQuery = true)
-    List<Integer> getAllKnowledgeGroupsId(int teacherId);
+    List<Integer> getAllKnowledgeGroupsId(Long teacherId);
 
 }

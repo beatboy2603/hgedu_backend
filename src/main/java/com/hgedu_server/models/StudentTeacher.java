@@ -20,13 +20,13 @@ public class StudentTeacher {
     
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY)
-    private long studentTeacherId;
+    private Long studentTeacherId;
     
     @Column
-    private long studentId;
+    private Long studentId;
     
     @Column
-    private long teacherId;
+    private Long teacherId;
     
     @Column
     private boolean isConnected;
@@ -34,27 +34,27 @@ public class StudentTeacher {
     @Column
     private String displayedName;
 
-    public long getStudentTeacherId() {
+    public Long getStudentTeacherId() {
         return studentTeacherId;
     }
 
-    public void setStudentTeacherId(long studentTeacherId) {
+    public void setStudentTeacherId(Long studentTeacherId) {
         this.studentTeacherId = studentTeacherId;
     }
 
-    public long getStudentId() {
+    public Long getStudentId() {
         return studentId;
     }
 
-    public void setStudentId(long studentId) {
+    public void setStudentId(Long studentId) {
         this.studentId = studentId;
     }
 
-    public long getTeacherId() {
+    public Long getTeacherId() {
         return teacherId;
     }
 
-    public void setTeacherId(long teacherId) {
+    public void setTeacherId(Long teacherId) {
         this.teacherId = teacherId;
     }
 

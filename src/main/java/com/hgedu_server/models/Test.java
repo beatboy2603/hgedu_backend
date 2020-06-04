@@ -38,7 +38,7 @@ public class Test {
     private boolean isPublic;
     
     @Column(name = "permutatedFrom")
-    private int permutatedFrom;
+    private Long permutatedFrom;
     
     @Column(name = "dateCreated")
     private String dateCreated;
@@ -91,11 +91,11 @@ public class Test {
         this.isPublic = isPublic;
     }
 
-    public int getPermutatedFrom() {
+    public Long getPermutatedFrom() {
         return permutatedFrom;
     }
 
-    public void setPermutatedFrom(int permutatedFrom) {
+    public void setPermutatedFrom(Long permutatedFrom) {
         this.permutatedFrom = permutatedFrom;
     }
 

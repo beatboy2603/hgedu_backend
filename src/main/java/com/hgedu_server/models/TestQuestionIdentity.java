@@ -16,32 +16,32 @@ import javax.validation.constraints.NotNull;
 @Embeddable
 public class TestQuestionIdentity implements Serializable {
     @NotNull
-    private int testId;
+    private Long testId;
 
     @NotNull
-    private int questionId;
+    private Long questionId;
 
     public TestQuestionIdentity() {
     }
 
-    public TestQuestionIdentity(int testId, int questionId) {
+    public TestQuestionIdentity(Long testId, Long questionId) {
         this.testId = testId;
         this.questionId = questionId;
     }
 
-    public int getTestId() {
+    public Long getTestId() {
         return testId;
     }
 
-    public void setTestId(int testId) {
+    public void setTestId(Long testId) {
         this.testId = testId;
     }
 
-    public int getQuestionId() {
+    public Long getQuestionId() {
         return questionId;
     }
 
-    public void setQuestionId(int questionId) {
+    public void setQuestionId(Long questionId) {
         this.questionId = questionId;
     }
 

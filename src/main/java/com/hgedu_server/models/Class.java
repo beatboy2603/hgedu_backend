@@ -19,23 +19,24 @@ import javax.validation.constraints.Size;
  */
 @Entity
 public class Class {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    
-    @NotBlank(message = "Class name is required")
-    @Size(min = 3, max = 50, message = "Please use 3 to 50 character")
-    private String name;
-    
-    @Column
-    private int teacherId;
+    private Long id;
 
-    public long getId() {
+    @Column
+//    @NotBlank(message = "Class name is required")
+//    @Size(min = 3, max = 50, message = "Please use 3 to 50 character")
+    private String name;
+
+    @Column
+    private Long teacherId;
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -47,14 +48,12 @@ public class Class {
         this.name = name;
     }
 
-    public int getTeacherId() {
+    public Long getTeacherId() {
         return teacherId;
     }
 
-    public void setTeacherId(int teacherId) {
+    public void setTeacherId(Long teacherId) {
         this.teacherId = teacherId;
     }
-    
-    
-    
+
 }

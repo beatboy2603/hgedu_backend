@@ -19,7 +19,7 @@ import org.springframework.data.repository.query.Param;
  *
  * @author Admin
  */
-public interface LinkRequestRepository extends JpaRepository<LinkRequest, Integer> {
+public interface LinkRequestRepository extends JpaRepository<LinkRequest, Long> {
 
     @Modifying
     @Query(value = "insert into LinkRequest (parentEmail, studentEmail) values (:parentEmail, :studentEmail)", nativeQuery = true)
@@ -32,10 +32,10 @@ public interface LinkRequestRepository extends JpaRepository<LinkRequest, Intege
     @Modifying
     @Query(value = "insert into ParentStudent (parentId, studentId) value (:parentId, :studentId)", nativeQuery = true)
     @Transactional
-    void addToLink(@Param("parentId") int parentId, @Param("studentId") int studentId);
+    void addToLink(@Param("parentId") Long parentId, @Param("studentId") Long studentId);
 
     @Query(value = "SELECT COUNT(*) FROM ParentStudent WHERE parentId = ?1 AND studentId = ?2", nativeQuery = true)
-    int checkDuplicateLinkedUser(int parentId, int studentId);
+    int checkDuplicateLinkedUser(Long parentId, Long studentId);
     
     
     @Modifying

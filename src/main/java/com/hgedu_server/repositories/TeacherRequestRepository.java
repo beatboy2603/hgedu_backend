@@ -22,10 +22,10 @@ public interface TeacherRequestRepository extends JpaRepository<TeacherRequest, 
     @Modifying
     @Query(value = "delete from TeacherRequest where teacherEmail =:teacherEmail and studentId = :studentId", nativeQuery = true)
     @Transactional
-    void removeByTeacherEmailAndStudentId(@Param("teacherEmail") String teacherEmail, @Param("studentId") int studentId);
+    void removeByTeacherEmailAndStudentId(@Param("teacherEmail") String teacherEmail, @Param("studentId") Long studentId);
 
     @Query(value = "SELECT COUNT(*) FROM TeacherRequest WHERE teacherEmail = ?1 AND studentId = ?2", nativeQuery = true)
-    int checkDuplicateEnrolledUser(String teacherEmail, int studentId);
+    int checkDuplicateEnrolledUser(String teacherEmail, Long studentId);
 
-    TeacherRequest findByTeacherEmailAndStudentId(String teacherEmail, int studentId);
+    TeacherRequest findByTeacherEmailAndStudentId(String teacherEmail, Long studentId);
 }

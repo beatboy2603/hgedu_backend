@@ -28,10 +28,10 @@ public interface ExamRepository extends JpaRepository<Exam, Long>{
     String getExamProgress(Long examId);
     
     @Query(value = "SELECT DATE(Exam.dateUpdated) FROM Exam WHERE Exam.startEntryTime <= CONVERT_TZ(NOW(),@@global.time_zone,'+07:00') AND Exam.startEntryTime != '0000-00-00 00:00:00' AND Exam.teacherId = ?1 GROUP BY DATE(Exam.dateUpdated) ORDER BY DATE(Exam.dateUpdated) ASC", nativeQuery = true)
-    List<String> getExamHistoryDates(long teacherId);
+    List<String> getExamHistoryDates(Long teacherId);
     
     @Query(value = "SELECT DATE(Exam.dateUpdated) FROM Exam WHERE Exam.startEntryTime > CONVERT_TZ(NOW(),@@global.time_zone,'+07:00') AND Exam.teacherId = ?1 GROUP BY DATE(Exam.dateUpdated) ORDER BY DATE(Exam.dateUpdated) ASC", nativeQuery = true)
-    List<String> getExamScheduleDates(long teacherId);
+    List<String> getExamScheduleDates(Long teacherId);
     
     @Query(value = "SELECT Exam.* FROM Exam, ClassExam WHERE Exam.id = ClassExam.examId and ClassExam.classId = ?1 ORDER BY DATE(Exam.dateUpdated) ASC", nativeQuery = true)
     List<Exam> getExamsForClass(Long classId);

@@ -34,12 +34,12 @@ public class FolderController {
     private FolderService folderService;
 
     @GetMapping("/{folderId}")
-    public Folder getFolderById(@PathVariable("folderId") int folderId) throws Exception {
+    public Folder getFolderById(@PathVariable("folderId") Long folderId) throws Exception {
         return folderService.getFolderById(folderId);
     }
 
     @PostMapping("/getFoldersForNav")
-    public Map<String, Object> getFoldersForNav(@RequestParam("uid") int teacherId) {
+    public Map<String, Object> getFoldersForNav(@RequestParam("uid") Long teacherId) {
         return folderService.getFoldersForNav(teacherId);
     }
     
@@ -65,17 +65,17 @@ public class FolderController {
 //    }
 
     @PostMapping("/deleteFolder")
-    public void deleteFolder(@RequestParam("folderId") int folderId) throws Exception {
+    public void deleteFolder(@RequestParam("folderId") Long folderId) throws Exception {
         folderService.deleteFolder(folderId);
     }
     
     @GetMapping("/getAllKnowledgeGroups/{teacherId}")
-    public List<String> getAllKnowledgeGroups(@PathVariable("teacherId") int teacherId) throws Exception {
+    public List<String> getAllKnowledgeGroups(@PathVariable("teacherId") Long teacherId) throws Exception {
         return folderService.getAllKnowledgeGroups(teacherId);
     }
     
     @GetMapping("/getAllKnowledgeGroupsId/{teacherId}")
-    public List<Integer> getAllKnowledgeGroupsId(@PathVariable("teacherId") int teacherId) throws Exception {
+    public List<Integer> getAllKnowledgeGroupsId(@PathVariable("teacherId") Long teacherId) throws Exception {
         return folderService.getAllKnowledgeGroupsId(teacherId);
     }
     

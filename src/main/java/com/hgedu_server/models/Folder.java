@@ -21,22 +21,22 @@ public class Folder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="folderId")
-    private int folderId;
+    private Long folderId;
     @Column(name="teacherId")
-    private int teacherId;
+    private Long teacherId;
     @Column(name="folderName")
     private String folderName;
     @Column(name="folderTypeId")
     private int folderTypeId;
     @Column(name="parentFolderId")
-    private int parentFolderId;
+    private Long parentFolderId;
     @Column(name="subGroupId")
     private int subGroupId;
 
     public Folder() {
     }
 
-    public Folder(int folderId, int teacherId, String folderName, int folderTypeId, int parentFolderId, int subGroupId) {
+    public Folder(Long folderId, Long teacherId, String folderName, int folderTypeId, Long parentFolderId, int subGroupId) {
         this.folderId = folderId;
         this.teacherId = teacherId;
         this.folderName = folderName;
@@ -53,19 +53,19 @@ public class Folder {
         this.subGroupId = subGroupId;
     }
 
-    public int getFolderId() {
+    public Long getFolderId() {
         return folderId;
     }
 
-    public void setFolderId(int folderId) {
+    public void setFolderId(Long folderId) {
         this.folderId = folderId;
     }
 
-    public int getTeacherId() {
+    public Long getTeacherId() {
         return teacherId;
     }
 
-    public void setTeacherId(int teacherId) {
+    public void setTeacherId(Long teacherId) {
         this.teacherId = teacherId;
     }
 
@@ -85,11 +85,11 @@ public class Folder {
         this.folderTypeId = folderTypeId;
     }
 
-    public int getParentFolderId() {
+    public Long getParentFolderId() {
         return parentFolderId;
     }
 
-    public void setParentFolderId(int parentFolderId) {
+    public void setParentFolderId(Long parentFolderId) {
         this.parentFolderId = parentFolderId;
     }
     

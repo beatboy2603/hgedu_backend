@@ -19,7 +19,7 @@ import org.springframework.data.jpa.repository.Query;
 public interface TestQuestionRepository extends JpaRepository<TestQuestion, TestQuestionIdentity>  {
 
     @Query(value = "SELECT * FROM TestQuestion where testId in (SELECT testId from Test where teacherId = ?1)", nativeQuery = true)
-    List<TestQuestion> findByTeacherId(int teacherId);
+    List<TestQuestion> findByTeacherId(Long teacherId);
 
 //    List<TestQuestion> findByTestId(Long id);
     

@@ -20,7 +20,7 @@ public class User {
 
     @Id
     @Column(name = "userId")
-    private int userId;
+    private Long userId;
     @Column(name = "userSub")
     private String userSub;
     @Column(name = "email")
@@ -49,7 +49,7 @@ public class User {
 
     
     
-    public User(int userId, String userSub, String email, String fullName, String phoneNumber, boolean gender, int roleId, String dob, String school, boolean isBan, boolean isBanForever, String bannedUntil) {
+    public User(Long userId, String userSub, String email, String fullName, String phoneNumber, boolean gender, int roleId, String dob, String school, boolean isBan, boolean isBanForever, String bannedUntil) {
         this.userId = userId;
         this.userSub = userSub;
         this.email = email;
@@ -64,11 +64,11 @@ public class User {
         this.bannedUntil = bannedUntil;
     }
 
-    public int getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 

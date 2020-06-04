@@ -15,9 +15,9 @@ import org.springframework.data.jpa.repository.Query;
  */
 public interface ClassStudentRepository extends JpaRepository<ClassStudent, Long> {
 
-    Iterable<ClassStudent> findByClassId(long classId);
+    Iterable<ClassStudent> findByClassId(Long classId);
 
-    Iterable<ClassStudent> findByStudentId(long studentId);
+    Iterable<ClassStudent> findByStudentId(Long studentId);
 
 //    @Transactional
 //    @Modifying
@@ -27,5 +27,5 @@ public interface ClassStudentRepository extends JpaRepository<ClassStudent, Long
     @Query(value = "SELECT * FROM ClassStudent cs WHERE cs.classId = ?1 AND cs.studentId =?2", nativeQuery = true)
     ClassStudent getByClassIdAndStudentId(Long classId, Long studentId);
 
-    ClassStudent findByClassIdAndStudentId(long classId, long studentId);
+    ClassStudent findByClassIdAndStudentId(Long classId, Long studentId);
 }

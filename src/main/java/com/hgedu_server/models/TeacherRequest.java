@@ -18,18 +18,18 @@ public class TeacherRequest {
 
     @Id
     @Column(name = "requestId")
-    private int requestId;
+    private Long requestId;
 
     @Column(name = "teacherEmail")
     private String teacherEmail;
 
     @Column(name = "studentId")
-    private int studentId;
+    private Long studentId;
     
     @Column(name = "displayedName")
     private String displayedName;
 
-    public TeacherRequest(int requestId, String teacherEmail, int studentId, String displayedName) {
+    public TeacherRequest(Long requestId, String teacherEmail, Long studentId, String displayedName) {
         this.requestId = requestId;
         this.teacherEmail = teacherEmail;
         this.studentId = studentId;
@@ -39,11 +39,11 @@ public class TeacherRequest {
     public TeacherRequest() {
     }
 
-    public int getRequestId() {
+    public Long getRequestId() {
         return requestId;
     }
 
-    public void setRequestId(int requestId) {
+    public void setRequestId(Long requestId) {
         this.requestId = requestId;
     }
 
@@ -55,11 +55,11 @@ public class TeacherRequest {
         this.teacherEmail = teacherEmail;
     }
 
-    public int getStudentId() {
+    public Long getStudentId() {
         return studentId;
     }
 
-    public void setStudentId(int studentId) {
+    public void setStudentId(Long studentId) {
         this.studentId = studentId;
     }
 

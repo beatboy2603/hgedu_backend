@@ -16,29 +16,29 @@ import org.springframework.data.jpa.repository.Query;
  *
  * @author Admin
  */
-public interface StudentTeacherRepository extends JpaRepository<StudentTeacher, Integer> {
+public interface StudentTeacherRepository extends JpaRepository<StudentTeacher, Long> {
 
     @Query(value = "select count(*) from StudentTeacher where studentId = ?1 and teacherId = ?2", nativeQuery = true)
-    long findByStudentIdAndTeacherId(int studentId, int teacherId);
+    Integer findByStudentIdAndTeacherId(Long studentId, Long teacherId);
 
     @Query(value = "SELECT u.userId, st.displayedname , u.`email`, u.`phoneNumber`, u.`gender`, u.`dob`\n"
             + "	 FROM `User` u\n"
             + "	 INNER JOIN `StudentTeacher` st ON u.`userId` = st.`studentId` \n"
             + "	  WHERE st.teacherId = ?1", nativeQuery = true)
-    List<Object[]> getStudentData(int teacherId);
+    List<Object[]> getStudentData(Long teacherId);
 
     @Query(value = "SELECT  u.userId, u.fullName , u.`email`, u.`phoneNumber`, u.`gender`, u.`dob`\n"
             + "	 FROM `User` u\n"
             + "	 INNER JOIN `StudentTeacher` st ON u.`userId` = st.`teacherId` \n"
             + "	  WHERE st.studentId = ?1", nativeQuery = true)
-    List<Object[]> getTeacherData(int studentId);
+    List<Object[]> getTeacherData(Long studentId);
 
-    Iterable<StudentTeacher> findByIsConnectedAndTeacherId(boolean isConnected, long teacherId);
+    Iterable<StudentTeacher> findByIsConnectedAndTeacherId(boolean isConnected, Long teacherId);
 
-    Iterable<StudentTeacher> findByIsConnectedAndStudentId(boolean isConnected, long studentId);
+    Iterable<StudentTeacher> findByIsConnectedAndStudentId(boolean isConnected, Long studentId);
 
     @Transactional
     @Modifying
     @Query(value = "DELETE FROM StudentTeacher WHERE studentId = ?1", nativeQuery = true)
-    void deleteByStudentId(long studentId);
+    void deleteByStudentId(Long studentId);
 }

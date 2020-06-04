@@ -50,74 +50,74 @@ public class ClassManagementController {
     private UserService userService;
 
     @GetMapping("/{teacherId}")
-    public ResponseEntity<?> getClasses(@PathVariable int teacherId) {
+    public ResponseEntity<?> getClasses(@PathVariable Long teacherId) {
         Iterable<Class> classes = classManagementService.findClassesByTeacherId(teacherId);
         return new ResponseEntity<Iterable<Class>>(classes, HttpStatus.OK);
     }
     
     @GetMapping("/studentClass/{studentId}")
-        public ResponseEntity<?> getClassesByStudentId(@PathVariable long studentId) {
+        public ResponseEntity<?> getClassesByStudentId(@PathVariable Long studentId) {
         Iterable<Class> classes = classManagementService.findClassesByStudentId(studentId);
         return new ResponseEntity<Iterable<Class>>(classes, HttpStatus.OK);
     }
 
     @GetMapping("/students/{classId}")
-    public ResponseEntity<?> getStudents(@PathVariable long classId) {
+    public ResponseEntity<?> getStudents(@PathVariable Long classId) {
         Iterable<User> students = userService.findUserByClassId(classId);
         return new ResponseEntity<Iterable<User>>(students, HttpStatus.OK);
     }
 
     @GetMapping("/student/{classStudentId}")
-    public ResponseEntity<?> getStudenGrade(@PathVariable long classStudentId) {
+    public ResponseEntity<?> getStudenGrade(@PathVariable Long classStudentId) {
         Iterable<Grade> grades = classManagementService.findByClassStudentId(classStudentId);
         return new ResponseEntity<Iterable<Grade>>(grades, HttpStatus.OK);
     }
 
     @GetMapping("/parent/{studentId}")
-    public ResponseEntity<?> getParentInformation(@PathVariable int studentId) {
+    public ResponseEntity<?> getParentInformation(@PathVariable Long studentId) {
         User user = classManagementService.findParentInformationByStudentId(studentId);
         return new ResponseEntity<User>(user, HttpStatus.OK);
     }
     
     @GetMapping("/teacher/{teacherId}")
-    public ResponseEntity<?> getTeacherByClassId(@PathVariable int teacherId) {
+    public ResponseEntity<?> getTeacherByClassId(@PathVariable Long teacherId) {
         User user = classManagementService.findTeacherInformation(teacherId);
         return new ResponseEntity<User>(user, HttpStatus.OK);
     }
 
     @GetMapping("/studentTeacher/{teacherId}")
-    public ResponseEntity<?> getStudentOfTeacher(@PathVariable long teacherId) {
+    public ResponseEntity<?> getStudentOfTeacher(@PathVariable Long teacherId) {
         Iterable<StudentTeacher> studentTeachers = classManagementService.findByIsConnected(teacherId);
         return new ResponseEntity<Iterable<StudentTeacher>>(studentTeachers, HttpStatus.OK);
     }
 
     @GetMapping("/studentTeacher/teacher/{studentId}")
-    public ResponseEntity<?> getTeacherOfStudent(@PathVariable long studentId) {
+    public ResponseEntity<?> getTeacherOfStudent(@PathVariable Long studentId) {
         Iterable<StudentTeacher> studentTeachers = classManagementService.findByIsConnectedAndStudentId(studentId);
         return new ResponseEntity<Iterable<StudentTeacher>>(studentTeachers, HttpStatus.OK);
     }
 
     @GetMapping("/studentTeacher/connected/{teacherId}")
-    public ResponseEntity<?> getInformationOfConntectedStudent(@PathVariable int teacherId) {
+    public ResponseEntity<?> getInformationOfConntectedStudent(@PathVariable Long teacherId) {
         Iterable<User> users = classManagementService.findConnectedStudentByTeacherId(teacherId);
         return new ResponseEntity<Iterable<User>>(users, HttpStatus.OK);
     }
 
     @GetMapping("/studentTeacher/connected/teacher/{studentId}")
-    public ResponseEntity<?> getInformationOfConntectedTeacher(@PathVariable int studentId) {
+    public ResponseEntity<?> getInformationOfConntectedTeacher(@PathVariable Long studentId) {
         Iterable<User> users = classManagementService.findConnectedTeacherByStudentId(studentId);
         return new ResponseEntity<Iterable<User>>(users, HttpStatus.OK);
     }
 
     @GetMapping("/classStudent/{classId}")
-    public ResponseEntity<?> getClassStudent(@PathVariable long classId) {
+    public ResponseEntity<?> getClassStudent(@PathVariable Long classId) {
         Iterable<ClassStudent> classStudents = classStudentService.getStudentsByClassId(classId);
         return new ResponseEntity<Iterable<ClassStudent>>(classStudents, HttpStatus.OK);
     }
     
     //jjjj
     @GetMapping("/classStudent/classes/{studentId}")
-    public ResponseEntity<?> getClassStudentByStudentId(@PathVariable long studentId) {
+    public ResponseEntity<?> getClassStudentByStudentId(@PathVariable Long studentId) {
         Iterable<ClassStudent> classStudents = classStudentService.getClassesByStudentId(studentId);
         return new ResponseEntity<Iterable<ClassStudent>>(classStudents, HttpStatus.OK);
     }
@@ -135,19 +135,19 @@ public class ClassManagementController {
     }
 
     @DeleteMapping("/{classId}")
-    public ResponseEntity<?> deleteById(@PathVariable long classId) {
+    public ResponseEntity<?> deleteById(@PathVariable Long classId) {
         classManagementService.deleteById(classId);
         return new ResponseEntity<String>("Class with ID " + classId + " was deleted", HttpStatus.OK);
     }
 
     @DeleteMapping("/student/{id}")
-    public ResponseEntity<?> deleteStudentById(@PathVariable long id) {
+    public ResponseEntity<?> deleteStudentById(@PathVariable Long id) {
         classStudentService.deleteById(id);
         return new ResponseEntity<String>("ClassStudent with ID " + id + " was deleted", HttpStatus.OK);
     }
 
     @DeleteMapping("/studentTeacher/{studentId}")
-    public ResponseEntity<?> deleteStudentTeacherByStudentId(@PathVariable long studentId) {
+    public ResponseEntity<?> deleteStudentTeacherByStudentId(@PathVariable Long studentId) {
         classManagementService.deleteStudentTeacher(studentId);
         return new ResponseEntity<String>("Student with ID " + studentId + " was deleted", HttpStatus.OK);
     }
@@ -159,13 +159,13 @@ public class ClassManagementController {
     }
     
     @GetMapping("/parentStudent/{parentId}")
-    public  ResponseEntity<?> getStudentsByParentId(@PathVariable long parentId) {
+    public  ResponseEntity<?> getStudentsByParentId(@PathVariable Long parentId) {
         Iterable<User> students = classManagementService.findStudentByParentId(parentId);
         return new ResponseEntity<Iterable<User>>(students, HttpStatus.OK);
     }
     
     @GetMapping("/parentFindTeacher/{studentId}")
-    public ResponseEntity<?> parentFindTeacherByStudentId(@PathVariable long studentId) {
+    public ResponseEntity<?> parentFindTeacherByStudentId(@PathVariable Long studentId) {
         Iterable<Object[]> teachers = classManagementService.parentFindTeacherByStudentId(studentId);
         return new ResponseEntity<Iterable<Object[]>>(teachers, HttpStatus.OK); 
     }

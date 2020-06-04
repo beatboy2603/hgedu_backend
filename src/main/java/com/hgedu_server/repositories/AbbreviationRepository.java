@@ -13,8 +13,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
  *
  * @author ADMIN
  */
-public interface AbbreviationRepository extends JpaRepository<Abbreviation, Integer>{
+public interface AbbreviationRepository extends JpaRepository<Abbreviation, Long>{
 
-    public List<Abbreviation> findByTeacherId(int teacherId);
+    public List<Abbreviation> findByTeacherId(Long teacherId);
     
 }

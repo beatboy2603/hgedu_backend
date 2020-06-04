@@ -20,38 +20,38 @@ public class ParentStudent {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int linkId;
+    private Long linkId;
     
     @Column
-    private int parentId;
+    private Long parentId;
     
     @Column
-    private int studentId;
+    private Long studentId;
 
     @Column
     private boolean isConnected;
 
-    public int getLinkId() {
+    public Long getLinkId() {
         return linkId;
     }
 
-    public void setLinkId(int linkId) {
+    public void setLinkId(Long linkId) {
         this.linkId = linkId;
     }
 
-    public int getParentId() {
+    public Long getParentId() {
         return parentId;
     }
 
-    public void setParentId(int parentId) {
+    public void setParentId(Long parentId) {
         this.parentId = parentId;
     }
 
-    public int getStudentId() {
+    public Long getStudentId() {
         return studentId;
     }
 
-    public void setStudentId(int studentId) {
+    public void setStudentId(Long studentId) {
         this.studentId = studentId;
     }
 

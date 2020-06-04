@@ -197,15 +197,15 @@ public class QuestionService {
     @Autowired
     private AnswerRepository answerRepository;
 
-    public List<Question> getQuestionByFolderId(int teacherId, int folderId) {
+    public List<Question> getQuestionByFolderId(Long teacherId, Long folderId) {
         return questionRepository.findByTeacherIdAndFolderId(teacherId, folderId);
     }
 
-    public List<String> getFormIdentifiers(int teacherId) {
+    public List<String> getFormIdentifiers(Long teacherId) {
         return questionRepository.getAllFormIdentifiersByTeacherId(teacherId);
     }
 
-    public List<String> getAllSpecialKnowledge(int teacherId) {
+    public List<String> getAllSpecialKnowledge(Long teacherId) {
         return questionRepository.getAllSpecialKnowledgeByTeacherId(teacherId);
     }
 
@@ -240,11 +240,11 @@ public class QuestionService {
         return questionAndAnswersList;
     }
 
-    public List<Question> getAllQuestions(int teacherId) {
+    public List<Question> getAllQuestions(Long teacherId) {
         return questionRepository.findByTeacherId(teacherId);
     }
 
-    public String addQuestion(List<QuestionAndAnswers> questionAndAnswersList, int teacherId) {
+    public String addQuestion(List<QuestionAndAnswers> questionAndAnswersList, Long teacherId) {
         if (questionAndAnswersList.size() == 1) {
             Question question = questionAndAnswersList.get(0).getQuestion();
             question.setQuestionParentId(Long.valueOf(0));
@@ -278,7 +278,7 @@ public class QuestionService {
         return "added";
     }
 
-    public String deleteQuestion(int questionId) {
+    public String deleteQuestion(Long questionId) {
         List<Question> questions = questionRepo.findByQuestionId(Long.valueOf(questionId));
         Question question = null;
         if(questions.size()>0){

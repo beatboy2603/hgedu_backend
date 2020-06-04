@@ -18,17 +18,17 @@ import org.springframework.data.repository.query.Param;
  *
  * @author Admin
  */
-public interface StudentEnrollmentRepository extends JpaRepository<StudentRequest, Integer> {
+public interface StudentEnrollmentRepository extends JpaRepository<StudentRequest, Long> {
     @Modifying  
     @Query(value = "insert into StudentRequest(note, teacherEmail, studentId) values(:note, :teacherEmail, :studentId)", nativeQuery = true)
     @Transactional
-    void addToEnrollmentRequest(@Param("note") String note, @Param("teacherEmail") String teacherEmail, @Param("studentId") int studentId);
+    void addToEnrollmentRequest(@Param("note") String note, @Param("teacherEmail") String teacherEmail, @Param("studentId") Long studentId);
    
     
     @Query(value = "SELECT COUNT(*) FROM StudentRequest WHERE teacherEmail = ?1 AND studentId = ?2", nativeQuery = true)
-    int checkDuplicateEnrolledUser(String teacherEmail, int studentId);
+    int checkDuplicateEnrolledUser(String teacherEmail, Long studentId);
     
-    List<StudentRequest> findByTeacherEmailAndStudentId(String teacherEmail, int studentId);
+    List<StudentRequest> findByTeacherEmailAndStudentId(String teacherEmail, Long studentId);
     
     @Query(value = "SELECT note FROM `StudentRequest` WHERE studentId IN (SELECT studentId FROM StudentRequest WHERE teacherEmail = ?1 ) AND teacherEmail = ?1", nativeQuery = true)
     List<String> getStudentNote(String teacherEmail);
@@ -36,6 +36,6 @@ public interface StudentEnrollmentRepository extends JpaRepository<StudentReques
     @Modifying  
     @Query(value = "delete from StudentRequest where teacherEmail =:teacherEmail and studentId = :studentId", nativeQuery = true)
     @Transactional
-    void deleteByTeacherEmailAndStudentId( @Param("teacherEmail") String teacherEmail, @Param("studentId") int studentId);
+    void deleteByTeacherEmailAndStudentId( @Param("teacherEmail") String teacherEmail, @Param("studentId") Long studentId);
 }
 

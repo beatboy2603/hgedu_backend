@@ -24,7 +24,7 @@ public class News implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name = "title")
     private String title;
@@ -36,7 +36,7 @@ public class News implements Serializable {
     private String description;
 
     @Column(name = "moderatorId")
-    private long modId;
+    private Long modId;
 
     @Column(name = "dateCreated")
     private String dateCreated;
@@ -47,11 +47,11 @@ public class News implements Serializable {
     public News() {
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -79,11 +79,11 @@ public class News implements Serializable {
         this.description = description;
     }
 
-    public long getModId() {
+    public Long getModId() {
         return modId;
     }
 
-    public void setModId(long modId) {
+    public void setModId(Long modId) {
         this.modId = modId;
     }
 

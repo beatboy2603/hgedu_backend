@@ -39,7 +39,7 @@ public class JwtController {
         algorithm = Algorithm.HMAC256("webgiaoduc-secretkey");
     }
 
-    public String createToken(String sub, int uid, int role) {
+    public String createToken(String sub, Long uid, int role) {
         // Create token with 30min timeline and change token each 15min
         try {
             Date exp = new Date(System.currentTimeMillis() + 60 * 60 * 1000); // 60 min expired
@@ -63,7 +63,7 @@ public class JwtController {
                 return null;
             }
             if (jwt.getClaim("renew").asDate().before(new Date(System.currentTimeMillis()))) {
-                return createToken(jwt.getClaim("sub").asString(), jwt.getClaim("uid").asInt(),
+                return createToken(jwt.getClaim("sub").asString(), jwt.getClaim("uid").asLong(),
                         jwt.getClaim("role").asInt());
             }
             return "";
@@ -77,7 +77,7 @@ public class JwtController {
     public long getUid(String token) {
         try {
             DecodedJWT jwt = JWT.decode(token);
-            return jwt.getClaim("uid").asInt();
+            return jwt.getClaim("uid").asLong();
         } catch (JWTDecodeException exception) {
             // Invalid signature/claims
             return -1;

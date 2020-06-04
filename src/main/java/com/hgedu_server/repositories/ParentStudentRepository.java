@@ -15,7 +15,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface ParentStudentRepository extends JpaRepository<ParentStudent, Long>{
 
-    List<ParentStudent> findByStudentIdAndParentId(int parentId, int studentId);
+    List<ParentStudent> findByStudentIdAndParentId(Long parentId, Long studentId);
     
 //    ParentStudent findByStudentId(long studentId);
     

@@ -14,7 +14,7 @@ import org.springframework.data.jpa.repository.Query;
  *
  * @author admin
  */
-public interface TestToWordRepository extends JpaRepository<TestToWord, Integer>{
+public interface TestToWordRepository extends JpaRepository<TestToWord, Long>{
     
     @Query(value = "SELECT content FROM TestToWord")
     List<String> getAllContent();

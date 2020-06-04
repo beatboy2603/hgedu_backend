@@ -51,8 +51,8 @@ public class StudentEnrollmentService {
             resMessage.put("error", "Không tìm thấy người dùng");
         } else {
             System.out.println("1");
-            int studentId = userRepository.getUserIdByEmail(studentEmail);
-            int teacherId = userRepository.getUserIdByEmail(teacherEmail);
+            Long studentId = userRepository.getUserIdByEmail(studentEmail);
+            Long teacherId = userRepository.getUserIdByEmail(teacherEmail);
             if (studentTeacherRepository.findByStudentIdAndTeacherId(studentId, teacherId) >= 1) {
                 System.out.println("2");
                 System.out.println("Already have link");
@@ -72,20 +72,20 @@ public class StudentEnrollmentService {
         return resMessage;
     }
 
-    public List<Object[]> getTeacherList(int studentId) {
+    public List<Object[]> getTeacherList(Long studentId) {
         return studentTeacherRepository.getTeacherData(studentId);
     }
 
-    public List<User> getRequestTeacher(int studentId) {
+    public List<User> getRequestTeacher(Long studentId) {
         return userRepository.getRequestTeacher(studentId);
     }
 
     //----teacher's part
-    public List<Object[]> getStudentList(int teacherId) {
+    public List<Object[]> getStudentList(Long teacherId) {
         return studentTeacherRepository.getStudentData(teacherId);
     }
 
-    public User getInfo(int id) {
+    public User getInfo(Long id) {
         System.out.println(id);
         User u = new User();
         User getUser = userRepository.getOne(id);
@@ -98,7 +98,7 @@ public class StudentEnrollmentService {
         return u;
     }
 
-    public List<User> getStudentParentInfo(int id) {
+    public List<User> getStudentParentInfo(Long id) {
         System.out.println(id);
         User u = new User();
         List<User> getUser = userRepository.getParentInfoByStudentId(id);
@@ -121,8 +121,8 @@ public class StudentEnrollmentService {
             System.out.println("User not found");
             res.put("error", "Không tìm thấy người dùng");
         } else {
-            int studentId = userRepository.getUserIdByEmail(studentEmail);
-            int teacherId = userRepository.getUserIdByEmail(teacherEmail);
+            Long studentId = userRepository.getUserIdByEmail(studentEmail);
+            Long teacherId = userRepository.getUserIdByEmail(teacherEmail);
 
             System.out.println("student: " + studentId);
             System.out.println("teacher: " + teacherId);
@@ -150,7 +150,7 @@ public class StudentEnrollmentService {
         return res;
     }
 
-    public List<User> getEnrollStudentInfo(int teacherId) {
+    public List<User> getEnrollStudentInfo(Long teacherId) {
         System.out.println("teacher email: " + userRepository.getOne(teacherId).getEmail());
         List<User> listStudent = userRepository.getEnrolledStudentByRequestEmail(userRepository.getOne(teacherId).getEmail());
         if (listStudent.isEmpty()) {
@@ -162,7 +162,7 @@ public class StudentEnrollmentService {
         }
     }
 
-    public List<String> getStudentNote(int teacherId) {
+    public List<String> getStudentNote(Long teacherId) {
         return studentEnrollmentRepository.getStudentNote(userRepository.getOne(teacherId).getEmail());
     }
 
@@ -181,7 +181,7 @@ public class StudentEnrollmentService {
 //            teacherRequestRepository.deleteByTeacherEmailAndStudentId(teacherEmail, studentId);
 //        }
 //    }
-    public void studentRequestHandle(String status, int teacherId, int studentId, String displayName) {
+    public void studentRequestHandle(String status, Long teacherId, Long studentId, String displayName) {
         StudentTeacher st = new StudentTeacher();
         if (status != null) {
             switch (status) {
@@ -202,7 +202,7 @@ public class StudentEnrollmentService {
         }
     }
 
-    public void teacherRequestHandle(String status, int teacherId, int studentId) {
+    public void teacherRequestHandle(String status, Long teacherId, Long studentId) {
         StudentTeacher st = new StudentTeacher();
         String displayName = teacherRequestRepository.findByTeacherEmailAndStudentId(userRepository.getOne(teacherId).getEmail(), studentId).getDisplayedName();
         if (status != null) {
@@ -226,7 +226,7 @@ public class StudentEnrollmentService {
         }
     }
 
-    public List<Object[]> getStudentInfo(int teacherId) {
+    public List<Object[]> getStudentInfo(Long teacherId) {
         return studentTeacherRepository.getStudentData(teacherId);
     }
 }

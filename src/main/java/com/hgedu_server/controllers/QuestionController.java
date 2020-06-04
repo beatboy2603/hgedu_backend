@@ -33,34 +33,34 @@ public class QuestionController {
 //    private AnswerRepository answerRepository;
 
     @GetMapping("/{teacherId}/{folderId}")
-    public List<Question> getQuestionByFolderId(@PathVariable("teacherId") int teacherId,
-            @PathVariable("folderId") int folderId) throws Exception {
+    public List<Question> getQuestionByFolderId(@PathVariable("teacherId") Long teacherId,
+            @PathVariable("folderId") Long folderId) throws Exception {
         return questionService.getQuestionByFolderId(teacherId, folderId);
     }
 
     @GetMapping("/{teacherId}")
-    public List<Question> getAllQuestions(@PathVariable("teacherId") int teacherId) throws Exception {
+    public List<Question> getAllQuestions(@PathVariable("teacherId") Long teacherId) throws Exception {
         return questionService.getAllQuestions(teacherId);
     }
 
     @PostMapping("/addQuestion/{teacherId}")
     public String addQuestion(@RequestBody List<QuestionAndAnswers> questionAndAnswersList, 
-            @PathVariable("teacherId") int teacherId) throws Exception {
+            @PathVariable("teacherId") Long teacherId) throws Exception {
         return questionService.addQuestion(questionAndAnswersList, teacherId);
     }
     
     @PostMapping("/deleteQuestion/{questionId}")
-    public String deleteQuestion(@PathVariable int questionId) throws Exception {
+    public String deleteQuestion(@PathVariable Long questionId) throws Exception {
         return questionService.deleteQuestion(questionId);
     }
 
     @GetMapping("/getFormIdentifiers/{teacherId}")
-    public List<String> getFormIdentifiers(@PathVariable("teacherId") int teacherId) throws Exception {
+    public List<String> getFormIdentifiers(@PathVariable("teacherId") Long teacherId) throws Exception {
         return questionService.getFormIdentifiers(teacherId);
     }
 
     @GetMapping("/getAllSpecialKnowledge/{teacherId}")
-    public List<String> getAllSpecialKnowledge(@PathVariable("teacherId") int teacherId) throws Exception {
+    public List<String> getAllSpecialKnowledge(@PathVariable("teacherId") Long teacherId) throws Exception {
         return questionService.getAllSpecialKnowledge(teacherId);
     }
 

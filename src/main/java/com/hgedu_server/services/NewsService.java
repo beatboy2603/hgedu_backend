@@ -45,7 +45,7 @@ public class NewsService {
                     news.setDateCreated((String)data.get(key));
                     break;
                 case "modId":
-                    news.setModId(Integer.parseInt((String) data.get(key)));
+                    news.setModId(Long.parseLong((String) data.get(key)));
                     break;
             }
         }

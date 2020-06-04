@@ -12,10 +12,10 @@ import org.springframework.data.jpa.repository.Query;
 public interface GradeRepository extends JpaRepository<Grade, Long>{
     
     
-    Iterable<Grade> findByClassStudentIdOrderByPowerIdAsc(long id);
+    Iterable<Grade> findByClassStudentIdOrderByPowerIdAsc(Long id);
     
     @Query(value = "SELECT g.* FROM Grade g, Setting s WHERE g.classStudentId = ?1 AND g.powerId = s.settingId AND s.value = ?2", nativeQuery = true)
     Grade getStudentGradeByClassStudentIdAndPowerLevel(Long classStudentId, Long powerLevel);
 
-    List<Grade> findByClassStudentId(long id);
+    List<Grade> findByClassStudentId(Long id);
 }

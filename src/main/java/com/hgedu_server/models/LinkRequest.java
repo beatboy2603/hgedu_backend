@@ -18,7 +18,7 @@ import javax.persistence.Id;
 public class LinkRequest {
     @Id
     @Column(name = "requestId")
-    private int id;
+    private Long id;
     @Column(name = "parentEmail")
     private String parentEmail;
     @Column(name = "studentEmail")
@@ -27,17 +27,17 @@ public class LinkRequest {
     public LinkRequest() {
     }
 
-    public LinkRequest(int id, String parentEmail, String studentEmail) {
+    public LinkRequest(Long id, String parentEmail, String studentEmail) {
         this.id = id;
         this.parentEmail = parentEmail;
         this.studentEmail= studentEmail;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

@@ -26,7 +26,7 @@ public class UserService {
     public UserService() {
     }
     
-    public Optional<User> getAnUser(int userId){
+    public Optional<User> getAnUser(Long userId){
         return userRepository.findById(userId);
     }
     
@@ -58,7 +58,7 @@ public class UserService {
         return userRepository.countUsers();
     }
     
-    public Iterable<User> findUserByClassId(long classId) {
+    public Iterable<User> findUserByClassId(Long classId) {
         return userRepository.findUserByClassId(classId);
     }
 

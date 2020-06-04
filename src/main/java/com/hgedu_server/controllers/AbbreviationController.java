@@ -32,16 +32,13 @@ public class AbbreviationController {
     private AbbreviationService abbreviationService;
 
     @GetMapping("/{teacherId}")
-    public List<Abbreviation> getAllAbbreviations(@PathVariable("teacherId") int teacherId) throws Exception {
+    public List<Abbreviation> getAllAbbreviations(@PathVariable("teacherId") Long teacherId) throws Exception {
         return abbreviationService.getAllAbbreviations(teacherId);
     }
 
     @PostMapping("/addAbbreviation")
     @ResponseBody
     public void addAbbreviation(@RequestBody Abbreviation abbreviation) throws Exception {
-        System.out.println(abbreviation.getTeacherId());
-        System.out.println(abbreviation.getOriginalForm());
-        System.out.println(abbreviation.getShortenForm());
         abbreviationService.addAbbreviation(abbreviation);
     }
     
@@ -52,7 +49,7 @@ public class AbbreviationController {
     }
 
     @PostMapping("/deleteAbbreviation/{abbreviationId}")
-    public void deleteAbbreviation(@PathVariable("abbreviationId") int abbreviationId) throws Exception {
+    public void deleteAbbreviation(@PathVariable("abbreviationId") Long abbreviationId) throws Exception {
         abbreviationService.deleteAbbreviation(abbreviationId);
     }
 }

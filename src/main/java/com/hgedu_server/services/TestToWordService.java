@@ -152,7 +152,7 @@ public class TestToWordService {
 
     }
 
-    public void getQuestions(int teacherId, int folderId) {
+    public void getQuestions(Long teacherId, Long folderId) {
         FileInputStream input;
         try {
 
@@ -338,7 +338,7 @@ public class TestToWordService {
         }
     }
 
-    public void formatWord(long testId) {
+    public void formatWord(Long testId) {
         try {
             String qResult = "";
             String aResult = "";

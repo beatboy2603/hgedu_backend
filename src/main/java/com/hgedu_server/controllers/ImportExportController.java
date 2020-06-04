@@ -68,7 +68,7 @@ public class ImportExportController {
     }
 
     @GetMapping("/import/{folderId}/{teacherId}")
-    public String importData(@PathVariable int teacherId, @PathVariable int folderId) {
+    public String importData(@PathVariable Long teacherId, @PathVariable Long folderId) {
         testToWordService.getQuestions(teacherId, folderId);
         return "import ok";
     }
@@ -79,7 +79,7 @@ public class ImportExportController {
 //    }
 
     @GetMapping("/download/{folderId}")
-    public ResponseEntity<Object> downloadFile(@PathVariable long folderId) {
+    public ResponseEntity<Object> downloadFile(@PathVariable Long folderId) {
         Test test = testRepository.findByFolderId(folderId);
         long testId = test.getId();
         System.out.println("testId"+testId);

@@ -103,7 +103,7 @@ public class AuthenService {
                 folders[i] = new Folder();
                 folders[i].setFolderName(folderNames[i]);
                 folders[i].setFolderTypeId(1);
-                folders[i].setParentFolderId(0);
+                folders[i].setParentFolderId(0L);
                 folders[i].setTeacherId(newUser.getUserId());
                 folders[i].setSubGroupId(i + 1);
                 folderRepository.save(folders[i]);

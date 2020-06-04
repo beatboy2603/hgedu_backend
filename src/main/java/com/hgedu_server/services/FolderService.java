@@ -28,13 +28,13 @@ public class FolderService {
     @Autowired
     private FolderRepository folderRepository;
 
-    public List<Folder> getFolderByName(int teacherId, String folderName) {
+    public List<Folder> getFolderByName(Long teacherId, String folderName) {
 //        Folder folder = folderRepository.findByTeacherIdAndFolderName(teacherId, folderName);
 //        System.out.println(folder.getFolderId());
         return folderRepository.findByTeacherIdAndFolderName(teacherId, folderName);
     }
     
-    public Folder getFolderById(int folderId) {
+    public Folder getFolderById(Long folderId) {
         List<Folder> folders = folderRepository.findByFolderId(folderId);
         if (folders.size() > 0) {
             return folders.get(0);
@@ -43,31 +43,31 @@ public class FolderService {
         }
     }
 
-    public Folder getFolderByNameFromRootFolders(int teacherId, String folderName) {
-        return folderRepository.findByTeacherIdAndFolderNameAndParentFolderId(teacherId, folderName, 0);
+    public Folder getFolderByNameFromRootFolders(Long teacherId, String folderName) {
+        return folderRepository.findByTeacherIdAndFolderNameAndParentFolderId(teacherId, folderName, 0L);
     }
 
-    public List<Folder> getAllSubfolders(int teacherId, int parentFolderId) {
+    public List<Folder> getAllSubfolders(Long teacherId, Long parentFolderId) {
         return folderRepository.getAllSubfolders(teacherId, parentFolderId);
     }
     
     public List<Folder> getAllSubfoldersForExam(Long teacherId, Long parentFolderId) {
-        return folderRepository.getAllSubfolders(parentFolderId, teacherId);
+        return folderRepository.getAllSubfoldersForExam(parentFolderId, teacherId);
     }
     
     public Folder getRootTestsFolder(Long teacherId) {
         return folderRepository.getRootTestsFolder(teacherId);
     }
 
-    public boolean checkFolderExisting(int folderId) {
-        Folder folder = folderRepository.getFolderById(folderId);
-        if (folder != null) {
-            System.out.println(folder.getFolderName());
-            return true;
-        } else {
-            return false;
-        }
-    }
+//    public boolean checkFolderExisting(int folderId) {
+//        Folder folder = folderRepository.getFolderById(folderId);
+//        if (folder != null) {
+//            System.out.println(folder.getFolderName());
+//            return true;
+//        } else {
+//            return false;
+//        }
+//    }
     
     public boolean checkFolderExisting(Long folderId) {
         Folder folder = folderRepository.getFolderById(folderId);
@@ -86,7 +86,7 @@ public class FolderService {
         return null;
     }
 
-    public void deleteFolder(int folderId) throws Exception {
+    public void deleteFolder(Long folderId) throws Exception {
         try {
             folderRepository.deleteById(folderId);
         } catch (Exception e) {
@@ -94,7 +94,7 @@ public class FolderService {
         }
     }
 
-    public Map<String, Object> getFoldersForNav(int teacherId) {
+    public Map<String, Object> getFoldersForNav(Long teacherId) {
         Map<String, Object> responseList = new LinkedHashMap<>();
         List<Folder> folders = folderRepository.findByTeacherId(teacherId);
         Folder publicGroup = null;
@@ -102,7 +102,7 @@ public class FolderService {
             Folder folder = folders.get(i);
             responseList.put("folder" + folder.getFolderId(), folder);
             if(folder.getFolderName().equals("Nhóm")&&folder.getParentFolderId()==0){
-                publicGroup = new Folder(1, 1, "Nhóm công cộng", 4, folder.getFolderId(), 3);
+                publicGroup = new Folder(1L, 1L, "Nhóm công cộng", 4, folder.getFolderId(), 3);
                 responseList.put("folder" + publicGroup.getFolderId(), publicGroup);
             }
         }
@@ -144,11 +144,11 @@ public class FolderService {
 //        }
 //    }
 
-    public List<String> getAllKnowledgeGroups(int teacherId) {
+    public List<String> getAllKnowledgeGroups(Long teacherId) {
        return folderRepository.getAllKnowledgeGroups(teacherId);
     }
 
-    public List<Integer> getAllKnowledgeGroupsId(int teacherId) {
+    public List<Integer> getAllKnowledgeGroupsId(Long teacherId) {
         return folderRepository.getAllKnowledgeGroupsId(teacherId);
     }
 }

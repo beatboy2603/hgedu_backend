@@ -22,7 +22,7 @@ public class ClassService {
     @Autowired
     private ClassRepository classRepo;
     
-    public List<Class> getAllClassesForTeacher(Integer teacherId) {
+    public List<Class> getAllClassesForTeacher(Long teacherId) {
         return classRepo.getClassesForExam(teacherId);
     }
 

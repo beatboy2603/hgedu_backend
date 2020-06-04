@@ -21,15 +21,15 @@ public class ClassStudentService {
     private ClassStudentRepository classStudentRepository;
     
     
-    public Iterable<ClassStudent> getStudentsByClassId(long classId) {
+    public Iterable<ClassStudent> getStudentsByClassId(Long classId) {
         return classStudentRepository.findByClassId(classId);
     }
     
-    public Iterable<ClassStudent> getClassesByStudentId(long studentId) {
+    public Iterable<ClassStudent> getClassesByStudentId(Long studentId) {
         return classStudentRepository.findByStudentId(studentId);
     }
     
-    public void deleteById(long id) {
+    public void deleteById(Long id) {
         classStudentRepository.deleteById(id);
     }
     
